@@ -1,0 +1,8 @@
+{
+  "name": "Website PKBM BINA INSANI SUMOWONO",
+  "description": "Website Resmi PKBM Bina Insani Sumowono - Pusat Kegiatan Belajar Masyarakat Kesetaraan Paket A, Paket B, dan Paket C",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
