@@ -43,7 +43,9 @@ import {
   Sliders,
   Camera,
   Award,
-  Navigation
+  Navigation,
+  Database,
+  Radio
 } from 'lucide-react';
 import { usePKBM } from '../../context/PKBMContext';
 import { NewsItem, GalleryItem, RegisteredStudent, PKBMInfoState } from '../../types';
@@ -53,6 +55,7 @@ import { VokasiCmsTab } from './tabs/VokasiCmsTab';
 import { FaqCmsTab } from './tabs/FaqCmsTab';
 import { HeroSlidesCmsTab } from './tabs/HeroSlidesCmsTab';
 import { PersonaliaCmsTab } from './tabs/PersonaliaCmsTab';
+import { DatabaseCmsTab } from './tabs/DatabaseCmsTab';
 import { LogoManagerModal } from './LogoManagerModal';
 
 interface AdminDashboardModalProps {
@@ -62,6 +65,7 @@ interface AdminDashboardModalProps {
 
 type TabType =
   | 'overview'
+  | 'database'
   | 'heroslides'
   | 'news'
   | 'personalia'
@@ -93,7 +97,11 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({ isOpen
     changeAdminPassword,
     resetToDefaultData,
     exportDataJSON,
-    importDataJSON
+    importDataJSON,
+    supabaseStatus,
+    isTableConfigured,
+    lastSyncTime,
+    isSyncing
   } = usePKBM();
 
   const [activeTab, setActiveTab] = useState<TabType>('overview');
@@ -549,6 +557,25 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({ isOpen
           </div>
 
           <div className="flex items-center gap-2">
+            {/* Supabase Realtime Quick Indicator */}
+            <button
+              onClick={() => setActiveTab('database')}
+              className={`px-3 py-1.5 rounded-xl border text-xs font-bold flex items-center gap-2 transition-all cursor-pointer ${
+                supabaseStatus === 'connected'
+                  ? 'bg-emerald-950/70 border-emerald-500/40 text-emerald-300 hover:bg-emerald-900/80'
+                  : supabaseStatus === 'connecting'
+                  ? 'bg-amber-950/70 border-amber-500/40 text-amber-300 hover:bg-amber-900/80'
+                  : 'bg-red-950/70 border-red-500/40 text-red-300 hover:bg-red-900/80'
+              }`}
+              title="Status Database Online Supabase - Klik untuk Buka Pengaturan Realtime"
+            >
+              <span className={`w-2 h-2 rounded-full ${
+                supabaseStatus === 'connected' ? 'bg-emerald-400 animate-ping' : 'bg-amber-400'
+              }`} />
+              <Database className="w-3.5 h-3.5 text-emerald-400" />
+              <span className="hidden sm:inline">Supabase Realtime</span>
+            </button>
+
             <button
               onClick={onClose}
               className="px-3.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer border border-slate-700"
@@ -598,6 +625,33 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({ isOpen
               >
                 <LayoutDashboard className="w-5 h-5 shrink-0" />
                 <span className="hidden sm:inline">Ringkasan & Stat</span>
+              </button>
+
+              {/* Tab: Database Supabase Realtime */}
+              <button
+                onClick={() => setActiveTab('database')}
+                className={`w-full p-2.5 sm:px-3.5 sm:py-2.5 rounded-2xl text-xs font-bold flex items-center justify-between transition-all cursor-pointer ${
+                  activeTab === 'database'
+                    ? 'bg-gradient-to-r from-emerald-700 to-teal-700 text-white shadow-md shadow-emerald-950/20'
+                    : 'text-slate-700 hover:bg-slate-100'
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <Database className={`w-5 h-5 shrink-0 ${activeTab === 'database' ? 'text-white' : 'text-emerald-600'}`} />
+                  <span className="hidden sm:inline">Database Supabase</span>
+                </div>
+                <span
+                  className={`hidden sm:inline-flex items-center gap-1 text-[10px] font-black px-2 py-0.5 rounded-full ${
+                    activeTab === 'database'
+                      ? 'bg-emerald-950 text-emerald-200'
+                      : supabaseStatus === 'connected'
+                      ? 'bg-emerald-100 text-emerald-800'
+                      : 'bg-amber-100 text-amber-800'
+                  }`}
+                >
+                  <span className={`w-1.5 h-1.5 rounded-full ${supabaseStatus === 'connected' ? 'bg-emerald-500' : 'bg-amber-500'}`} />
+                  {supabaseStatus === 'connected' ? 'Live' : 'Sync'}
+                </span>
               </button>
 
               {/* Tab 2: Banner Beranda / Halaman Berganti (Slider) */}
@@ -838,6 +892,45 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({ isOpen
                   </div>
                 </div>
 
+                {/* Realtime Supabase Cloud Status Card */}
+                <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-emerald-950 p-4 sm:p-5 rounded-3xl border border-emerald-500/30 text-white flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm">
+                  <div className="flex items-center gap-3.5">
+                    <div className="w-10 h-10 rounded-2xl bg-emerald-500/20 border border-emerald-400/40 text-emerald-400 flex items-center justify-center font-black shrink-0 shadow-inner">
+                      <Database className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <p className="text-sm font-black tracking-tight text-white">
+                          Supabase Realtime Database
+                        </p>
+                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-black flex items-center gap-1.5 ${
+                          supabaseStatus === 'connected'
+                            ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
+                            : 'bg-amber-500/20 text-amber-300 border border-amber-500/40'
+                        }`}>
+                          <span className={`w-1.5 h-1.5 rounded-full ${
+                            supabaseStatus === 'connected' ? 'bg-emerald-400 animate-ping' : 'bg-amber-400'
+                          }`} />
+                          {supabaseStatus === 'connected' ? 'Terhubung & Sinkron' : 'Menghubungkan...'}
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-slate-300 mt-0.5">
+                        Setiap pendaftaran baru, artikel berita, dan foto kegiatan langsung tersinkron ke semua perangkat via WebSockets.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => setActiveTab('database')}
+                      className="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer shadow-sm"
+                    >
+                      <Database className="w-3.5 h-3.5" />
+                      <span>Buka Panel Database</span>
+                    </button>
+                  </div>
+                </div>
+
                 {/* Metric Cards */}
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                   <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm flex flex-col justify-between">
@@ -974,6 +1067,9 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({ isOpen
                 </div>
               </div>
             )}
+
+            {/* TAB: DATABASE SUPABASE CMS */}
+            {activeTab === 'database' && <DatabaseCmsTab />}
 
             {/* TAB 2: NEWS CMS */}
             {activeTab === 'news' && (

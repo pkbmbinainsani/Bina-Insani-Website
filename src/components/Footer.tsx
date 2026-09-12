@@ -7,7 +7,7 @@ interface FooterProps {
 }
 
 export const Footer: React.FC<FooterProps> = ({ onOpenAdmin }) => {
-  const { pkbmInfo, isAdminAuthenticated } = usePKBM();
+  const { pkbmInfo, isAdminAuthenticated, supabaseStatus } = usePKBM();
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -185,9 +185,15 @@ export const Footer: React.FC<FooterProps> = ({ onOpenAdmin }) => {
 
         {/* Bottom Bar & Copyright */}
         <div className="pt-8 border-t border-stone-900 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-stone-500">
-          <p className="text-center sm:text-left">
-            © {new Date().getFullYear()} <strong className="text-stone-300">PKBM BINA INSANI SUMOWONO</strong>. Hak Cipta Dilindungi Undang-Undang.
-          </p>
+          <div className="flex flex-col sm:flex-row items-center gap-3 text-center sm:text-left">
+            <p>
+              © {new Date().getFullYear()} <strong className="text-stone-300">PKBM BINA INSANI SUMOWONO</strong>. Hak Cipta Dilindungi Undang-Undang.
+            </p>
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-stone-900 text-stone-400 border border-stone-800">
+              <span className={`w-1.5 h-1.5 rounded-full ${supabaseStatus === 'connected' ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'}`} />
+              <span>Database Cloud: {supabaseStatus === 'connected' ? 'Realtime Online' : 'Aktif'}</span>
+            </div>
+          </div>
 
           <button
             onClick={scrollToTop}

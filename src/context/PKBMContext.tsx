@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 import {
   NewsItem,
   GalleryItem,
@@ -12,7 +12,8 @@ import {
   FAQItem,
   StatItem,
   HeroSlide,
-  PersonaliaMember
+  PersonaliaMember,
+  SupabaseConnectionStatus
 } from '../types';
 import {
   PKBM_INFO,
@@ -23,6 +24,12 @@ import {
   NEWS_DATA,
   PERSONALIA_DATA
 } from '../data/pkbmData';
+import {
+  supabase,
+  fetchAllRecordsFromSupabase,
+  saveRecordToSupabase,
+  broadcastRealtimeUpdate
+} from '../lib/supabase';
 
 
 
@@ -177,6 +184,15 @@ interface PKBMContextType {
   resetToDefaultData: () => void;
   exportDataJSON: () => string;
   importDataJSON: (jsonString: string) => boolean;
+
+  // 14. Supabase Online Realtime Database
+  supabaseStatus: SupabaseConnectionStatus;
+  isTableConfigured: boolean;
+  lastSyncTime: string | null;
+  isSyncing: boolean;
+  syncAllToSupabase: () => Promise<{ success: boolean; message: string }>;
+  loadFromSupabase: () => Promise<void>;
+  sendRealtimePing: () => void;
 }
 
 const PKBMContext = createContext<PKBMContextType | undefined>(undefined);
@@ -358,6 +374,324 @@ export const PKBMProvider: React.FC<{ children: React.ReactNode }> = ({ children
   });
   const [isAdminPanelOpen, setIsAdminPanelOpen] = useState<boolean>(false);
 
+  // 14. Supabase Online Realtime State
+  const [supabaseStatus, setSupabaseStatus] = useState<SupabaseConnectionStatus>('connecting');
+  const [isTableConfigured, setIsTableConfigured] = useState<boolean>(false);
+  const [lastSyncTime, setLastSyncTime] = useState<string | null>(null);
+  const [isSyncing, setIsSyncing] = useState<boolean>(false);
+  const channelRef = useRef<any>(null);
+
+  // Helper to persist single record to Supabase & broadcast in real-time
+  const syncRecord = (key: string, data: any) => {
+    saveRecordToSupabase(key, data).then((res) => {
+      if (res.success) {
+        setIsTableConfigured(true);
+        setSupabaseStatus('connected');
+      }
+    });
+    broadcastRealtimeUpdate(channelRef.current, key, data);
+    setLastSyncTime(new Date().toLocaleTimeString('id-ID'));
+  };
+
+  // Process incoming remote data from Supabase Realtime channel or Postgres CDC
+  const handleIncomingRemoteData = (key: string, data: any) => {
+    if (!key || data === undefined) return;
+    setLastSyncTime(new Date().toLocaleTimeString('id-ID'));
+    setIsTableConfigured(true);
+
+    switch (key) {
+      case 'news':
+        if (Array.isArray(data)) {
+          setNews(data);
+          try { localStorage.setItem(STORAGE_KEYS.NEWS, JSON.stringify(data)); } catch {}
+        }
+        break;
+      case 'gallery':
+        if (Array.isArray(data)) {
+          setGallery(data);
+          try { localStorage.setItem(STORAGE_KEYS.GALLERY, JSON.stringify(data)); } catch {}
+        }
+        break;
+      case 'registrations':
+        if (Array.isArray(data)) {
+          setRegistrations(data);
+          try { localStorage.setItem(STORAGE_KEYS.REGISTRATIONS, JSON.stringify(data)); } catch {}
+        }
+        break;
+      case 'pkbmInfo':
+        if (data && typeof data === 'object') {
+          setPkbmInfo(data);
+          try { localStorage.setItem(STORAGE_KEYS.INFO, JSON.stringify(data)); } catch {}
+        }
+        break;
+      case 'aboutProfile':
+        if (typeof data === 'string') {
+          setAboutProfile(data);
+          try { localStorage.setItem(STORAGE_KEYS.ABOUT_PROFILE, data); } catch {}
+        }
+        break;
+      case 'visiMisi':
+        if (data && typeof data === 'object') {
+          setVisiMisi(data);
+          try { localStorage.setItem(STORAGE_KEYS.VISI_MISI, JSON.stringify(data)); } catch {}
+        }
+        break;
+      case 'mottoValues':
+        if (Array.isArray(data)) {
+          setMottoValues(data);
+          try { localStorage.setItem(STORAGE_KEYS.MOTTO, JSON.stringify(data)); } catch {}
+        }
+        break;
+      case 'programs':
+        if (Array.isArray(data)) {
+          setPrograms(data);
+          try { localStorage.setItem(STORAGE_KEYS.PROGRAMS, JSON.stringify(data)); } catch {}
+        }
+        break;
+      case 'vokasiPrograms':
+        if (Array.isArray(data)) {
+          setVokasiPrograms(data);
+          try { localStorage.setItem(STORAGE_KEYS.VOKASI, JSON.stringify(data)); } catch {}
+        }
+        break;
+      case 'faqs':
+        if (Array.isArray(data)) {
+          setFaqs(data);
+          try { localStorage.setItem(STORAGE_KEYS.FAQS, JSON.stringify(data)); } catch {}
+        }
+        break;
+      case 'heroSlides':
+        if (Array.isArray(data)) {
+          setHeroSlides(data);
+          try { localStorage.setItem(STORAGE_KEYS.HERO_SLIDES, JSON.stringify(data)); } catch {}
+        }
+        break;
+      case 'heroAutoplay':
+      case 'slideAutoplayDuration':
+        if (typeof data === 'number') {
+          setSlideAutoplayDuration(data);
+          try { localStorage.setItem(STORAGE_KEYS.HERO_AUTOPLAY, String(data)); } catch {}
+        }
+        break;
+      case 'stats':
+        if (Array.isArray(data)) {
+          setStats(data);
+          try { localStorage.setItem(STORAGE_KEYS.STATS, JSON.stringify(data)); } catch {}
+        }
+        break;
+      case 'personalia':
+        if (Array.isArray(data)) {
+          setPersonalia(data);
+          try { localStorage.setItem(STORAGE_KEYS.PERSONALIA, JSON.stringify(data)); } catch {}
+        }
+        break;
+      case 'adminPassword':
+        if (typeof data === 'string') {
+          try { localStorage.setItem(STORAGE_KEYS.ADMIN_PASSWORD, data); } catch {}
+        }
+        break;
+    }
+  };
+
+  // Fetch all records from Supabase on start or manual refresh
+  const loadFromSupabase = async () => {
+    setIsSyncing(true);
+    try {
+      const { records, tableExists, error } = await fetchAllRecordsFromSupabase();
+      setIsTableConfigured(tableExists);
+
+      if (tableExists && Object.keys(records).length > 0) {
+        if (records.news && Array.isArray(records.news)) {
+          setNews(records.news);
+          try { localStorage.setItem(STORAGE_KEYS.NEWS, JSON.stringify(records.news)); } catch {}
+        }
+        if (records.gallery && Array.isArray(records.gallery)) {
+          setGallery(records.gallery);
+          try { localStorage.setItem(STORAGE_KEYS.GALLERY, JSON.stringify(records.gallery)); } catch {}
+        }
+        if (records.registrations && Array.isArray(records.registrations)) {
+          setRegistrations(records.registrations);
+          try { localStorage.setItem(STORAGE_KEYS.REGISTRATIONS, JSON.stringify(records.registrations)); } catch {}
+        }
+        if (records.pkbmInfo && typeof records.pkbmInfo === 'object') {
+          setPkbmInfo(records.pkbmInfo);
+          try { localStorage.setItem(STORAGE_KEYS.INFO, JSON.stringify(records.pkbmInfo)); } catch {}
+        }
+        if (records.aboutProfile && typeof records.aboutProfile === 'string') {
+          setAboutProfile(records.aboutProfile);
+          try { localStorage.setItem(STORAGE_KEYS.ABOUT_PROFILE, records.aboutProfile); } catch {}
+        }
+        if (records.visiMisi && typeof records.visiMisi === 'object') {
+          setVisiMisi(records.visiMisi);
+          try { localStorage.setItem(STORAGE_KEYS.VISI_MISI, JSON.stringify(records.visiMisi)); } catch {}
+        }
+        if (records.mottoValues && Array.isArray(records.mottoValues)) {
+          setMottoValues(records.mottoValues);
+          try { localStorage.setItem(STORAGE_KEYS.MOTTO, JSON.stringify(records.mottoValues)); } catch {}
+        }
+        if (records.programs && Array.isArray(records.programs)) {
+          setPrograms(records.programs);
+          try { localStorage.setItem(STORAGE_KEYS.PROGRAMS, JSON.stringify(records.programs)); } catch {}
+        }
+        if (records.vokasiPrograms && Array.isArray(records.vokasiPrograms)) {
+          setVokasiPrograms(records.vokasiPrograms);
+          try { localStorage.setItem(STORAGE_KEYS.VOKASI, JSON.stringify(records.vokasiPrograms)); } catch {}
+        }
+        if (records.faqs && Array.isArray(records.faqs)) {
+          setFaqs(records.faqs);
+          try { localStorage.setItem(STORAGE_KEYS.FAQS, JSON.stringify(records.faqs)); } catch {}
+        }
+        if (records.heroSlides && Array.isArray(records.heroSlides)) {
+          setHeroSlides(records.heroSlides);
+          try { localStorage.setItem(STORAGE_KEYS.HERO_SLIDES, JSON.stringify(records.heroSlides)); } catch {}
+        }
+        if (records.slideAutoplayDuration && typeof records.slideAutoplayDuration === 'number') {
+          setSlideAutoplayDuration(records.slideAutoplayDuration);
+          try { localStorage.setItem(STORAGE_KEYS.HERO_AUTOPLAY, String(records.slideAutoplayDuration)); } catch {}
+        } else if (records.heroAutoplay && typeof records.heroAutoplay === 'number') {
+          setSlideAutoplayDuration(records.heroAutoplay);
+          try { localStorage.setItem(STORAGE_KEYS.HERO_AUTOPLAY, String(records.heroAutoplay)); } catch {}
+        }
+        if (records.stats && Array.isArray(records.stats)) {
+          setStats(records.stats);
+          try { localStorage.setItem(STORAGE_KEYS.STATS, JSON.stringify(records.stats)); } catch {}
+        }
+        if (records.personalia && Array.isArray(records.personalia)) {
+          setPersonalia(records.personalia);
+          try { localStorage.setItem(STORAGE_KEYS.PERSONALIA, JSON.stringify(records.personalia)); } catch {}
+        }
+        if (records.adminPassword && typeof records.adminPassword === 'string') {
+          try { localStorage.setItem(STORAGE_KEYS.ADMIN_PASSWORD, records.adminPassword); } catch {}
+        }
+        setLastSyncTime(new Date().toLocaleTimeString('id-ID'));
+        setSupabaseStatus('connected');
+      } else if (tableExists && Object.keys(records).length === 0) {
+        // Table exists but is completely empty: auto-populate with initial data
+        await syncAllToSupabase();
+      }
+    } catch (err) {
+      console.warn('[Supabase] Initial load failed:', err);
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
+  // Push all local data slices to Supabase
+  const syncAllToSupabase = async (): Promise<{ success: boolean; message: string }> => {
+    setIsSyncing(true);
+    try {
+      const allData: Record<string, any> = {
+        news,
+        gallery,
+        registrations,
+        pkbmInfo,
+        aboutProfile,
+        visiMisi,
+        mottoValues,
+        programs,
+        vokasiPrograms,
+        faqs,
+        heroSlides,
+        slideAutoplayDuration,
+        stats,
+        personalia,
+        adminPassword: localStorage.getItem(STORAGE_KEYS.ADMIN_PASSWORD) || 'admin123'
+      };
+
+      let anyError = false;
+      let lastErrMsg = '';
+
+      for (const [key, value] of Object.entries(allData)) {
+        const res = await saveRecordToSupabase(key, value);
+        if (!res.success) {
+          anyError = true;
+          lastErrMsg = res.error || 'Gagal menyimpan tabel';
+        }
+        broadcastRealtimeUpdate(channelRef.current, key, value);
+      }
+
+      setLastSyncTime(new Date().toLocaleTimeString('id-ID'));
+      setIsSyncing(false);
+
+      if (anyError) {
+        return {
+          success: false,
+          message: `Tabel 'pkbm_records' belum ada atau error di Supabase: ${lastErrMsg}. Silakan jalankan script SQL di Supabase SQL Editor.`
+        };
+      }
+
+      setIsTableConfigured(true);
+      setSupabaseStatus('connected');
+      return {
+        success: true,
+        message: 'Seluruh database berhasil disinkronkan ke Supabase secara online & realtime!'
+      };
+    } catch (e: any) {
+      setIsSyncing(false);
+      return { success: false, message: e?.message || 'Gagal sinkronisasi ke Supabase' };
+    }
+  };
+
+  // Send a Realtime heartbeat ping across all connected devices
+  const sendRealtimePing = () => {
+    if (channelRef.current) {
+      channelRef.current.send({
+        type: 'broadcast',
+        event: 'pkbm_ping',
+        payload: {
+          timestamp: Date.now(),
+          client: 'Admin PKBM Bina Insani',
+          time: new Date().toLocaleTimeString('id-ID')
+        }
+      });
+      setLastSyncTime(new Date().toLocaleTimeString('id-ID'));
+    }
+  };
+
+  // Setup Supabase Realtime Channel & initial load
+  useEffect(() => {
+    // 1. Initial load from Supabase
+    loadFromSupabase();
+
+    // 2. Setup Realtime Channel
+    const channel = supabase.channel('pkbm_realtime_sync');
+    channelRef.current = channel;
+
+    channel
+      .on('broadcast', { event: 'pkbm_sync_event' }, (payload: any) => {
+        if (payload && payload.payload) {
+          const { key, data } = payload.payload;
+          handleIncomingRemoteData(key, data);
+        }
+      })
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'pkbm_records' },
+        (payload: any) => {
+          if (payload && payload.new && (payload.new as any).key) {
+            handleIncomingRemoteData((payload.new as any).key, (payload.new as any).data);
+          }
+        }
+      )
+      .subscribe((status) => {
+        if (status === 'SUBSCRIBED') {
+          setSupabaseStatus('connected');
+        } else if (status === 'CHANNEL_ERROR') {
+          setSupabaseStatus('error');
+        } else if (status === 'TIMED_OUT') {
+          setSupabaseStatus('error');
+        } else if (status === 'CLOSED') {
+          setSupabaseStatus('disconnected');
+        }
+      });
+
+    return () => {
+      if (channel) {
+        supabase.removeChannel(channel);
+      }
+    };
+  }, []);
+
   // Sync to LocalStorage on changes
   useEffect(() => {
     try { localStorage.setItem(STORAGE_KEYS.NEWS, JSON.stringify(news)); } catch (e) { console.error(e); }
@@ -381,19 +715,16 @@ export const PKBMProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Dynamic Favicon & Page Title Synchronization with Institutional Logo
     try {
       if (typeof document !== 'undefined') {
-        // 1. Update Document Title
         if (pkbmInfo.name) {
           document.title = `${pkbmInfo.name} - ${pkbmInfo.motto || 'HEBAT • MANDIRI • KREATIF'}`;
         }
 
-        // 2. Default Vector Favicon (Emerald & Gold Crest with Open Book)
         const defaultFaviconSvg = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%2300552b'/%3E%3Crect x='3' y='3' width='58' height='58' rx='13' fill='none' stroke='%23fbbf24' stroke-width='2.5'/%3E%3Cpath d='M32 44C27.5 40.5 20.5 40 14 42V22C20.5 20 27.5 20.5 32 24C36.5 20.5 43.5 20 50 22V42C43.5 40 36.5 40.5 32 44Z' fill='%23ffffff' stroke='%23f59e0b' stroke-width='2' stroke-linejoin='round'/%3E%3Cline x1='32' y1='24' x2='32' y2='44' stroke='%2300552b' stroke-width='2'/%3E%3C/svg%3E`;
 
         const activeFaviconUrl = pkbmInfo.logoUrl && pkbmInfo.logoUrl.trim() !== ''
           ? pkbmInfo.logoUrl
           : defaultFaviconSvg;
 
-        // Find or create standard icon links
         const linkSelectors = [
           "link[rel='icon']",
           "link[rel='shortcut icon']",
@@ -475,6 +806,7 @@ export const PKBMProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const currentPass = localStorage.getItem(STORAGE_KEYS.ADMIN_PASSWORD) || 'admin123';
     if (oldPass === currentPass || oldPass === 'admin123' || oldPass === 'binainsani') {
       localStorage.setItem(STORAGE_KEYS.ADMIN_PASSWORD, newPass);
+      syncRecord('adminPassword', newPass);
       return true;
     }
     return false;
@@ -490,23 +822,27 @@ export const PKBMProvider: React.FC<{ children: React.ReactNode }> = ({ children
       slug,
       views: 1
     };
-    setNews((prev) => [newArticle, ...prev]);
+    const updated = [newArticle, ...news];
+    setNews(updated);
+    syncRecord('news', updated);
     return newArticle;
   };
 
   const updateNews = (id: string, updated: Partial<NewsItem>) => {
-    setNews((prev) =>
-      prev.map((item) => {
-        if (item.id === id) {
-          return { ...item, ...updated };
-        }
-        return item;
-      })
-    );
+    const updatedList = news.map((item) => {
+      if (item.id === id) {
+        return { ...item, ...updated };
+      }
+      return item;
+    });
+    setNews(updatedList);
+    syncRecord('news', updatedList);
   };
 
   const deleteNews = (id: string) => {
-    setNews((prev) => prev.filter((item) => item.id !== id));
+    const updatedList = news.filter((item) => item.id !== id);
+    setNews(updatedList);
+    syncRecord('news', updatedList);
   };
 
   // Gallery Handlers
@@ -515,12 +851,16 @@ export const PKBMProvider: React.FC<{ children: React.ReactNode }> = ({ children
       ...item,
       id: 'gal-' + Date.now()
     };
-    setGallery((prev) => [newGalleryItem, ...prev]);
+    const updatedList = [newGalleryItem, ...gallery];
+    setGallery(updatedList);
+    syncRecord('gallery', updatedList);
     return newGalleryItem;
   };
 
   const deleteGalleryItem = (id: string) => {
-    setGallery((prev) => prev.filter((item) => item.id !== id));
+    const updatedList = gallery.filter((item) => item.id !== id);
+    setGallery(updatedList);
+    syncRecord('gallery', updatedList);
   };
 
   // Registration Handlers
@@ -557,112 +897,151 @@ export const PKBMProvider: React.FC<{ children: React.ReactNode }> = ({ children
       adminNotes: 'Pendaftaran mandiri melalui formulir online website.'
     };
 
-    setRegistrations((prev) => [newStudent, ...prev]);
+    const updatedList = [newStudent, ...registrations];
+    setRegistrations(updatedList);
+    syncRecord('registrations', updatedList);
     return { code, student: newStudent };
   };
 
   const updateRegistrationStatus = (id: string, status: RegisteredStudent['status'], notes?: string) => {
-    setRegistrations((prev) =>
-      prev.map((reg) => {
-        if (reg.id === id) {
-          return {
-            ...reg,
-            status,
-            adminNotes: notes !== undefined ? notes : reg.adminNotes
-          };
-        }
-        return reg;
-      })
-    );
+    const updatedList = registrations.map((reg) => {
+      if (reg.id === id) {
+        return {
+          ...reg,
+          status,
+          adminNotes: notes !== undefined ? notes : reg.adminNotes
+        };
+      }
+      return reg;
+    });
+    setRegistrations(updatedList);
+    syncRecord('registrations', updatedList);
   };
 
   const deleteRegistration = (id: string) => {
-    setRegistrations((prev) => prev.filter((reg) => reg.id !== id));
+    const updatedList = registrations.filter((reg) => reg.id !== id);
+    setRegistrations(updatedList);
+    syncRecord('registrations', updatedList);
   };
 
   // PKBM Info Handlers
   const updatePKBMInfo = (info: Partial<PKBMInfoState>) => {
-    setPkbmInfo((prev) => ({ ...prev, ...info }));
+    setPkbmInfo((prev) => {
+      const updated = { ...prev, ...info };
+      syncRecord('pkbmInfo', updated);
+      return updated;
+    });
   };
 
   // Tentang PKBM Handlers
   const updateAboutProfile = (text: string) => {
     setAboutProfile(text);
+    syncRecord('aboutProfile', text);
   };
 
   const updateVisiMisi = (data: Partial<VisiMisi>) => {
-    setVisiMisi((prev) => ({ ...prev, ...data }));
+    setVisiMisi((prev) => {
+      const updated = { ...prev, ...data };
+      syncRecord('visiMisi', updated);
+      return updated;
+    });
   };
 
   const updateMottoValues = (values: MottoValue[]) => {
     setMottoValues(values);
+    syncRecord('mottoValues', values);
   };
 
   // Programs Handlers
   const updateProgram = (id: string, updated: Partial<Program>) => {
-    setPrograms((prev) =>
-      prev.map((prog) => (prog.id === id ? { ...prog, ...updated } : prog))
-    );
+    const updatedList = programs.map((prog) => (prog.id === id ? { ...prog, ...updated } : prog));
+    setPrograms(updatedList);
+    syncRecord('programs', updatedList);
   };
 
   const addProgram = (program: Program) => {
-    setPrograms((prev) => [...prev, program]);
+    const updatedList = [...programs, program];
+    setPrograms(updatedList);
+    syncRecord('programs', updatedList);
   };
 
   const deleteProgram = (id: string) => {
-    setPrograms((prev) => prev.filter((prog) => prog.id !== id));
+    const updatedList = programs.filter((prog) => prog.id !== id);
+    setPrograms(updatedList);
+    syncRecord('programs', updatedList);
   };
 
   // Vokasi Handlers
   const updateVokasiProgram = (index: number, updated: VokasiProgram) => {
-    setVokasiPrograms((prev) =>
-      prev.map((vok, idx) => (idx === index ? updated : vok))
-    );
+    const updatedList = vokasiPrograms.map((vok, idx) => (idx === index ? updated : vok));
+    setVokasiPrograms(updatedList);
+    syncRecord('vokasiPrograms', updatedList);
   };
 
   const addVokasiProgram = (program: VokasiProgram) => {
-    setVokasiPrograms((prev) => [...prev, program]);
+    const updatedList = [...vokasiPrograms, program];
+    setVokasiPrograms(updatedList);
+    syncRecord('vokasiPrograms', updatedList);
   };
 
   const deleteVokasiProgram = (index: number) => {
-    setVokasiPrograms((prev) => prev.filter((_, idx) => idx !== index));
+    const updatedList = vokasiPrograms.filter((_, idx) => idx !== index);
+    setVokasiPrograms(updatedList);
+    syncRecord('vokasiPrograms', updatedList);
   };
 
   // FAQs Handlers
   const updateFaq = (index: number, updated: FAQItem) => {
-    setFaqs((prev) => prev.map((faq, idx) => (idx === index ? updated : faq)));
+    const updatedList = faqs.map((faq, idx) => (idx === index ? updated : faq));
+    setFaqs(updatedList);
+    syncRecord('faqs', updatedList);
   };
 
   const addFaq = (faq: FAQItem) => {
-    setFaqs((prev) => [...prev, faq]);
+    const updatedList = [...faqs, faq];
+    setFaqs(updatedList);
+    syncRecord('faqs', updatedList);
   };
 
   const deleteFaq = (index: number) => {
-    setFaqs((prev) => prev.filter((_, idx) => idx !== index));
+    const updatedList = faqs.filter((_, idx) => idx !== index);
+    setFaqs(updatedList);
+    syncRecord('faqs', updatedList);
   };
 
   // Hero Slides Handlers
   const updateHeroSlide = (id: string, updated: Partial<HeroSlide>) => {
-    setHeroSlides((prev) =>
-      prev.map((slide) => (slide.id === id ? { ...slide, ...updated } : slide))
-    );
+    const updatedList = heroSlides.map((slide) => (slide.id === id ? { ...slide, ...updated } : slide));
+    setHeroSlides(updatedList);
+    syncRecord('heroSlides', updatedList);
   };
 
   const addHeroSlide = (slide: HeroSlide) => {
-    setHeroSlides((prev) => [...prev, slide]);
+    const updatedList = [...heroSlides, slide];
+    setHeroSlides(updatedList);
+    syncRecord('heroSlides', updatedList);
   };
 
   const deleteHeroSlide = (id: string) => {
-    setHeroSlides((prev) => prev.filter((slide) => slide.id !== id));
+    const updatedList = heroSlides.filter((slide) => slide.id !== id);
+    setHeroSlides(updatedList);
+    syncRecord('heroSlides', updatedList);
   };
 
   const reorderHeroSlides = (newSlides: HeroSlide[]) => {
     setHeroSlides(newSlides);
+    syncRecord('heroSlides', newSlides);
+  };
+
+  const setAutoplayDurationHandler = (seconds: number) => {
+    setSlideAutoplayDuration(seconds);
+    syncRecord('slideAutoplayDuration', seconds);
   };
 
   // Stats Handlers
   const updateStats = (newStats: StatItem[]) => {
     setStats(newStats);
+    syncRecord('stats', newStats);
   };
 
   // Personalia Handlers
@@ -671,23 +1050,28 @@ export const PKBMProvider: React.FC<{ children: React.ReactNode }> = ({ children
       ...member,
       id: 'person-' + Date.now()
     };
-    setPersonalia((prev) => [...prev, newMember]);
+    const updatedList = [...personalia, newMember];
+    setPersonalia(updatedList);
+    syncRecord('personalia', updatedList);
     return newMember;
   };
 
   const updatePersonalia = (id: string, updated: Partial<PersonaliaMember>) => {
-    setPersonalia((prev) =>
-      prev.map((item) => (item.id === id ? { ...item, ...updated } : item))
-    );
+    const updatedList = personalia.map((item) => (item.id === id ? { ...item, ...updated } : item));
+    setPersonalia(updatedList);
+    syncRecord('personalia', updatedList);
   };
 
   const deletePersonalia = (id: string) => {
-    setPersonalia((prev) => prev.filter((item) => item.id !== id));
+    const updatedList = personalia.filter((item) => item.id !== id);
+    setPersonalia(updatedList);
+    syncRecord('personalia', updatedList);
   };
 
   const resetPersonalia = () => {
     setPersonalia(PERSONALIA_DATA);
     localStorage.removeItem(STORAGE_KEYS.PERSONALIA);
+    syncRecord('personalia', PERSONALIA_DATA);
   };
 
   // Reset & Backup
@@ -721,6 +1105,9 @@ export const PKBMProvider: React.FC<{ children: React.ReactNode }> = ({ children
     localStorage.removeItem(STORAGE_KEYS.HERO_AUTOPLAY);
     localStorage.removeItem(STORAGE_KEYS.STATS);
     localStorage.removeItem(STORAGE_KEYS.PERSONALIA);
+
+    // Also push default data to Supabase
+    syncAllToSupabase();
   };
 
   const exportDataJSON = () => {
@@ -747,20 +1134,20 @@ export const PKBMProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const importDataJSON = (jsonString: string): boolean => {
     try {
       const data = JSON.parse(jsonString);
-      if (data.news && Array.isArray(data.news)) setNews(data.news);
-      if (data.gallery && Array.isArray(data.gallery)) setGallery(data.gallery);
-      if (data.registrations && Array.isArray(data.registrations)) setRegistrations(data.registrations);
-      if (data.pkbmInfo && typeof data.pkbmInfo === 'object') setPkbmInfo(data.pkbmInfo);
-      if (data.aboutProfile && typeof data.aboutProfile === 'string') setAboutProfile(data.aboutProfile);
-      if (data.visiMisi && typeof data.visiMisi === 'object') setVisiMisi(data.visiMisi);
-      if (data.mottoValues && Array.isArray(data.mottoValues)) setMottoValues(data.mottoValues);
-      if (data.programs && Array.isArray(data.programs)) setPrograms(data.programs);
-      if (data.vokasiPrograms && Array.isArray(data.vokasiPrograms)) setVokasiPrograms(data.vokasiPrograms);
-      if (data.faqs && Array.isArray(data.faqs)) setFaqs(data.faqs);
-      if (data.heroSlides && Array.isArray(data.heroSlides)) setHeroSlides(data.heroSlides);
-      if (data.slideAutoplayDuration && typeof data.slideAutoplayDuration === 'number') setSlideAutoplayDuration(data.slideAutoplayDuration);
-      if (data.stats && Array.isArray(data.stats)) setStats(data.stats);
-      if (data.personalia && Array.isArray(data.personalia)) setPersonalia(data.personalia);
+      if (data.news && Array.isArray(data.news)) { setNews(data.news); syncRecord('news', data.news); }
+      if (data.gallery && Array.isArray(data.gallery)) { setGallery(data.gallery); syncRecord('gallery', data.gallery); }
+      if (data.registrations && Array.isArray(data.registrations)) { setRegistrations(data.registrations); syncRecord('registrations', data.registrations); }
+      if (data.pkbmInfo && typeof data.pkbmInfo === 'object') { setPkbmInfo(data.pkbmInfo); syncRecord('pkbmInfo', data.pkbmInfo); }
+      if (data.aboutProfile && typeof data.aboutProfile === 'string') { setAboutProfile(data.aboutProfile); syncRecord('aboutProfile', data.aboutProfile); }
+      if (data.visiMisi && typeof data.visiMisi === 'object') { setVisiMisi(data.visiMisi); syncRecord('visiMisi', data.visiMisi); }
+      if (data.mottoValues && Array.isArray(data.mottoValues)) { setMottoValues(data.mottoValues); syncRecord('mottoValues', data.mottoValues); }
+      if (data.programs && Array.isArray(data.programs)) { setPrograms(data.programs); syncRecord('programs', data.programs); }
+      if (data.vokasiPrograms && Array.isArray(data.vokasiPrograms)) { setVokasiPrograms(data.vokasiPrograms); syncRecord('vokasiPrograms', data.vokasiPrograms); }
+      if (data.faqs && Array.isArray(data.faqs)) { setFaqs(data.faqs); syncRecord('faqs', data.faqs); }
+      if (data.heroSlides && Array.isArray(data.heroSlides)) { setHeroSlides(data.heroSlides); syncRecord('heroSlides', data.heroSlides); }
+      if (data.slideAutoplayDuration && typeof data.slideAutoplayDuration === 'number') { setSlideAutoplayDuration(data.slideAutoplayDuration); syncRecord('slideAutoplayDuration', data.slideAutoplayDuration); }
+      if (data.stats && Array.isArray(data.stats)) { setStats(data.stats); syncRecord('stats', data.stats); }
+      if (data.personalia && Array.isArray(data.personalia)) { setPersonalia(data.personalia); syncRecord('personalia', data.personalia); }
       return true;
     } catch (e) {
       console.error('Import error', e);
@@ -808,7 +1195,7 @@ export const PKBMProvider: React.FC<{ children: React.ReactNode }> = ({ children
         deleteHeroSlide,
         reorderHeroSlides,
         slideAutoplayDuration,
-        setSlideAutoplayDuration,
+        setSlideAutoplayDuration: setAutoplayDurationHandler,
         stats,
         updateStats,
         personalia,
@@ -824,7 +1211,14 @@ export const PKBMProvider: React.FC<{ children: React.ReactNode }> = ({ children
         changeAdminPassword,
         resetToDefaultData,
         exportDataJSON,
-        importDataJSON
+        importDataJSON,
+        supabaseStatus,
+        isTableConfigured,
+        lastSyncTime,
+        isSyncing,
+        syncAllToSupabase,
+        loadFromSupabase,
+        sendRealtimePing
       }}
     >
       {children}

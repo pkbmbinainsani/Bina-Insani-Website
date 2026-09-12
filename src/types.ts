@@ -221,6 +221,8 @@ export interface PKBMInfoState {
 
 export type PersonaliaCategory = 'pendiri' | 'yayasan' | 'pendidik' | 'tendik';
 
+export type SupabaseConnectionStatus = 'connected' | 'connecting' | 'error' | 'disconnected';
+
 export interface PersonaliaMember {
   id: string;
   name: string;
