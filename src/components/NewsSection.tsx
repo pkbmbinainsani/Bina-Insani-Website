@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
-import { Newspaper, Calendar, Clock, User, ArrowRight, Search, X, Share2, Tag, BookOpen, PlusCircle, ShieldCheck } from 'lucide-react';
+import { Newspaper, Calendar, Clock, User, ArrowRight, Search, X, Share2, Tag, BookOpen, PlusCircle, ShieldCheck, Sparkles, ChevronRight } from 'lucide-react';
 import { usePKBM } from '../context/PKBMContext';
 import { NewsItem } from '../types';
 
@@ -25,6 +25,15 @@ export const NewsSection: React.FC<NewsSectionProps> = ({ onOpenAdmin }) => {
     return matchesCategory && matchesQuery;
   });
 
+  // Separate the single latest news item and the previous news items
+  const latestArticle = filteredNews.length > 0 ? filteredNews[0] : null;
+  const previousNews = filteredNews.length > 1 ? filteredNews.slice(1) : [];
+
+  // Check if an article is long and doesn't fit entirely in the preview
+  const isArticleLong = (article: NewsItem) => {
+    const wordCount = (article.summary + ' ' + (article.content ? article.content.join(' ') : '')).split(/\s+/).length;
+    return wordCount > 45 || (article.content && article.content.length > 1) || article.summary.length > 200;
+  };
 
   return (
     <section id="berita" className="py-20 bg-slate-50 relative">
@@ -97,69 +106,198 @@ export const NewsSection: React.FC<NewsSectionProps> = ({ onOpenAdmin }) => {
           </div>
         </div>
 
-        {/* News Grid */}
-        <div className="grid md:grid-cols-3 gap-8">
-          {filteredNews.map((article, idx) => (
-            <motion.article
-              key={article.id}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: idx * 0.15 }}
-              className="bg-white rounded-3xl border border-stone-200 shadow-sm hover:shadow-xl hover:border-orange-300 transition-all duration-300 overflow-hidden flex flex-col justify-between group"
-            >
-              <div>
-                {/* Image Container */}
-                <div className="relative h-48 overflow-hidden">
-                  <img
-                    src={article.image}
-                    alt={article.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                  <div className="absolute top-3 left-3">
-                    <span className="px-2.5 py-1 rounded-lg text-[10px] font-extrabold bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-sm">
-                      {article.category}
-                    </span>
-                  </div>
+        {/* 1. Satu Berita Terbaru Dibuat Lebar agar Langsung Mudah Dibaca */}
+        {latestArticle && (
+          <motion.article
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+            className="mb-14 bg-white rounded-3xl border border-stone-200 shadow-sm hover:shadow-xl hover:border-orange-300 transition-all duration-300 overflow-hidden group"
+          >
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-0">
+              {/* Kolom Gambar Berita Terbaru */}
+              <div
+                onClick={() => setSelectedArticle(latestArticle)}
+                className="lg:col-span-5 relative h-64 sm:h-80 lg:h-full min-h-[260px] lg:min-h-[400px] overflow-hidden bg-stone-100 cursor-pointer"
+              >
+                <img
+                  src={latestArticle.image}
+                  alt={latestArticle.title}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent lg:hidden" />
+                
+                {/* Badge Unggulan & Kategori */}
+                <div className="absolute top-4 left-4 flex flex-wrap items-center gap-2 z-10">
+                  <span className="px-3 py-1 rounded-xl text-xs font-black bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-md flex items-center gap-1.5">
+                    <Sparkles className="w-3.5 h-3.5" />
+                    Berita Terbaru
+                  </span>
+                  <span className="px-2.5 py-1 rounded-xl text-xs font-extrabold bg-stone-900/80 backdrop-blur-sm text-white shadow-md">
+                    {latestArticle.category}
+                  </span>
                 </div>
+              </div>
 
-                {/* Article Meta & Content */}
-                <div className="p-6 space-y-3">
-                  <div className="flex items-center gap-3 text-stone-500 text-xs">
-                    <span className="flex items-center gap-1">
-                      <Calendar className="w-3.5 h-3.5 text-orange-600" />
-                      {article.date}
+              {/* Kolom Teks Konten Berita Lebar */}
+              <div className="lg:col-span-7 p-6 sm:p-8 lg:p-10 flex flex-col justify-between space-y-4">
+                <div className="space-y-4">
+                  {/* Meta Bar */}
+                  <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-stone-500 text-xs sm:text-sm">
+                    <span className="flex items-center gap-1.5 font-medium">
+                      <Calendar className="w-4 h-4 text-orange-600" />
+                      {latestArticle.date}
                     </span>
-                    <span>•</span>
-                    <span className="flex items-center gap-1">
-                      <Clock className="w-3.5 h-3.5 text-orange-600" />
-                      {article.readTime}
+                    <span className="text-stone-300">•</span>
+                    <span className="flex items-center gap-1.5 font-medium">
+                      <Clock className="w-4 h-4 text-orange-600" />
+                      {latestArticle.readTime}
+                    </span>
+                    <span className="text-stone-300">•</span>
+                    <span className="flex items-center gap-1.5 font-medium">
+                      <User className="w-4 h-4 text-orange-600" />
+                      {latestArticle.author}
                     </span>
                   </div>
 
-                  <h3 className="font-extrabold text-slate-900 text-base sm:text-lg group-hover:text-orange-600 transition-colors line-clamp-2 leading-snug">
-                    {article.title}
+                  {/* Judul Berita yang Jelas dan Mudah Dibaca */}
+                  <h3
+                    onClick={() => setSelectedArticle(latestArticle)}
+                    className="text-xl sm:text-2xl lg:text-3xl font-black text-slate-900 group-hover:text-orange-600 transition-colors leading-snug cursor-pointer"
+                  >
+                    {latestArticle.title}
                   </h3>
 
-                  <p className="text-stone-600 text-xs line-clamp-3 leading-relaxed">
-                    {article.summary}
-                  </p>
-                </div>
-              </div>
+                  {/* Isi Berita Langsung Terbaca di Layar */}
+                  <div className="space-y-3 text-stone-700">
+                    <p className="text-sm sm:text-base leading-relaxed font-medium text-slate-800">
+                      {latestArticle.summary}
+                    </p>
 
-              {/* Card Footer Read Button */}
-              <div className="px-6 pb-6 pt-2">
-                <button
-                  onClick={() => setSelectedArticle(article)}
-                  className="w-full py-2.5 px-4 rounded-xl bg-stone-50 hover:bg-orange-50 text-stone-700 hover:text-orange-700 font-bold text-xs border border-stone-200 hover:border-orange-200 transition-all flex items-center justify-center gap-2 cursor-pointer"
-                >
-                  <span>Baca Selengkapnya</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </button>
+                    {/* Paragraf pertama jika tersedia untuk memperjelas konteks berita */}
+                    {latestArticle.content && latestArticle.content.length > 0 && latestArticle.content[0] !== latestArticle.summary && (
+                      <p className="text-xs sm:text-sm text-stone-600 leading-relaxed line-clamp-3">
+                        {latestArticle.content[0]}
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                {/* Bagian Bawah: Teks / Tombol "baca selengkapnya" jika berita panjang / ada isi lengkap */}
+                {isArticleLong(latestArticle) ? (
+                  <div className="pt-4 border-t border-stone-100 flex flex-wrap items-center justify-between gap-3">
+                    <button
+                      onClick={() => setSelectedArticle(latestArticle)}
+                      className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-bold text-xs sm:text-sm shadow-md shadow-orange-950/20 transition-all cursor-pointer group/btn"
+                    >
+                      <span>baca selengkapnya</span>
+                      <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
+                    </button>
+
+                    <button
+                      onClick={() => setSelectedArticle(latestArticle)}
+                      className="text-xs text-stone-500 hover:text-orange-600 font-medium transition-colors cursor-pointer"
+                    >
+                      Buka artikel lengkap & dokumentasi foto →
+                    </button>
+                  </div>
+                ) : (
+                  <div className="pt-4 border-t border-stone-100 flex items-center justify-between">
+                    <button
+                      onClick={() => setSelectedArticle(latestArticle)}
+                      className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-orange-600 hover:text-orange-700 transition-colors cursor-pointer"
+                    >
+                      <span>baca selengkapnya</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                )}
               </div>
-            </motion.article>
-          ))}
-        </div>
+            </div>
+          </motion.article>
+        )}
+
+        {/* 2. Berita-Berita Terdahulu Tampak Sebagaimana Tampilan Berita Saat Ini */}
+        {previousNews.length > 0 && (
+          <div className="space-y-6">
+            <div className="flex items-center justify-between border-b border-stone-200 pb-4">
+              <div className="flex items-center gap-2">
+                <BookOpen className="w-5 h-5 text-orange-600" />
+                <h3 className="text-lg sm:text-xl font-black text-slate-900">
+                  Berita Terdahulu
+                </h3>
+              </div>
+              <span className="text-xs font-bold text-stone-500 bg-stone-100 px-3 py-1 rounded-full">
+                {previousNews.length} Berita Terdahulu
+              </span>
+            </div>
+
+            {/* Grid 3 Kolom Berita Terdahulu */}
+            <div className="grid md:grid-cols-3 gap-8">
+              {previousNews.map((article, idx) => (
+                <motion.article
+                  key={article.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: idx * 0.1 }}
+                  className="bg-white rounded-3xl border border-stone-200 shadow-sm hover:shadow-xl hover:border-orange-300 transition-all duration-300 overflow-hidden flex flex-col justify-between group"
+                >
+                  <div>
+                    {/* Image Container */}
+                    <div className="relative h-48 overflow-hidden">
+                      <img
+                        src={article.image}
+                        alt={article.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                      <div className="absolute top-3 left-3">
+                        <span className="px-2.5 py-1 rounded-lg text-[10px] font-extrabold bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-sm">
+                          {article.category}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Article Meta & Content */}
+                    <div className="p-6 space-y-3">
+                      <div className="flex items-center gap-3 text-stone-500 text-xs">
+                        <span className="flex items-center gap-1">
+                          <Calendar className="w-3.5 h-3.5 text-orange-600" />
+                          {article.date}
+                        </span>
+                        <span>•</span>
+                        <span className="flex items-center gap-1">
+                          <Clock className="w-3.5 h-3.5 text-orange-600" />
+                          {article.readTime}
+                        </span>
+                      </div>
+
+                      <h3 className="font-extrabold text-slate-900 text-base sm:text-lg group-hover:text-orange-600 transition-colors line-clamp-2 leading-snug">
+                        {article.title}
+                      </h3>
+
+                      <p className="text-stone-600 text-xs line-clamp-3 leading-relaxed">
+                        {article.summary}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Card Footer Read Button */}
+                  <div className="px-6 pb-6 pt-2">
+                    <button
+                      onClick={() => setSelectedArticle(article)}
+                      className="w-full py-2.5 px-4 rounded-xl bg-stone-50 hover:bg-orange-50 text-stone-700 hover:text-orange-700 font-bold text-xs border border-stone-200 hover:border-orange-200 transition-all flex items-center justify-center gap-2 cursor-pointer"
+                    >
+                      <span>baca selengkapnya</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </motion.article>
+              ))}
+            </div>
+          </div>
+        )}
 
         {filteredNews.length === 0 && (
           <div className="text-center py-16 px-4 bg-white rounded-3xl border border-stone-200 shadow-sm max-w-xl mx-auto space-y-3">
@@ -269,3 +407,4 @@ export const NewsSection: React.FC<NewsSectionProps> = ({ onOpenAdmin }) => {
     </section>
   );
 };
+
