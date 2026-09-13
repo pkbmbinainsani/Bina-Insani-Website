@@ -167,7 +167,44 @@ export const VOKASI_PROGRAMS: VokasiProgram[] = [
   }
 ];
 
-export const NEWS_DATA: NewsItem[] = [];
+export const NEWS_DATA: NewsItem[] = [
+  {
+    id: 'news-prestasi-1',
+    title: 'Warga Belajar Paket C PKBM Bina Insani Raih Juara 1 Lomba Tata Busana & Desain Mode Kesetaraan',
+    slug: 'warga-belajar-raih-juara-1-tata-busana',
+    date: '28 Agustus 2026',
+    category: 'Prestasi Warga Belajar',
+    author: 'Tutor Vokasi & Redaksi',
+    summary: 'Karya busana etnik kontemporer hasil rancangan warga belajar PKBM Bina Insani Sumowono berhasil menyabet Juara 1 dalam Lomba Keterampilan Vokasi Kesetaraan tingkat regional.',
+    content: [
+      'Karya busana etnik kontemporer hasil rancangan warga belajar PKBM Bina Insani Sumowono berhasil menyabet Juara 1 dalam Lomba Keterampilan Vokasi Kesetaraan tingkat regional.',
+      'Prestasi membanggakan ini menjadi bukti nyata bahwa pendidikan kesetaraan Paket C mampu melahirkan talenta wirausaha yang kompeten dan siap bersaing di industri kreatif.',
+      'Pihak lembaga memberikan apresiasi beasiswa pembinaan serta fasilitasi mesin jahit industri untuk pengembangan unit usaha mandiri warga belajar.'
+    ],
+    image: 'https://images.unsplash.com/photo-1558769132-cb1aea458c5e?auto=format&fit=crop&w=1000&q=80',
+    readTime: '3 Menit',
+    featured: true,
+    tags: ['Prestasi', 'Tata Busana', 'Paket C']
+  },
+  {
+    id: 'news-akademik-1',
+    title: 'Pelaksanaan Uji Kesetaraan (UK) Paket A, B, dan C Tahun 2026 Sukses Digelar di Sumowono',
+    slug: 'pelaksanaan-uji-kesetaraan-2026-sukses',
+    date: '10 September 2026',
+    category: 'Akademik',
+    author: 'Tim Akademik PKBM',
+    summary: 'Sebanyak 128 warga belajar mengikuti Uji Kesetaraan berbasis komputer dengan lancar, tertib, dan tingkat kelulusan yang membanggakan.',
+    content: [
+      'Sebanyak 128 warga belajar PKBM Bina Insani Sumowono telah menyelesaikan seluruh rangkaian Uji Kesetaraan (UK) berbasis komputer yang diselenggarakan secara resmi oleh Kemendikbudristek.',
+      'Dengan persiapan tryout berkala dan pendampingan intensif dari para tutor, seluruh peserta dapat menyelesaikan soal ujian dengan percaya diri.',
+      'Ijazah resmi negara berstandar nasional akan segera diterbitkan untuk mendukung kelanjutan studi ke perguruan tinggi maupun persyaratan kenaikan jenjang karir.'
+    ],
+    image: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1000&q=80',
+    readTime: '4 Menit',
+    featured: false,
+    tags: ['Ujian', 'Paket C', 'Akademik']
+  }
+];
 
 export const FAQ_DATA: FAQItem[] = [
   {

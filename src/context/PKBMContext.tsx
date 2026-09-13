@@ -825,6 +825,25 @@ export const PKBMProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const updated = [newArticle, ...news];
     setNews(updated);
     syncRecord('news', updated);
+
+    // Otomatis seluruh foto yang terpasang di berita masuk ke bagian galeri
+    if (item.image && item.image.trim() !== '') {
+      const alreadyInGallery = gallery.some((g) => g.image === item.image || g.id === `gal-news-${newId}`);
+      if (!alreadyInGallery) {
+        const autoGalItem: GalleryItem = {
+          id: `gal-news-${newId}`,
+          title: item.title,
+          category: item.category === 'Prestasi Warga Belajar' ? 'Prestasi Warga Belajar' : (item.category || 'Dokumentasi Berita'),
+          image: item.image,
+          date: item.date,
+          description: item.summary || `Dokumentasi Berita: ${item.title}`
+        };
+        const updatedGal = [autoGalItem, ...gallery];
+        setGallery(updatedGal);
+        syncRecord('gallery', updatedGal);
+      }
+    }
+
     return newArticle;
   };
 
@@ -837,12 +856,52 @@ export const PKBMProvider: React.FC<{ children: React.ReactNode }> = ({ children
     });
     setNews(updatedList);
     syncRecord('news', updatedList);
+
+    // Perbarui atau sinkronkan foto ke galeri jika ada perubahan
+    const targetArticle = updatedList.find((item) => item.id === id);
+    if (targetArticle && targetArticle.image && targetArticle.image.trim() !== '') {
+      const galId = `gal-news-${id}`;
+      const existingGalIndex = gallery.findIndex((g) => g.id === galId || g.image === targetArticle.image);
+      if (existingGalIndex >= 0) {
+        const updatedGal = [...gallery];
+        updatedGal[existingGalIndex] = {
+          ...updatedGal[existingGalIndex],
+          title: targetArticle.title,
+          category: targetArticle.category === 'Prestasi Warga Belajar' ? 'Prestasi Warga Belajar' : (targetArticle.category || 'Dokumentasi Berita'),
+          image: targetArticle.image,
+          date: targetArticle.date,
+          description: targetArticle.summary
+        };
+        setGallery(updatedGal);
+        syncRecord('gallery', updatedGal);
+      } else {
+        const autoGalItem: GalleryItem = {
+          id: galId,
+          title: targetArticle.title,
+          category: targetArticle.category === 'Prestasi Warga Belajar' ? 'Prestasi Warga Belajar' : (targetArticle.category || 'Dokumentasi Berita'),
+          image: targetArticle.image,
+          date: targetArticle.date,
+          description: targetArticle.summary || `Dokumentasi Berita: ${targetArticle.title}`
+        };
+        const updatedGal = [autoGalItem, ...gallery];
+        setGallery(updatedGal);
+        syncRecord('gallery', updatedGal);
+      }
+    }
   };
 
   const deleteNews = (id: string) => {
     const updatedList = news.filter((item) => item.id !== id);
     setNews(updatedList);
     syncRecord('news', updatedList);
+    
+    // Hapus juga foto terkait dari galeri jika bersumber dari berita ini
+    const galId = `gal-news-${id}`;
+    if (gallery.some((g) => g.id === galId)) {
+      const updatedGal = gallery.filter((g) => g.id !== galId);
+      setGallery(updatedGal);
+      syncRecord('gallery', updatedGal);
+    }
   };
 
   // Gallery Handlers

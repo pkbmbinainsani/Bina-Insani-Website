@@ -8,6 +8,7 @@ import {
   BookOpen,
   ChevronRight,
   Award,
+  Trophy,
   Users,
   Search,
   Globe,
@@ -49,7 +50,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenRegistration, onOpenAdmin 
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
 
-      const sections = ['beranda', 'berita', 'tentang-kami', 'personalia', 'program-belajar', 'vokasi', 'galeri', 'faq', 'kontak'];
+      const sections = ['beranda', 'berita', 'prestasi', 'tentang-kami', 'personalia', 'program-belajar', 'vokasi', 'galeri', 'faq', 'kontak'];
       const scrollPosition = window.scrollY + 140;
 
       for (const section of sections) {
@@ -72,6 +73,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenRegistration, onOpenAdmin 
   const navLinks = [
     { name: 'Beranda Utama', href: '#beranda', id: 'beranda', icon: BookOpen, desc: 'Informasi & Pendaftaran PWBB' },
     { name: 'Berita & Pengumuman', href: '#berita', id: 'berita', icon: Newspaper, desc: 'Kabar Terbaru & Agenda' },
+    { name: 'Prestasi Warga Belajar', href: '#prestasi', id: 'prestasi', icon: Trophy, desc: 'Pencapaian & Juara Siswa' },
     { name: 'Profil & Visi Misi', href: '#tentang-kami', id: 'tentang-kami', icon: Award, desc: 'Landasan & Karakter Lembaga' },
     { name: 'Profil Personalia & Guru', href: '#personalia', id: 'personalia', icon: Users, desc: 'Pendiri, Pengurus, Tutor & Tendik' },
     { name: 'Program Kesetaraan', href: '#program-belajar', id: 'program-belajar', icon: GraduationCap, desc: 'Paket A, Paket B, & Paket C' },

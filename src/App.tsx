@@ -9,6 +9,7 @@ import { Programs } from './components/Programs';
 import { VokasiSection } from './components/VokasiSection';
 import { GallerySection } from './components/GallerySection';
 import { NewsSection } from './components/NewsSection';
+import { PrestasiSection } from './components/PrestasiSection';
 import { FaqSection } from './components/FaqSection';
 import { ContactSection } from './components/ContactSection';
 import { Footer } from './components/Footer';
@@ -60,6 +61,9 @@ function MainAppContent() {
 
         {/* Berita Terkini & Pengumuman (Kelola & Post Berita via Admin) */}
         <NewsSection onOpenAdmin={handleOpenAdmin} />
+
+        {/* Prestasi Warga Belajar (Otomatis Tersinkronisasi dari Berita Berlabel Prestasi Warga Belajar) */}
+        <PrestasiSection onOpenAdmin={handleOpenAdmin} />
 
         {/* Tentang Kami (Visi, Misi 6 Misi, Tujuan 4 Tujuan, Motto HEBAT - MANDIRI - KREATIF) */}
         <AboutUs />

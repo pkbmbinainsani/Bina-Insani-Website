@@ -2035,6 +2035,26 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({ isOpen
                     </div>
                   </div>
                 </div>
+
+                {/* Automation notice for News -> Gallery and News -> Prestasi */}
+                <div className="mt-3 p-3 bg-amber-50/90 border border-amber-300/80 rounded-2xl text-amber-950 text-xs flex items-start gap-2.5">
+                  <Sparkles className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                  <div className="text-[11px] leading-relaxed">
+                    <span className="font-bold text-amber-900 block">Integrasi Otomatis Terhubung:</span>
+                    <p className="text-amber-800 mt-0.5">
+                      • Seluruh foto yang dilampirkan pada berita akan <strong>otomatis masuk ke Bagian Galeri</strong>.
+                    </p>
+                    {newsFormData.category === 'Prestasi Warga Belajar' ? (
+                      <p className="text-orange-900 font-bold mt-0.5">
+                        • Kategori <strong>"Prestasi Warga Belajar"</strong> aktif: Foto dan rekam jejak prestasi ini akan <strong>otomatis tampil di Bagian Prestasi Warga Belajar</strong> di halaman depan!
+                      </p>
+                    ) : (
+                      <p className="text-amber-800 mt-0.5">
+                        • Jika berlabel kategori <strong>"Prestasi Warga Belajar"</strong>, foto dan capaian ini juga akan <strong>otomatis masuk ke Bagian Prestasi</strong>.
+                      </p>
+                    )}
+                  </div>
+                </div>
               </div>
 
               <div>

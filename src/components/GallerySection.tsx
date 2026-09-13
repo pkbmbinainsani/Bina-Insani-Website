@@ -9,13 +9,43 @@ interface GallerySectionProps {
 }
 
 export const GallerySection: React.FC<GallerySectionProps> = ({ onOpenAdmin }) => {
-  const { gallery, isAdminAuthenticated } = usePKBM();
+  const { gallery, news, isAdminAuthenticated } = usePKBM();
   const [selectedCategory, setSelectedCategory] = useState<string>('Semua');
   const [selectedPhoto, setSelectedPhoto] = useState<GalleryItem | null>(null);
 
-  const categories = ['Semua', ...Array.from(new Set(gallery.map((item) => item.category)))];
+  // 1. Ambil foto-foto yang bersumber dari berita secara dinamis dan otomatis
+  const newsGalleryItems: GalleryItem[] = news
+    .filter((article) => article.image && article.image.trim() !== '')
+    .map((article) => ({
+      id: `news-photo-${article.id}`,
+      title: article.title,
+      category: article.category === 'Prestasi Warga Belajar' ? 'Prestasi Warga Belajar' : (article.category || 'Dokumentasi Berita'),
+      image: article.image,
+      date: article.date,
+      description: article.summary || `Dokumentasi Berita: ${article.title}`
+    }));
 
-  const filteredGallery = gallery.filter((item) => {
+  // 2. Gabungkan galeri mandiri + seluruh foto berita tanpa duplikasi URL foto
+  const seenImages = new Set<string>();
+  const combinedGallery: GalleryItem[] = [];
+
+  for (const item of gallery) {
+    if (item.image && !seenImages.has(item.image)) {
+      seenImages.add(item.image);
+      combinedGallery.push(item);
+    }
+  }
+
+  for (const item of newsGalleryItems) {
+    if (item.image && !seenImages.has(item.image)) {
+      seenImages.add(item.image);
+      combinedGallery.push(item);
+    }
+  }
+
+  const categories = ['Semua', ...Array.from(new Set(combinedGallery.map((item) => item.category)))];
+
+  const filteredGallery = combinedGallery.filter((item) => {
     return selectedCategory === 'Semua' || item.category === selectedCategory;
   });
 
