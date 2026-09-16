@@ -30,6 +30,7 @@ import {
   saveRecordToSupabase,
   broadcastRealtimeUpdate
 } from '../lib/supabase';
+import { sortNewsByDateDesc } from '../utils/dateHelper';
 
 
 
@@ -168,6 +169,7 @@ interface PKBMContextType {
   // 11. Personalia Lembaga (Pendiri, Pengurus Yayasan, Pendidik, Tendik)
   personalia: PersonaliaMember[];
   addPersonalia: (member: Omit<PersonaliaMember, 'id'>) => PersonaliaMember;
+  importPersonalia: (members: Omit<PersonaliaMember, 'id'>[], mode?: 'append' | 'replace') => PersonaliaMember[];
   updatePersonalia: (id: string, updated: Partial<PersonaliaMember>) => void;
   deletePersonalia: (id: string) => void;
   resetPersonalia: () => void;
@@ -217,15 +219,15 @@ const STORAGE_KEYS = {
 };
 
 export const PKBMProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  // 1. News state
+  // 1. News state (selalu diurutkan berdasarkan tanggal terbit terbaru di atas)
   const [news, setNews] = useState<NewsItem[]>(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEYS.NEWS);
-      if (saved) return JSON.parse(saved);
+      if (saved) return sortNewsByDateDesc(JSON.parse(saved));
     } catch (e) {
       console.error('Failed to load news from storage', e);
     }
-    return NEWS_DATA;
+    return sortNewsByDateDesc(NEWS_DATA);
   });
 
   // 2. Gallery state
@@ -402,8 +404,9 @@ export const PKBMProvider: React.FC<{ children: React.ReactNode }> = ({ children
     switch (key) {
       case 'news':
         if (Array.isArray(data)) {
-          setNews(data);
-          try { localStorage.setItem(STORAGE_KEYS.NEWS, JSON.stringify(data)); } catch {}
+          const sorted = sortNewsByDateDesc(data);
+          setNews(sorted);
+          try { localStorage.setItem(STORAGE_KEYS.NEWS, JSON.stringify(sorted)); } catch {}
         }
         break;
       case 'gallery':
@@ -502,8 +505,9 @@ export const PKBMProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       if (tableExists && Object.keys(records).length > 0) {
         if (records.news && Array.isArray(records.news)) {
-          setNews(records.news);
-          try { localStorage.setItem(STORAGE_KEYS.NEWS, JSON.stringify(records.news)); } catch {}
+          const sorted = sortNewsByDateDesc(records.news);
+          setNews(sorted);
+          try { localStorage.setItem(STORAGE_KEYS.NEWS, JSON.stringify(sorted)); } catch {}
         }
         if (records.gallery && Array.isArray(records.gallery)) {
           setGallery(records.gallery);
@@ -822,7 +826,7 @@ export const PKBMProvider: React.FC<{ children: React.ReactNode }> = ({ children
       slug,
       views: 1
     };
-    const updated = [newArticle, ...news];
+    const updated = sortNewsByDateDesc([newArticle, ...news]);
     setNews(updated);
     syncRecord('news', updated);
 
@@ -848,12 +852,12 @@ export const PKBMProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const updateNews = (id: string, updated: Partial<NewsItem>) => {
-    const updatedList = news.map((item) => {
+    const updatedList = sortNewsByDateDesc(news.map((item) => {
       if (item.id === id) {
         return { ...item, ...updated };
       }
       return item;
-    });
+    }));
     setNews(updatedList);
     syncRecord('news', updatedList);
 
@@ -1115,6 +1119,18 @@ export const PKBMProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return newMember;
   };
 
+  const importPersonalia = (members: Omit<PersonaliaMember, 'id'>[], mode: 'append' | 'replace' = 'append'): PersonaliaMember[] => {
+    const timestamp = Date.now();
+    const newMembers: PersonaliaMember[] = members.map((m, idx) => ({
+      ...m,
+      id: 'person-csv-' + (timestamp + idx)
+    }));
+    const updatedList = mode === 'replace' ? newMembers : [...personalia, ...newMembers];
+    setPersonalia(updatedList);
+    syncRecord('personalia', updatedList);
+    return newMembers;
+  };
+
   const updatePersonalia = (id: string, updated: Partial<PersonaliaMember>) => {
     const updatedList = personalia.map((item) => (item.id === id ? { ...item, ...updated } : item));
     setPersonalia(updatedList);
@@ -1135,7 +1151,7 @@ export const PKBMProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Reset & Backup
   const resetToDefaultData = () => {
-    setNews(NEWS_DATA);
+    setNews(sortNewsByDateDesc(NEWS_DATA));
     setGallery(INITIAL_GALLERY);
     setRegistrations(INITIAL_REGISTRATIONS);
     setPkbmInfo(INITIAL_PKBM_INFO);
@@ -1193,7 +1209,11 @@ export const PKBMProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const importDataJSON = (jsonString: string): boolean => {
     try {
       const data = JSON.parse(jsonString);
-      if (data.news && Array.isArray(data.news)) { setNews(data.news); syncRecord('news', data.news); }
+      if (data.news && Array.isArray(data.news)) {
+        const sorted = sortNewsByDateDesc(data.news);
+        setNews(sorted);
+        syncRecord('news', sorted);
+      }
       if (data.gallery && Array.isArray(data.gallery)) { setGallery(data.gallery); syncRecord('gallery', data.gallery); }
       if (data.registrations && Array.isArray(data.registrations)) { setRegistrations(data.registrations); syncRecord('registrations', data.registrations); }
       if (data.pkbmInfo && typeof data.pkbmInfo === 'object') { setPkbmInfo(data.pkbmInfo); syncRecord('pkbmInfo', data.pkbmInfo); }
@@ -1259,6 +1279,7 @@ export const PKBMProvider: React.FC<{ children: React.ReactNode }> = ({ children
         updateStats,
         personalia,
         addPersonalia,
+        importPersonalia,
         updatePersonalia,
         deletePersonalia,
         resetPersonalia,

@@ -19,10 +19,12 @@ import {
   CheckCircle,
   Mail,
   Phone,
-  BookOpen
+  BookOpen,
+  FileSpreadsheet
 } from 'lucide-react';
 import { usePKBM } from '../../../context/PKBMContext';
 import { PersonaliaCategory, PersonaliaMember } from '../../../types';
+import { ImportPersonaliaCsvModal } from './ImportPersonaliaCsvModal';
 
 interface PersonaliaCmsTabProps {
   onShowToast: (msg: string) => void;
@@ -76,7 +78,14 @@ export const PersonaliaCmsTab: React.FC<PersonaliaCmsTabProps> = ({ onShowToast 
   const [filterCategory, setFilterCategory] = useState<PersonaliaCategory | 'all'>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isCsvModalOpen, setIsCsvModalOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+
+  const handleCsvImportSuccess = (count: number, mode: 'append' | 'replace') => {
+    onShowToast(
+      `Berhasil mengimpor ${count} data personalia (${mode === 'append' ? 'Ditambahkan' : 'Ganti Seluruh Data'})!`
+    );
+  };
 
   // Form State
   const [formData, setFormData] = useState<Omit<PersonaliaMember, 'id'>>({
@@ -228,6 +237,15 @@ export const PersonaliaCmsTab: React.FC<PersonaliaCmsTabProps> = ({ onShowToast 
         </div>
 
         <div className="flex items-center gap-2 shrink-0">
+          <button
+            onClick={() => setIsCsvModalOpen(true)}
+            title="Import data personalia massal dari file CSV"
+            className="px-3.5 py-2.5 rounded-2xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 font-black text-xs transition-all flex items-center gap-2 shadow-sm hover:shadow cursor-pointer border border-amber-400"
+          >
+            <FileSpreadsheet className="w-4 h-4 text-slate-950" />
+            <span>Import CSV</span>
+          </button>
+
           <button
             onClick={handleResetData}
             title="Reset ke susunan default"
@@ -723,6 +741,13 @@ export const PersonaliaCmsTab: React.FC<PersonaliaCmsTabProps> = ({ onShowToast 
           </div>
         )}
       </AnimatePresence>
+
+      {/* Modal Import CSV Personalia */}
+      <ImportPersonaliaCsvModal
+        isOpen={isCsvModalOpen}
+        onClose={() => setIsCsvModalOpen(false)}
+        onImportSuccess={handleCsvImportSuccess}
+      />
     </div>
   );
 };

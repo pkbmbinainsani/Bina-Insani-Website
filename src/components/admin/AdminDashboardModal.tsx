@@ -1079,6 +1079,9 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({ isOpen
                   <div>
                     <h3 className="text-lg font-black text-slate-900">Kelola Berita & Pengumuman</h3>
                     <p className="text-xs text-slate-600">Buat artikel baru, unggah gambar kegiatan, atau edit postingan</p>
+                    <div className="inline-flex items-center gap-1.5 text-[11px] font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full mt-2">
+                      <span>✓ Urutan berita otomatis berdasarkan tanggal terbit (terbaru di posisi teratas)</span>
+                    </div>
                   </div>
                   <button
                     onClick={handleOpenAddNews}
@@ -1958,13 +1961,38 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({ isOpen
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-800 mb-1">Tanggal Terbit</label>
-                  <input
-                    type="text"
-                    value={newsFormData.date}
-                    onChange={(e) => setNewsFormData({ ...newsFormData, date: e.target.value })}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs focus:outline-none focus:border-orange-500"
-                  />
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="block text-xs font-bold text-slate-800">Tanggal Terbit</label>
+                    <span className="text-[10px] text-amber-700 font-semibold">Urutan berita (terbaru di atas)</span>
+                  </div>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      placeholder="Contoh: 15 September 2026"
+                      value={newsFormData.date}
+                      onChange={(e) => setNewsFormData({ ...newsFormData, date: e.target.value })}
+                      className="flex-1 px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs focus:outline-none focus:border-orange-500"
+                    />
+                    <input
+                      type="date"
+                      title="Pilih tanggal dari kalender"
+                      onChange={(e) => {
+                        if (e.target.value) {
+                          const dateObj = new Date(e.target.value + 'T00:00:00');
+                          const formatted = dateObj.toLocaleDateString('id-ID', {
+                            day: 'numeric',
+                            month: 'long',
+                            year: 'numeric'
+                          });
+                          setNewsFormData({ ...newsFormData, date: formatted });
+                        }
+                      }}
+                      className="px-2 py-2 rounded-xl border border-slate-300 text-xs bg-slate-50 text-slate-700 cursor-pointer"
+                    />
+                  </div>
+                  <p className="text-[10px] text-slate-500 mt-1">
+                    Bisa ketik langsung (misal: <em>15 September 2026</em>) atau klik ikon kalender.
+                  </p>
                 </div>
 
                 <div>

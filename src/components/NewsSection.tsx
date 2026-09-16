@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { motion } from 'motion/react';
 import { Newspaper, Calendar, Clock, User, ArrowRight, Search, X, Share2, Tag, BookOpen, PlusCircle, ShieldCheck, Sparkles, ChevronRight } from 'lucide-react';
 import { usePKBM } from '../context/PKBMContext';
 import { NewsItem } from '../types';
+import { sortNewsByDateDesc } from '../utils/dateHelper';
 
 interface NewsSectionProps {
   onOpenAdmin?: () => void;
@@ -14,16 +15,21 @@ export const NewsSection: React.FC<NewsSectionProps> = ({ onOpenAdmin }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('Semua');
 
-  // Dynamic categories from current articles
-  const availableCategories = ['Semua', ...Array.from(new Set(news.map((item) => item.category)))];
+  // Urutkan berita berdasarkan tanggal terbit terbaru di atas
+  const sortedNews = useMemo(() => sortNewsByDateDesc(news), [news]);
 
-  const filteredNews = news.filter((item) => {
-    const matchesCategory = selectedCategory === 'Semua' || item.category === selectedCategory;
-    const matchesQuery = item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         item.summary.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         item.author.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesCategory && matchesQuery;
-  });
+  // Dynamic categories from current articles
+  const availableCategories = ['Semua', ...Array.from(new Set(sortedNews.map((item) => item.category)))];
+
+  const filteredNews = useMemo(() => {
+    return sortedNews.filter((item) => {
+      const matchesCategory = selectedCategory === 'Semua' || item.category === selectedCategory;
+      const matchesQuery = item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                           item.summary.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                           item.author.toLowerCase().includes(searchQuery.toLowerCase());
+      return matchesCategory && matchesQuery;
+    });
+  }, [sortedNews, selectedCategory, searchQuery]);
 
   // Separate the single latest news item and the previous news items
   const latestArticle = filteredNews.length > 0 ? filteredNews[0] : null;

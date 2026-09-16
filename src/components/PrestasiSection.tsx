@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { usePKBM } from '../context/PKBMContext';
 import { NewsItem } from '../types';
+import { sortNewsByDateDesc } from '../utils/dateHelper';
 
 interface PrestasiSectionProps {
   onOpenAdmin?: () => void;
@@ -28,14 +29,16 @@ export const PrestasiSection: React.FC<PrestasiSectionProps> = ({ onOpenAdmin, o
   const { news, pkbmInfo, isAdminAuthenticated } = usePKBM();
   const [activeArticleModal, setActiveArticleModal] = useState<NewsItem | null>(null);
 
-  // Ambil seluruh berita yang berkategori atau berlabel "Prestasi Warga Belajar"
-  const prestasiItems: NewsItem[] = news.filter((item) => {
-    const isCategoryPrestasi = item.category === 'Prestasi Warga Belajar' ||
-      item.category.toLowerCase().includes('prestasi');
-    const isTaggedPrestasi = item.tags && item.tags.some((t) => t.toLowerCase().includes('prestasi'));
-    const isTitlePrestasi = item.title.toLowerCase().includes('prestasi') || item.title.toLowerCase().includes('juara');
-    return isCategoryPrestasi || isTaggedPrestasi || isTitlePrestasi;
-  });
+  // Ambil seluruh berita yang berkategori atau berlabel "Prestasi Warga Belajar" dan urutkan tanggal terbit terbaru
+  const prestasiItems: NewsItem[] = sortNewsByDateDesc(
+    news.filter((item) => {
+      const isCategoryPrestasi = item.category === 'Prestasi Warga Belajar' ||
+        item.category.toLowerCase().includes('prestasi');
+      const isTaggedPrestasi = item.tags && item.tags.some((t) => t.toLowerCase().includes('prestasi'));
+      const isTitlePrestasi = item.title.toLowerCase().includes('prestasi') || item.title.toLowerCase().includes('juara');
+      return isCategoryPrestasi || isTaggedPrestasi || isTitlePrestasi;
+    })
+  );
 
   const handleReadDetail = (item: NewsItem) => {
     if (onOpenNewsReader) {
