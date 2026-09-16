@@ -1,4 +1,4 @@
-import { VisiMisi, Program, NewsItem, VokasiProgram, FAQItem, Testimonial, PersonaliaMember } from '../types';
+import { VisiMisi, Program, NewsItem, VokasiProgram, FAQItem, Testimonial, PersonaliaMember, VideoItem } from '../types';
 
 export const PKBM_INFO = {
   name: 'PKBM BINA INSANI SUMOWONO',
@@ -237,4 +237,49 @@ export const FAQ_DATA: FAQItem[] = [
 export const TESTIMONIALS: Testimonial[] = [];
 
 export const PERSONALIA_DATA: PersonaliaMember[] = [];
+
+export const INITIAL_VIDEOS: VideoItem[] = [
+  {
+    id: 'vid-1',
+    title: 'Profil PKBM Bina Insani Sumowono & Semangat Belajar Pendidikan Kesetaraan',
+    videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+    platform: 'youtube',
+    category: 'Profil Lembaga',
+    date: '10 September 2026',
+    description: 'Mengenal lebih dekat PKBM Bina Insani Sumowono, fasilitas ruang belajar, tutor berdedikasi, serta program Paket A, B, dan C.',
+    duration: '4:20',
+    featured: true
+  },
+  {
+    id: 'vid-2',
+    title: 'Praktik Keterampilan Tata Busana & Desain Pakaian Warga Belajar Paket C',
+    videoUrl: 'https://www.instagram.com/reel/C8xxxxxxxx/',
+    platform: 'instagram',
+    category: 'Pelatihan Vokasi',
+    date: '28 Agustus 2026',
+    description: 'Cuplikan kegiatan praktik menjahit, pembuatan pola busana modern, dan karya busana kreasi warga belajar di Sumowono.',
+    duration: '1:00',
+    featured: true
+  },
+  {
+    id: 'vid-3',
+    title: 'Pelaksanaan Simulasi Uji Kesetaraan (UK) Berbasis Komputer T.A. 2026',
+    videoUrl: 'https://www.facebook.com/watch/?v=123456789012345',
+    platform: 'facebook',
+    category: 'Akademik & Ujian',
+    date: '15 Agustus 2026',
+    description: 'Dokumentasi kesiapan warga belajar mengikuti simulasi ujian berbasis komputer dengan tertib, mandiri, dan penuh semangat.',
+    duration: '3:15'
+  },
+  {
+    id: 'vid-4',
+    title: 'Pelatihan Barista Kopi & Pengolahan Hasil Kebun Khas Lereng Sumowono',
+    videoUrl: 'https://www.youtube.com/watch?v=ScMzIvxBSi4',
+    platform: 'youtube',
+    category: 'Wirausaha & UMKM',
+    date: '22 Juli 2026',
+    description: 'Keseruan kelas vokasi barista dan peracikan kopi lokal sebagai bekal kemandirian ekonomi warga belajar.',
+    duration: '5:45'
+  }
+];
 

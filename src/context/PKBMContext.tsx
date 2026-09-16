@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect, useRef } from 'r
 import {
   NewsItem,
   GalleryItem,
+  VideoItem,
   RegisteredStudent,
   PKBMInfoState,
   RegistrationFormData,
@@ -22,7 +23,8 @@ import {
   VOKASI_PROGRAMS,
   FAQ_DATA,
   NEWS_DATA,
-  PERSONALIA_DATA
+  PERSONALIA_DATA,
+  INITIAL_VIDEOS
 } from '../data/pkbmData';
 import {
   supabase,
@@ -117,6 +119,13 @@ interface PKBMContextType {
   addGalleryItem: (item: Omit<GalleryItem, 'id'>) => GalleryItem;
   deleteGalleryItem: (id: string) => void;
 
+  // 2b. Video Gallery CMS (YouTube, Facebook, Instagram, Video Online)
+  videos: VideoItem[];
+  addVideoItem: (item: Omit<VideoItem, 'id'>) => VideoItem;
+  updateVideoItem: (id: string, updated: Partial<VideoItem>) => void;
+  deleteVideoItem: (id: string) => void;
+  resetVideos: () => void;
+
   // 3. Student Registrations (PWBB)
   registrations: RegisteredStudent[];
   addRegistration: (formData: RegistrationFormData) => { code: string; student: RegisteredStudent };
@@ -202,6 +211,7 @@ const PKBMContext = createContext<PKBMContextType | undefined>(undefined);
 const STORAGE_KEYS = {
   NEWS: 'pkbm_sumowono_news_v5',
   GALLERY: 'pkbm_sumowono_gallery_v5',
+  VIDEOS: 'pkbm_sumowono_videos_v2',
   REGISTRATIONS: 'pkbm_sumowono_registrations_v5',
   INFO: 'pkbm_sumowono_info_v3',
   ABOUT_PROFILE: 'pkbm_sumowono_about_profile_v3',
@@ -239,6 +249,17 @@ export const PKBMProvider: React.FC<{ children: React.ReactNode }> = ({ children
       console.error('Failed to load gallery from storage', e);
     }
     return INITIAL_GALLERY;
+  });
+
+  // 2b. Video Gallery state (YouTube, Facebook, Instagram, Video Online)
+  const [videos, setVideos] = useState<VideoItem[]>(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEYS.VIDEOS);
+      if (saved) return JSON.parse(saved);
+    } catch (e) {
+      console.error('Failed to load videos from storage', e);
+    }
+    return INITIAL_VIDEOS;
   });
 
   // 3. Registrations state
@@ -415,6 +436,12 @@ export const PKBMProvider: React.FC<{ children: React.ReactNode }> = ({ children
           try { localStorage.setItem(STORAGE_KEYS.GALLERY, JSON.stringify(data)); } catch {}
         }
         break;
+      case 'videos':
+        if (Array.isArray(data)) {
+          setVideos(data);
+          try { localStorage.setItem(STORAGE_KEYS.VIDEOS, JSON.stringify(data)); } catch {}
+        }
+        break;
       case 'registrations':
         if (Array.isArray(data)) {
           setRegistrations(data);
@@ -513,6 +540,10 @@ export const PKBMProvider: React.FC<{ children: React.ReactNode }> = ({ children
           setGallery(records.gallery);
           try { localStorage.setItem(STORAGE_KEYS.GALLERY, JSON.stringify(records.gallery)); } catch {}
         }
+        if (records.videos && Array.isArray(records.videos)) {
+          setVideos(records.videos);
+          try { localStorage.setItem(STORAGE_KEYS.VIDEOS, JSON.stringify(records.videos)); } catch {}
+        }
         if (records.registrations && Array.isArray(records.registrations)) {
           setRegistrations(records.registrations);
           try { localStorage.setItem(STORAGE_KEYS.REGISTRATIONS, JSON.stringify(records.registrations)); } catch {}
@@ -587,6 +618,7 @@ export const PKBMProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const allData: Record<string, any> = {
         news,
         gallery,
+        videos,
         registrations,
         pkbmInfo,
         aboutProfile,
@@ -926,6 +958,39 @@ export const PKBMProvider: React.FC<{ children: React.ReactNode }> = ({ children
     syncRecord('gallery', updatedList);
   };
 
+  // Video Gallery Handlers
+  const addVideoItem = (item: Omit<VideoItem, 'id'>): VideoItem => {
+    const newVideo: VideoItem = {
+      ...item,
+      id: 'vid-' + Date.now()
+    };
+    const updated = [newVideo, ...videos];
+    setVideos(updated);
+    try { localStorage.setItem(STORAGE_KEYS.VIDEOS, JSON.stringify(updated)); } catch {}
+    syncRecord('videos', updated);
+    return newVideo;
+  };
+
+  const updateVideoItem = (id: string, updated: Partial<VideoItem>) => {
+    const updatedList = videos.map((v) => (v.id === id ? { ...v, ...updated } : v));
+    setVideos(updatedList);
+    try { localStorage.setItem(STORAGE_KEYS.VIDEOS, JSON.stringify(updatedList)); } catch {}
+    syncRecord('videos', updatedList);
+  };
+
+  const deleteVideoItem = (id: string) => {
+    const updated = videos.filter((v) => v.id !== id);
+    setVideos(updated);
+    try { localStorage.setItem(STORAGE_KEYS.VIDEOS, JSON.stringify(updated)); } catch {}
+    syncRecord('videos', updated);
+  };
+
+  const resetVideos = () => {
+    setVideos(INITIAL_VIDEOS);
+    try { localStorage.setItem(STORAGE_KEYS.VIDEOS, JSON.stringify(INITIAL_VIDEOS)); } catch {}
+    syncRecord('videos', INITIAL_VIDEOS);
+  };
+
   // Registration Handlers
   const addRegistration = (formData: RegistrationFormData) => {
     const now = new Date();
@@ -1153,6 +1218,7 @@ export const PKBMProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const resetToDefaultData = () => {
     setNews(sortNewsByDateDesc(NEWS_DATA));
     setGallery(INITIAL_GALLERY);
+    setVideos(INITIAL_VIDEOS);
     setRegistrations(INITIAL_REGISTRATIONS);
     setPkbmInfo(INITIAL_PKBM_INFO);
     setAboutProfile(INITIAL_ABOUT_PROFILE);
@@ -1168,6 +1234,7 @@ export const PKBMProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     localStorage.removeItem(STORAGE_KEYS.NEWS);
     localStorage.removeItem(STORAGE_KEYS.GALLERY);
+    localStorage.removeItem(STORAGE_KEYS.VIDEOS);
     localStorage.removeItem(STORAGE_KEYS.REGISTRATIONS);
     localStorage.removeItem(STORAGE_KEYS.INFO);
     localStorage.removeItem(STORAGE_KEYS.ABOUT_PROFILE);
@@ -1201,6 +1268,7 @@ export const PKBMProvider: React.FC<{ children: React.ReactNode }> = ({ children
       personalia,
       news,
       gallery,
+      videos,
       registrations
     };
     return JSON.stringify(backup, null, 2);
@@ -1215,6 +1283,7 @@ export const PKBMProvider: React.FC<{ children: React.ReactNode }> = ({ children
         syncRecord('news', sorted);
       }
       if (data.gallery && Array.isArray(data.gallery)) { setGallery(data.gallery); syncRecord('gallery', data.gallery); }
+      if (data.videos && Array.isArray(data.videos)) { setVideos(data.videos); syncRecord('videos', data.videos); }
       if (data.registrations && Array.isArray(data.registrations)) { setRegistrations(data.registrations); syncRecord('registrations', data.registrations); }
       if (data.pkbmInfo && typeof data.pkbmInfo === 'object') { setPkbmInfo(data.pkbmInfo); syncRecord('pkbmInfo', data.pkbmInfo); }
       if (data.aboutProfile && typeof data.aboutProfile === 'string') { setAboutProfile(data.aboutProfile); syncRecord('aboutProfile', data.aboutProfile); }
@@ -1244,6 +1313,11 @@ export const PKBMProvider: React.FC<{ children: React.ReactNode }> = ({ children
         gallery,
         addGalleryItem,
         deleteGalleryItem,
+        videos,
+        addVideoItem,
+        updateVideoItem,
+        deleteVideoItem,
+        resetVideos,
         registrations,
         addRegistration,
         updateRegistrationStatus,

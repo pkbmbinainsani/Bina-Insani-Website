@@ -45,7 +45,8 @@ import {
   Award,
   Navigation,
   Database,
-  Radio
+  Radio,
+  Video
 } from 'lucide-react';
 import { usePKBM } from '../../context/PKBMContext';
 import { NewsItem, GalleryItem, RegisteredStudent, PKBMInfoState } from '../../types';
@@ -56,6 +57,7 @@ import { FaqCmsTab } from './tabs/FaqCmsTab';
 import { HeroSlidesCmsTab } from './tabs/HeroSlidesCmsTab';
 import { PersonaliaCmsTab } from './tabs/PersonaliaCmsTab';
 import { DatabaseCmsTab } from './tabs/DatabaseCmsTab';
+import { VideoGalleryCmsTab } from './tabs/VideoGalleryCmsTab';
 import { LogoManagerModal } from './LogoManagerModal';
 
 interface AdminDashboardModalProps {
@@ -71,6 +73,7 @@ type TabType =
   | 'personalia'
   | 'registrations'
   | 'gallery'
+  | 'videos'
   | 'about'
   | 'programs'
   | 'vokasi'
@@ -86,6 +89,7 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({ isOpen
     gallery,
     addGalleryItem,
     deleteGalleryItem,
+    videos,
     registrations,
     updateRegistrationStatus,
     deleteRegistration,
@@ -764,6 +768,28 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({ isOpen
                 </span>
               </button>
 
+              {/* Tab 4b: Galeri Video */}
+              <button
+                onClick={() => setActiveTab('videos')}
+                className={`w-full p-2.5 sm:px-3.5 sm:py-2.5 rounded-2xl text-xs font-bold flex items-center justify-between transition-all cursor-pointer ${
+                  activeTab === 'videos'
+                    ? 'bg-gradient-to-r from-red-600 to-pink-600 text-white shadow-md shadow-red-950/20'
+                    : 'text-slate-700 hover:bg-slate-100'
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <Video className={`w-5 h-5 shrink-0 ${activeTab === 'videos' ? 'text-white' : 'text-red-500'}`} />
+                  <span className="hidden sm:inline">Galeri Video</span>
+                </div>
+                <span
+                  className={`hidden sm:inline-block text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                    activeTab === 'videos' ? 'bg-red-950 text-red-200' : 'bg-red-50 text-red-700 border border-red-200'
+                  }`}
+                >
+                  {videos.length}
+                </span>
+              </button>
+
               {/* Tab 5: Tentang PKBM & Visi Misi */}
               <button
                 onClick={() => setActiveTab('about')}
@@ -932,7 +958,7 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({ isOpen
                 </div>
 
                 {/* Metric Cards */}
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4">
                   <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm flex flex-col justify-between">
                     <div className="flex items-center justify-between">
                       <span className="text-xs font-bold text-slate-500">Berita & Artikel</span>
@@ -973,6 +999,19 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({ isOpen
                   </div>
 
                   <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold text-slate-500">Galeri Video</span>
+                      <div className="p-2.5 bg-red-100 text-red-800 rounded-xl">
+                        <Video className="w-5 h-5" />
+                      </div>
+                    </div>
+                    <div className="mt-3">
+                      <p className="text-3xl font-black text-slate-900">{videos.length}</p>
+                      <p className="text-[11px] text-red-700 font-semibold mt-0.5">Video YouTube/FB/IG</p>
+                    </div>
+                  </div>
+
+                  <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm flex flex-col justify-between col-span-2 sm:col-span-1">
                     <div className="flex items-center justify-between">
                       <span className="text-xs font-bold text-slate-500">Status Akreditasi</span>
                       <div className="p-2.5 bg-purple-100 text-purple-800 rounded-xl">
@@ -1453,6 +1492,13 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({ isOpen
                     </div>
                   ))}
                 </div>
+              </div>
+            )}
+
+            {/* TAB: GALERI VIDEO (YOUTUBE, FACEBOOK, INSTAGRAM, ONLINE) */}
+            {activeTab === 'videos' && (
+              <div className="max-w-6xl mx-auto">
+                <VideoGalleryCmsTab onShowToast={showToast} />
               </div>
             )}
 

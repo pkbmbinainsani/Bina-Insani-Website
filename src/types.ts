@@ -76,6 +76,21 @@ export interface GalleryItem {
   description?: string;
 }
 
+export type VideoPlatform = 'youtube' | 'facebook' | 'instagram' | 'tiktok' | 'vimeo' | 'direct' | 'other';
+
+export interface VideoItem {
+  id: string;
+  title: string;
+  videoUrl: string;
+  platform: VideoPlatform;
+  category: string;
+  date: string;
+  description?: string;
+  thumbnail?: string;
+  duration?: string;
+  featured?: boolean;
+}
+
 export interface VokasiProgram {
   title: string;
   description: string;
