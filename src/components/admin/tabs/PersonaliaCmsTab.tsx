@@ -405,11 +405,11 @@ export const PersonaliaCmsTab: React.FC<PersonaliaCmsTabProps> = ({ onShowToast 
                 {/* Header info */}
                 <div className="space-y-3">
                   <div className="flex items-start gap-3">
-                    <div className="relative w-14 h-14 rounded-xl overflow-hidden bg-slate-100 shrink-0 border border-slate-200">
+                    <div className="relative w-14 h-14 rounded-xl overflow-hidden bg-slate-900 shrink-0 border border-slate-200 flex items-center justify-center">
                       <img
                         src={item.photo}
                         alt={item.name}
-                        className="w-full h-full object-cover object-top"
+                        className="w-full h-full object-contain p-0.5"
                         onError={(e) => {
                           (e.target as HTMLImageElement).src =
                             'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=600&q=80';
@@ -662,11 +662,11 @@ export const PersonaliaCmsTab: React.FC<PersonaliaCmsTabProps> = ({ onShowToast 
 
                   <div className="flex flex-col sm:flex-row items-center gap-4">
                     {/* Live Preview Avatar */}
-                    <div className="relative w-20 h-20 rounded-2xl overflow-hidden bg-slate-100 border-2 border-[#006633] shrink-0 shadow-md">
+                    <div className="relative w-20 h-24 rounded-2xl overflow-hidden bg-slate-900 border-2 border-[#006633] shrink-0 shadow-md flex items-center justify-center">
                       <img
                         src={formData.photo}
                         alt="Preview Foto"
-                        className="w-full h-full object-cover object-top"
+                        className="w-full h-full object-contain p-1"
                       />
                     </div>
 

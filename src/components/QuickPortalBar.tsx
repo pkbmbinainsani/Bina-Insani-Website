@@ -4,9 +4,10 @@ import { PKBM_INFO } from '../data/pkbmData';
 
 interface QuickPortalBarProps {
   onOpenRegistration: (programName?: string) => void;
+  onNavigateTab?: (tabId: string) => void;
 }
 
-export const QuickPortalBar: React.FC<QuickPortalBarProps> = ({ onOpenRegistration }) => {
+export const QuickPortalBar: React.FC<QuickPortalBarProps> = ({ onOpenRegistration, onNavigateTab }) => {
   const [activeModal, setActiveModal] = useState<'dapodik' | 'modul' | null>(null);
 
   return (
@@ -72,9 +73,9 @@ export const QuickPortalBar: React.FC<QuickPortalBarProps> = ({ onOpenRegistrati
           </button>
 
           {/* Tile 4: Pelatihan Vokasi */}
-          <a
-            href="#vokasi"
-            className="p-4 rounded-2xl bg-amber-50/80 hover:bg-amber-100/90 text-amber-950 border border-amber-200/90 transition-all flex flex-col justify-between group shadow-sm text-left"
+          <button
+            onClick={() => onNavigateTab ? onNavigateTab('vokasi') : undefined}
+            className="p-4 rounded-2xl bg-amber-50/80 hover:bg-amber-100/90 text-amber-950 border border-amber-200/90 transition-all flex flex-col justify-between group shadow-sm text-left cursor-pointer"
           >
             <div className="flex items-center justify-between">
               <div className="p-2.5 rounded-xl bg-gradient-to-br from-orange-500 to-amber-600 text-white">
@@ -88,7 +89,7 @@ export const QuickPortalBar: React.FC<QuickPortalBarProps> = ({ onOpenRegistrati
                 4 Skill Siap Kerja <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform text-orange-600" />
               </p>
             </div>
-          </a>
+          </button>
 
           {/* Tile 5: WhatsApp Hotline */}
           <a

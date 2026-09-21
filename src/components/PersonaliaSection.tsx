@@ -18,7 +18,10 @@ import {
   SlidersHorizontal,
   CheckCircle2,
   UserCheck,
-  Edit3
+  Edit3,
+  Maximize2,
+  ZoomIn,
+  Download
 } from 'lucide-react';
 import { usePKBM } from '../context/PKBMContext';
 import { PersonaliaCategory, PersonaliaMember } from '../types';
@@ -88,6 +91,7 @@ export const PersonaliaSection: React.FC<PersonaliaSectionProps> = ({ onOpenAdmi
   const [selectedCategory, setSelectedCategory] = useState<PersonaliaCategory | 'all'>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [activeModalMember, setActiveModalMember] = useState<PersonaliaMember | null>(null);
+  const [zoomPhotoMember, setZoomPhotoMember] = useState<PersonaliaMember | null>(null);
 
   // Category counts
   const categoryCounts = useMemo(() => {
@@ -376,22 +380,35 @@ export const PersonaliaSection: React.FC<PersonaliaSectionProps> = ({ onOpenAdmi
                       : 'border-orange-400/30 hover:border-orange-400 hover:shadow-orange-400/10'
                   }`}
                 >
-                  {/* Card Top: Photo and Badge */}
+                  {/* Card Top: Photo Display (Utuh Tanpa Terpotong) and Badge */}
                   <div>
-                    <div className="relative h-60 w-full overflow-hidden bg-stone-950">
-                      <img
-                        src={member.photo}
-                        alt={member.name}
-                        className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
-                        onError={(e) => {
-                          (e.target as HTMLImageElement).src =
-                            'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=600&q=80';
-                        }}
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-stone-950 via-transparent to-black/30" />
+                    <div className="relative h-72 sm:h-80 w-full overflow-hidden bg-stone-950 flex items-center justify-center border-b border-orange-500/20">
+                      {/* Ambient soft glow backdrop of the same photo so all aspect ratios blend seamlessly */}
+                      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                        <img
+                          src={member.photo}
+                          alt=""
+                          aria-hidden="true"
+                          className="w-full h-full object-cover blur-2xl opacity-30 scale-125 pointer-events-none"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-stone-950/80 via-stone-950/40 to-black/30" />
+                      </div>
+
+                      {/* Foreground photo: 100% UTUH tanpa terpotong */}
+                      <div className="relative z-10 w-full h-full p-3 sm:p-4 flex items-center justify-center">
+                        <img
+                          src={member.photo}
+                          alt={member.name}
+                          className="max-h-full max-w-full w-auto h-auto object-contain rounded-2xl drop-shadow-2xl transition-transform duration-500 group-hover:scale-105"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).src =
+                              'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=600&q=80';
+                          }}
+                        />
+                      </div>
 
                       {/* Category Badge */}
-                      <div className="absolute top-3 left-3">
+                      <div className="absolute top-3 left-3 z-20 pointer-events-none">
                         <span
                           className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-[11px] font-black uppercase tracking-wider backdrop-blur-md border ${catConfig.badgeBg} ${catConfig.badgeText} ${catConfig.badgeBorder} shadow-lg`}
                         >
@@ -400,14 +417,32 @@ export const PersonaliaSection: React.FC<PersonaliaSectionProps> = ({ onOpenAdmi
                         </span>
                       </div>
 
-                      {/* Order / Status Badge */}
-                      {member.nuptkOrNip && (
-                        <div className="absolute top-3 right-3">
-                          <span className="px-2 py-0.5 rounded-lg bg-stone-950/80 text-[10px] text-amber-300 font-mono border border-orange-500/30 backdrop-blur-sm">
+                      {/* Order / Status Badge & Zoom Photo Button */}
+                      <div className="absolute top-3 right-3 z-20 flex items-center gap-1.5">
+                        {member.nuptkOrNip && (
+                          <span className="px-2 py-0.5 rounded-lg bg-stone-950/90 text-[10px] text-amber-300 font-mono border border-orange-500/40 backdrop-blur-sm shadow">
                             Terdaftar
                           </span>
-                        </div>
-                      )}
+                        )}
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setZoomPhotoMember(member);
+                          }}
+                          title="Lihat Foto Utuh Resolusi Penuh"
+                          className="p-1.5 rounded-xl bg-black/75 hover:bg-orange-600 text-stone-300 hover:text-white border border-stone-700 hover:border-orange-400 backdrop-blur-md transition-all cursor-pointer shadow-md"
+                        >
+                          <Maximize2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+
+                      {/* Hint label "Foto Utuh" */}
+                      <div className="absolute bottom-2 right-2 z-20 pointer-events-none">
+                        <span className="px-2 py-0.5 rounded-md bg-black/60 backdrop-blur-md text-[9px] font-semibold text-stone-400 border border-stone-800/80">
+                          Foto Utuh
+                        </span>
+                      </div>
                     </div>
 
                     {/* Content Details */}
@@ -490,6 +525,118 @@ export const PersonaliaSection: React.FC<PersonaliaSectionProps> = ({ onOpenAdmi
           </a>
         </div>
       </div>
+
+      {/* Full-Screen Lightbox Modal Foto Utuh Resolusi Tinggi */}
+      <AnimatePresence>
+        {zoomPhotoMember && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 sm:p-6"
+            onClick={() => setZoomPhotoMember(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className="relative max-w-3xl w-full bg-stone-900 border border-orange-500/30 rounded-3xl overflow-hidden shadow-2xl flex flex-col"
+            >
+              {/* Header Modal */}
+              <div className="p-4 sm:p-5 bg-stone-950/90 border-b border-stone-800 flex items-center justify-between gap-4">
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2">
+                    <span className="px-2.5 py-0.5 rounded-lg bg-orange-500/20 text-orange-400 border border-orange-500/30 text-[11px] font-black uppercase">
+                      {CATEGORY_CONFIG[zoomPhotoMember.category]?.shortLabel || 'Personalia'}
+                    </span>
+                    {zoomPhotoMember.nuptkOrNip && (
+                      <span className="text-xs font-mono text-stone-400">
+                        NUPTK/NIP: {zoomPhotoMember.nuptkOrNip}
+                      </span>
+                    )}
+                  </div>
+                  <h3 className="text-lg font-black text-white truncate mt-1">
+                    {zoomPhotoMember.name}
+                  </h3>
+                  <p className="text-xs text-amber-300 font-semibold truncate">
+                    {zoomPhotoMember.role}
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-2 shrink-0">
+                  <a
+                    href={zoomPhotoMember.photo}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-2 rounded-xl bg-stone-800 hover:bg-stone-700 text-stone-300 hover:text-white border border-stone-700 transition-colors cursor-pointer"
+                    title="Buka Gambar di Tab Baru"
+                  >
+                    <ExternalLink className="w-4 h-4" />
+                  </a>
+                  <button
+                    onClick={() => setZoomPhotoMember(null)}
+                    className="p-2 rounded-xl bg-stone-800 hover:bg-red-500/20 text-stone-300 hover:text-red-400 border border-stone-700 transition-colors cursor-pointer"
+                    title="Tutup Modal"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Main Photo Container - Utuh 100% Bebas Terpotong */}
+              <div className="relative w-full h-[60vh] sm:h-[68vh] bg-stone-950 flex items-center justify-center p-4 sm:p-6 overflow-hidden">
+                {/* Background Ambient Glow */}
+                <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                  <img
+                    src={zoomPhotoMember.photo}
+                    alt=""
+                    aria-hidden="true"
+                    className="w-full h-full object-cover blur-3xl opacity-20 scale-125"
+                  />
+                </div>
+
+                <img
+                  src={zoomPhotoMember.photo}
+                  alt={zoomPhotoMember.name}
+                  className="relative z-10 max-h-full max-w-full w-auto h-auto object-contain rounded-2xl drop-shadow-2xl border border-stone-800"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src =
+                      'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=600&q=80';
+                  }}
+                />
+              </div>
+
+              {/* Footer Information */}
+              <div className="p-4 bg-stone-950 border-t border-stone-800 flex flex-wrap items-center justify-between gap-3 text-xs">
+                <div className="text-stone-400">
+                  {zoomPhotoMember.education && (
+                    <span className="text-stone-300 mr-3">
+                      🎓 {zoomPhotoMember.education}
+                    </span>
+                  )}
+                  {zoomPhotoMember.specialization && (
+                    <span className="text-stone-400">
+                      📖 {zoomPhotoMember.specialization}
+                    </span>
+                  )}
+                </div>
+
+                <button
+                  onClick={() => {
+                    const member = zoomPhotoMember;
+                    setZoomPhotoMember(null);
+                    setActiveModalMember(member);
+                  }}
+                  className="px-4 py-1.5 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-400 hover:to-amber-400 text-white font-bold cursor-pointer transition-all shadow"
+                >
+                  Buka Profil Lengkap
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   );
 };

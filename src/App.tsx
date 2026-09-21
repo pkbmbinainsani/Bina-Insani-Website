@@ -1,8 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
+import {
+  Newspaper,
+  Trophy,
+  Award,
+  Users,
+  GraduationCap,
+  Wrench,
+  ImageIcon,
+  HelpCircle,
+  MapPin
+} from 'lucide-react';
 import { PKBMProvider, usePKBM } from './context/PKBMContext';
 import { Header } from './components/Header';
 import { Hero } from './components/Hero';
 import { QuickPortalBar } from './components/QuickPortalBar';
+import { HomeHighlights } from './components/HomeHighlights';
+import { PageHeaderBanner } from './components/PageHeaderBanner';
 import { AboutUs } from './components/AboutUs';
 import { PersonaliaSection } from './components/PersonaliaSection';
 import { Programs } from './components/Programs';
@@ -18,12 +32,67 @@ import { FloatingWidget } from './components/FloatingWidget';
 import { AdminLoginModal } from './components/admin/AdminLoginModal';
 import { AdminDashboardModal } from './components/admin/AdminDashboardModal';
 
+const VALID_TABS = [
+  'beranda',
+  'berita',
+  'prestasi',
+  'tentang-kami',
+  'personalia',
+  'program-belajar',
+  'vokasi',
+  'galeri',
+  'faq',
+  'kontak'
+];
+
 function MainAppContent() {
   const { isAdminAuthenticated } = usePKBM();
   const [isRegistrationOpen, setIsRegistrationOpen] = useState(false);
   const [selectedProgramForReg, setSelectedProgramForReg] = useState<string | undefined>(undefined);
   const [isAdminLoginOpen, setIsAdminLoginOpen] = useState(false);
   const [isAdminDashboardOpen, setIsAdminDashboardOpen] = useState(false);
+
+  // Initialize active tab from URL hash (e.g. #berita or #prestasi) or default to 'beranda'
+  const [activeTab, setActiveTab] = useState<string>(() => {
+    if (typeof window !== 'undefined') {
+      const initialHash = window.location.hash.replace('#', '').trim();
+      if (VALID_TABS.includes(initialHash)) {
+        return initialHash;
+      }
+    }
+    return 'beranda';
+  });
+
+  // Sync hash changes (e.g. browser back/forward buttons)
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash.replace('#', '').trim();
+      if (hash && VALID_TABS.includes(hash)) {
+        setActiveTab(hash);
+        window.scrollTo({ top: 0, behavior: 'instant' });
+      } else if (!hash) {
+        setActiveTab('beranda');
+        window.scrollTo({ top: 0, behavior: 'instant' });
+      }
+    };
+
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
+
+  // Handler to navigate between dedicated tab pages directly without continuous page scrolling
+  const handleSelectTab = (tabId: string) => {
+    if (VALID_TABS.includes(tabId)) {
+      setActiveTab(tabId);
+      if (tabId === 'beranda') {
+        // Clear hash cleanly or set #beranda
+        history.pushState(null, '', window.location.pathname);
+      } else {
+        window.location.hash = tabId;
+      }
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    }
+  };
 
   const handleOpenRegistration = (programName?: string) => {
     setSelectedProgramForReg(programName);
@@ -44,51 +113,232 @@ function MainAppContent() {
   };
 
   return (
-    <div className="min-h-screen pb-20 md:pb-0 bg-slate-50 text-slate-900 font-sans antialiased selection:bg-orange-100 selection:text-orange-900">
-      {/* Header Bar with dynamic logo, navigation, and Admin Portal trigger */}
+    <div className="min-h-screen pb-20 md:pb-0 bg-slate-50 text-slate-900 font-sans antialiased selection:bg-orange-100 selection:text-orange-900 flex flex-col justify-between">
+      {/* Header Bar with dynamic logo, tab navigation, and Admin Portal trigger */}
       <Header
+        activeTab={activeTab}
+        onSelectTab={handleSelectTab}
         onOpenRegistration={handleOpenRegistration}
         onOpenAdmin={handleOpenAdmin}
       />
 
-      {/* Main Content Sections */}
-      <main>
-        {/* Hero Landing */}
-        <Hero onOpenRegistration={handleOpenRegistration} />
+      {/* Main Multi-Page Container with Instant Dedicated Page Switching */}
+      <main className="flex-1">
+        <AnimatePresence mode="wait">
+          {activeTab === 'beranda' && (
+            <motion.div
+              key="page-beranda"
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -6 }}
+              transition={{ duration: 0.2 }}
+            >
+              {/* Hero Banner Carousel */}
+              <Hero
+                onOpenRegistration={handleOpenRegistration}
+                onNavigateTab={handleSelectTab}
+              />
 
-        {/* Quick Portal Access Tiles */}
-        <QuickPortalBar onOpenRegistration={handleOpenRegistration} />
+              {/* Quick Portal Access Bar */}
+              <QuickPortalBar
+                onOpenRegistration={handleOpenRegistration}
+                onNavigateTab={handleSelectTab}
+              />
 
-        {/* Berita Terkini & Pengumuman (Kelola & Post Berita via Admin) */}
-        <NewsSection onOpenAdmin={handleOpenAdmin} />
+              {/* Curated Home Section Previews with Direct Page Launchers */}
+              <HomeHighlights
+                onNavigateTab={handleSelectTab}
+                onOpenRegistration={handleOpenRegistration}
+              />
+            </motion.div>
+          )}
 
-        {/* Prestasi Warga Belajar (Otomatis Tersinkronisasi dari Berita Berlabel Prestasi Warga Belajar) */}
-        <PrestasiSection onOpenAdmin={handleOpenAdmin} />
+          {activeTab === 'berita' && (
+            <motion.div
+              key="page-berita"
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -6 }}
+              transition={{ duration: 0.2 }}
+            >
+              <PageHeaderBanner
+                title="Berita & Pengumuman Resmi"
+                subtitle="Kabar terkini, liputan agenda kegiatan akademik, pengumuman ujian kesetaraan, dan informasi resmi PKBM Bina Insani Sumowono."
+                badge="Berita & Informasi"
+                icon={Newspaper}
+                onBackToHome={() => handleSelectTab('beranda')}
+              />
+              <NewsSection onOpenAdmin={handleOpenAdmin} />
+            </motion.div>
+          )}
 
-        {/* Tentang Kami (Visi, Misi 6 Misi, Tujuan 4 Tujuan, Motto HEBAT - MANDIRI - KREATIF) */}
-        <AboutUs />
+          {activeTab === 'prestasi' && (
+            <motion.div
+              key="page-prestasi"
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -6 }}
+              transition={{ duration: 0.2 }}
+            >
+              <PageHeaderBanner
+                title="Prestasi Warga Belajar"
+                subtitle="Dokumentasi pencapaian, kejuaraan lomba, medali, dan penghargaan membanggakan yang diraih oleh warga belajar PKBM Bina Insani."
+                badge="Prestasi Siswa"
+                icon={Trophy}
+                onBackToHome={() => handleSelectTab('beranda')}
+              />
+              <PrestasiSection onOpenAdmin={handleOpenAdmin} />
+            </motion.div>
+          )}
 
-        {/* Profil Personalia (Pendiri, Pengurus Yayasan, Tutor & Tendik) */}
-        <PersonaliaSection onOpenAdmin={handleOpenAdmin} />
+          {activeTab === 'tentang-kami' && (
+            <motion.div
+              key="page-tentang-kami"
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -6 }}
+              transition={{ duration: 0.2 }}
+            >
+              <PageHeaderBanner
+                title="Profil, Visi, Misi & Landasan Karakter"
+                subtitle="Mengenal lebih dekat visi kelembagaan, 6 misi strategis, 4 tujuan pokok, serta pilar karakter HEBAT • MANDIRI • KREATIF di PKBM Bina Insani Sumowono."
+                badge="Profil Lembaga"
+                icon={Award}
+                onBackToHome={() => handleSelectTab('beranda')}
+              />
+              <AboutUs />
+            </motion.div>
+          )}
 
-        {/* Program Belajar (Paket A, Paket B, Paket C) */}
-        <Programs onOpenRegistration={handleOpenRegistration} />
+          {activeTab === 'personalia' && (
+            <motion.div
+              key="page-personalia"
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -6 }}
+              transition={{ duration: 0.2 }}
+            >
+              <PageHeaderBanner
+                title="Profil Personalia & Dewan Guru"
+                subtitle="Struktur dewan pengurus yayasan, jajaran tutor pendidik bersertifikasi, serta tenaga kependidikan yang mendampingi proses belajar warga binaan."
+                badge="Personalia & Guru"
+                icon={Users}
+                onBackToHome={() => handleSelectTab('beranda')}
+              />
+              <PersonaliaSection onOpenAdmin={handleOpenAdmin} />
+            </motion.div>
+          )}
 
-        {/* Keterampilan Vokasi & Wirausaha */}
-        <VokasiSection />
+          {activeTab === 'program-belajar' && (
+            <motion.div
+              key="page-program-belajar"
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -6 }}
+              transition={{ duration: 0.2 }}
+            >
+              <PageHeaderBanner
+                title="Program Pendidikan Kesetaraan"
+                subtitle="Layanan pendidikan kesetaraan ijazah resmi negara: Paket A (Setara SD), Paket B (Setara SMP), dan Paket C (Setara SMA) dengan jadwal belajar fleksibel."
+                badge="Program Belajar"
+                icon={GraduationCap}
+                onBackToHome={() => handleSelectTab('beranda')}
+                actionButton={{
+                  label: 'Daftar Sekarang (PWBB)',
+                  onClick: () => handleOpenRegistration()
+                }}
+              />
+              <Programs onOpenRegistration={handleOpenRegistration} />
+            </motion.div>
+          )}
 
-        {/* Galeri Kegiatan & Dokumentasi Foto (Kelola foto via Admin) */}
-        <GallerySection onOpenAdmin={handleOpenAdmin} />
+          {activeTab === 'vokasi' && (
+            <motion.div
+              key="page-vokasi"
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -6 }}
+              transition={{ duration: 0.2 }}
+            >
+              <PageHeaderBanner
+                title="Pelatihan Keterampilan Vokasi"
+                subtitle="Kursus keterampilan terapan gratis siap kerja: Komputer & TI, Tata Busana / Menjahit, Tata Boga Olahan Pangan Lokal, serta Kerajinan Tangan Kreatif."
+                badge="Keterampilan & Vokasi"
+                icon={Wrench}
+                onBackToHome={() => handleSelectTab('beranda')}
+                actionButton={{
+                  label: 'Daftar Kursus Vokasi',
+                  onClick: () => handleOpenRegistration('Vokasi')
+                }}
+              />
+              <VokasiSection />
+            </motion.div>
+          )}
 
-        {/* FAQ Section */}
-        <FaqSection />
+          {activeTab === 'galeri' && (
+            <motion.div
+              key="page-galeri"
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -6 }}
+              transition={{ duration: 0.2 }}
+            >
+              <PageHeaderBanner
+                title="Galeri Dokumentasi Foto & Video"
+                subtitle="Koleksi potret dokumentasi visual dan video kegiatan pembelajaran, ujian kesetaraan, workshop vokasi, dan berbagai momen inspiratif."
+                badge="Galeri Dokumentasi"
+                icon={ImageIcon}
+                onBackToHome={() => handleSelectTab('beranda')}
+              />
+              <GallerySection onOpenAdmin={handleOpenAdmin} />
+            </motion.div>
+          )}
 
-        {/* Formulir Kontak & Map Location */}
-        <ContactSection />
+          {activeTab === 'faq' && (
+            <motion.div
+              key="page-faq"
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -6 }}
+              transition={{ duration: 0.2 }}
+            >
+              <PageHeaderBanner
+                title="Pusat Bantuan & Tanya Jawab (FAQ)"
+                subtitle="Informasi lengkap mengenai persyaratan usia, legalitas ijazah kesetaraan, biaya pendidikan SPP gratis, dan prosedur pendaftaran warga belajar."
+                badge="Tanya Jawab (FAQ)"
+                icon={HelpCircle}
+                onBackToHome={() => handleSelectTab('beranda')}
+              />
+              <FaqSection />
+            </motion.div>
+          )}
+
+          {activeTab === 'kontak' && (
+            <motion.div
+              key="page-kontak"
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -6 }}
+              transition={{ duration: 0.2 }}
+            >
+              <PageHeaderBanner
+                title="Kontak & Lokasi Lembaga"
+                subtitle="Alamat kantor sekretariat PKBM Bina Insani Sumowono, peta navigasi Google Maps, jam operasional layanan, dan konsultasi WhatsApp resmi."
+                badge="Kontak & Lokasi"
+                icon={MapPin}
+                onBackToHome={() => handleSelectTab('beranda')}
+              />
+              <ContactSection />
+            </motion.div>
+          )}
+        </AnimatePresence>
       </main>
 
-      {/* Footer */}
-      <Footer onOpenAdmin={handleOpenAdmin} />
+      {/* Site Footer */}
+      <Footer
+        onOpenAdmin={handleOpenAdmin}
+        onSelectTab={handleSelectTab}
+      />
 
       {/* Floating Accessibility & WhatsApp Widget */}
       <FloatingWidget onOpenAdmin={handleOpenAdmin} />

@@ -166,7 +166,13 @@ export const MediaShowcaseView: React.FC<MediaShowcaseViewProps> = ({
           <div className="lg:col-span-8 flex flex-col space-y-4">
             
             {/* Box Media Utama (Hitam / Dark Frame Seperti Pada Gambar Layout) */}
-            <div className="relative w-full aspect-video sm:aspect-[16/10] bg-black rounded-2xl overflow-hidden border border-stone-800 shadow-xl flex items-center justify-center">
+            <div
+              className={`relative w-full ${
+                mediaType === 'person'
+                  ? 'h-80 sm:h-[480px] max-h-[540px]'
+                  : 'aspect-video sm:aspect-[16/10]'
+              } bg-black rounded-2xl overflow-hidden border border-stone-800 shadow-xl flex items-center justify-center`}
+            >
               {currentItem.videoUrl ? (
                 currentItem.platform === 'direct' ? (
                   <video
@@ -187,16 +193,27 @@ export const MediaShowcaseView: React.FC<MediaShowcaseViewProps> = ({
                   />
                 )
               ) : currentItem.image ? (
-                <div className="relative w-full h-full flex items-center justify-center bg-stone-950">
+                <div className="relative w-full h-full flex items-center justify-center bg-stone-950 p-2 sm:p-4 overflow-hidden">
+                  {/* Ambient soft blur glow */}
+                  <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                    <img
+                      src={currentItem.image}
+                      alt=""
+                      aria-hidden="true"
+                      className="w-full h-full object-cover blur-2xl opacity-25 scale-125 pointer-events-none"
+                    />
+                    <div className="absolute inset-0 bg-stone-950/70" />
+                  </div>
+
                   <img
                     key={currentItem.image}
                     src={currentItem.image}
                     alt={currentItem.title}
-                    className="w-full h-full object-cover sm:object-contain"
+                    className="relative z-10 max-h-full max-w-full w-auto h-auto object-contain rounded-xl drop-shadow-2xl"
                   />
                   {currentItem.category && (
-                    <div className="absolute top-4 left-4 z-10">
-                      <span className="px-3 py-1 rounded-xl text-xs font-black bg-black/70 backdrop-blur-md text-amber-300 border border-orange-500/30 shadow-md">
+                    <div className="absolute top-4 left-4 z-20">
+                      <span className="px-3 py-1 rounded-xl text-xs font-black bg-black/75 backdrop-blur-md text-amber-300 border border-orange-500/30 shadow-md">
                         {currentItem.category}
                       </span>
                     </div>
@@ -367,12 +384,18 @@ export const MediaShowcaseView: React.FC<MediaShowcaseViewProps> = ({
                     }`}
                   >
                     {/* Thumbnail Kiri (Kotak Hitam / Thumbnail [GAMBAR/VIDEO LAIN]) */}
-                    <div className="relative w-28 sm:w-32 aspect-[16/11] bg-black rounded-xl overflow-hidden shrink-0 border border-stone-800">
+                    <div
+                      className={`relative w-24 sm:w-28 ${
+                        mediaType === 'person' ? 'aspect-[4/5]' : 'aspect-[16/11]'
+                      } bg-black rounded-xl overflow-hidden shrink-0 border border-stone-800 flex items-center justify-center`}
+                    >
                       {item.image ? (
                         <img
                           src={item.image}
                           alt={item.title}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                          className={`w-full h-full ${
+                            mediaType === 'person' ? 'object-contain p-1' : 'object-cover group-hover:scale-105'
+                          } transition-transform`}
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center bg-stone-900 text-stone-500">

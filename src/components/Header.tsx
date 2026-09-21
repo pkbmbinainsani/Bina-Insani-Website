@@ -35,13 +35,19 @@ import { LogoManagerModal } from './admin/LogoManagerModal';
 interface HeaderProps {
   onOpenRegistration: (programName?: string) => void;
   onOpenAdmin?: () => void;
+  activeTab?: string;
+  onSelectTab?: (tabId: string) => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({ onOpenRegistration, onOpenAdmin }) => {
+export const Header: React.FC<HeaderProps> = ({
+  onOpenRegistration,
+  onOpenAdmin,
+  activeTab = 'beranda',
+  onSelectTab
+}) => {
   const { pkbmInfo, isAdminAuthenticated, heroSlides } = usePKBM();
   const [isScrolled, setIsScrolled] = useState(false);
   const [menuDrawerOpen, setMenuDrawerOpen] = useState(false);
-  const [activeSection, setActiveSection] = useState('beranda');
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isLogoModalOpen, setIsLogoModalOpen] = useState(false);
@@ -49,26 +55,23 @@ export const Header: React.FC<HeaderProps> = ({ onOpenRegistration, onOpenAdmin 
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
-
-      const sections = ['beranda', 'berita', 'prestasi', 'tentang-kami', 'personalia', 'program-belajar', 'vokasi', 'galeri', 'faq', 'kontak'];
-      const scrollPosition = window.scrollY + 175;
-
-      for (const section of sections) {
-        const el = document.getElementById(section);
-        if (el) {
-          const top = el.offsetTop;
-          const height = el.offsetHeight;
-          if (scrollPosition >= top && scrollPosition < top + height) {
-            setActiveSection(section);
-            break;
-          }
-        }
-      }
     };
 
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  const handleNavClick = (e: React.MouseEvent, tabId: string) => {
+    e.preventDefault();
+    if (onSelectTab) {
+      onSelectTab(tabId);
+    } else {
+      const el = document.getElementById(tabId);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  };
 
   const navLinks = [
     { name: 'Beranda Utama', shortName: 'Beranda', href: '#beranda', id: 'beranda', icon: BookOpen, desc: 'Informasi & Pendaftaran PWBB' },
@@ -137,7 +140,8 @@ export const Header: React.FC<HeaderProps> = ({ onOpenRegistration, onOpenAdmin 
                 <div className="relative group/logo min-w-0">
                   <a
                     href="#beranda"
-                    className="bg-gradient-to-br from-amber-50 via-white to-orange-50 p-1.5 sm:p-2.5 md:p-3 rounded-xl sm:rounded-2xl shadow-xl border-2 border-orange-400/80 flex items-center gap-2 sm:gap-3 group-hover:scale-105 transition-all group-hover:shadow-orange-500/20 block min-w-0"
+                    onClick={(e) => handleNavClick(e, 'beranda')}
+                    className="bg-gradient-to-br from-amber-50 via-white to-orange-50 p-1.5 sm:p-2.5 md:p-3 rounded-xl sm:rounded-2xl shadow-xl border-2 border-orange-400/80 flex items-center gap-2 sm:gap-3 group-hover:scale-105 transition-all group-hover:shadow-orange-500/20 block min-w-0 cursor-pointer"
                   >
                     <div className="flex items-center gap-2 sm:gap-3 min-w-0">
                       <div
@@ -266,12 +270,13 @@ export const Header: React.FC<HeaderProps> = ({ onOpenRegistration, onOpenAdmin 
               aria-label="Navigasi Menu Utama PKBM Bina Insani"
             >
               {navLinks.map((link) => {
-                const isActive = activeSection === link.id;
+                const isActive = activeTab === link.id;
                 const Icon = link.icon;
                 return (
                   <a
                     key={link.id}
                     href={link.href}
+                    onClick={(e) => handleNavClick(e, link.id)}
                     className={`px-2.5 lg:px-3.5 py-1.5 rounded-xl text-xs lg:text-[13px] font-black transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer select-none ${
                       isActive
                         ? 'bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 text-white shadow-md shadow-orange-950/40 border border-orange-300/60 scale-[1.02]'
@@ -317,15 +322,23 @@ export const Header: React.FC<HeaderProps> = ({ onOpenRegistration, onOpenAdmin 
               <div className="space-y-2">
                 <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">Pencarian Populer:</p>
                 <div className="flex flex-wrap gap-2">
-                  {['Paket C Setara SMA', 'Vokasi Komputer', 'Syarat Pendaftaran', 'Jadwal Belajar', 'Alamat Lokasi'].map((item) => (
-                    <a
-                      key={item}
-                      href="#program-belajar"
-                      onClick={() => setIsSearchOpen(false)}
-                      className="px-3.5 py-2 rounded-xl bg-orange-100/80 hover:bg-orange-200 text-orange-800 text-xs font-bold transition-all border border-orange-300"
+                  {[
+                    { label: 'Paket C Setara SMA', tabId: 'program-belajar' },
+                    { label: 'Vokasi Komputer', tabId: 'vokasi' },
+                    { label: 'Syarat Pendaftaran', tabId: 'faq' },
+                    { label: 'Jadwal Belajar', tabId: 'program-belajar' },
+                    { label: 'Alamat Lokasi', tabId: 'kontak' },
+                  ].map((item) => (
+                    <button
+                      key={item.label}
+                      onClick={(e) => {
+                        setIsSearchOpen(false);
+                        handleNavClick(e, item.tabId);
+                      }}
+                      className="px-3.5 py-2 rounded-xl bg-orange-100/80 hover:bg-orange-200 text-orange-800 text-xs font-bold transition-all border border-orange-300 cursor-pointer"
                     >
-                      {item}
-                    </a>
+                      {item.label}
+                    </button>
                   ))}
                 </div>
               </div>
@@ -440,12 +453,15 @@ export const Header: React.FC<HeaderProps> = ({ onOpenRegistration, onOpenAdmin 
                 <div className="space-y-1.5">
                   {navLinks.map((link) => {
                     const Icon = link.icon;
-                    const isActive = activeSection === link.id;
+                    const isActive = activeTab === link.id;
                     return (
                       <a
                         key={link.name}
                         href={link.href}
-                        onClick={() => setMenuDrawerOpen(false)}
+                        onClick={(e) => {
+                          setMenuDrawerOpen(false);
+                          handleNavClick(e, link.id);
+                        }}
                         className={`p-3 rounded-2xl flex items-center justify-between transition-all group ${
                           isActive
                             ? 'bg-gradient-to-r from-orange-600 to-amber-600 border-2 border-amber-300 shadow-md text-white'
@@ -528,8 +544,9 @@ export const Header: React.FC<HeaderProps> = ({ onOpenRegistration, onOpenAdmin 
           {/* 1. Beranda */}
           <a
             href="#beranda"
-            className={`min-h-[44px] flex flex-col items-center justify-center py-1 rounded-xl text-[10px] font-bold transition-all ${
-              activeSection === 'beranda'
+            onClick={(e) => handleNavClick(e, 'beranda')}
+            className={`min-h-[44px] flex flex-col items-center justify-center py-1 rounded-xl text-[10px] font-bold transition-all cursor-pointer ${
+              activeTab === 'beranda'
                 ? 'text-amber-300 bg-orange-950/70 border border-orange-500/40'
                 : 'text-stone-400 hover:text-stone-200'
             }`}

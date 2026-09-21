@@ -4,14 +4,28 @@ import { usePKBM } from '../context/PKBMContext';
 
 interface FooterProps {
   onOpenAdmin?: () => void;
+  onSelectTab?: (tabId: string) => void;
 }
 
-export const Footer: React.FC<FooterProps> = ({ onOpenAdmin }) => {
+export const Footer: React.FC<FooterProps> = ({ onOpenAdmin, onSelectTab }) => {
   const { pkbmInfo, isAdminAuthenticated, supabaseStatus } = usePKBM();
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
+
+  const quickNav = [
+    { label: 'Beranda Utama', id: 'beranda' },
+    { label: 'Berita & Pengumuman', id: 'berita' },
+    { label: 'Prestasi Warga Belajar', id: 'prestasi' },
+    { label: 'Tentang Kami (Profil & Visi Misi)', id: 'tentang-kami' },
+    { label: 'Profil Personalia (Pendiri & Guru)', id: 'personalia' },
+    { label: 'Program Belajar Paket A, B, C', id: 'program-belajar' },
+    { label: 'Keterampilan Vokasi & Wirausaha', id: 'vokasi' },
+    { label: 'Galeri Dokumentasi Foto & Video', id: 'galeri' },
+    { label: 'Pertanyaan Umum (FAQ)', id: 'faq' },
+    { label: 'Formulir Kontak & Lokasi', id: 'kontak' },
+  ];
 
   return (
     <footer className="bg-[#090807] text-stone-300 pt-16 pb-8 border-t border-stone-800 relative">
@@ -74,54 +88,26 @@ export const Footer: React.FC<FooterProps> = ({ onOpenAdmin }) => {
           {/* Col 2: Navigation Links */}
           <div className="lg:col-span-3 space-y-3">
             <p className="font-extrabold text-white text-sm uppercase tracking-wider">
-              Navigasi Cepat
+              Navigasi Halaman
             </p>
             <ul className="space-y-2 text-xs text-stone-400">
-              <li>
-                <a href="#beranda" className="hover:text-orange-400 transition-colors">
-                  Beranda Utama
-                </a>
-              </li>
-              <li>
-                <a href="#tentang-kami" className="hover:text-orange-400 transition-colors">
-                  Tentang Kami (Visi & Misi)
-                </a>
-              </li>
-              <li>
-                <a href="#personalia" className="hover:text-amber-300 font-medium text-orange-300 transition-colors">
-                  Profil Personalia (Pendiri, Guru & Tendik)
-                </a>
-              </li>
-              <li>
-                <a href="#program-belajar" className="hover:text-orange-400 transition-colors">
-                  Program Belajar Paket A, B, C
-                </a>
-              </li>
-              <li>
-                <a href="#vokasi" className="hover:text-orange-400 transition-colors">
-                  Keterampilan Vokasi & Wirausaha
-                </a>
-              </li>
-              <li>
-                <a href="#galeri" className="hover:text-orange-400 transition-colors">
-                  Galeri Dokumentasi Foto
-                </a>
-              </li>
-              <li>
-                <a href="#berita" className="hover:text-orange-400 transition-colors">
-                  Berita & Pengumuman Terkini
-                </a>
-              </li>
-              <li>
-                <a href="#faq" className="hover:text-orange-400 transition-colors">
-                  Pertanyaan Umum (FAQ)
-                </a>
-              </li>
-              <li>
-                <a href="#kontak" className="hover:text-orange-400 transition-colors">
-                  Formulir Kontak & Lokasi
-                </a>
-              </li>
+              {quickNav.map((item) => (
+                <li key={item.id}>
+                  <button
+                    onClick={() => {
+                      if (onSelectTab) {
+                        onSelectTab(item.id);
+                      } else {
+                        document.getElementById(item.id)?.scrollIntoView({ behavior: 'smooth' });
+                      }
+                    }}
+                    className="hover:text-amber-300 transition-colors text-left cursor-pointer flex items-center gap-1.5 group"
+                  >
+                    <span className="text-orange-500 opacity-0 group-hover:opacity-100 transition-opacity">›</span>
+                    <span>{item.label}</span>
+                  </button>
+                </li>
+              ))}
             </ul>
           </div>
 

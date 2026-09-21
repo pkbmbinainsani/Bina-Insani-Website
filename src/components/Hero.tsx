@@ -17,9 +17,10 @@ import { usePKBM } from '../context/PKBMContext';
 
 interface HeroProps {
   onOpenRegistration: (programName?: string) => void;
+  onNavigateTab?: (tabId: string) => void;
 }
 
-export const Hero: React.FC<HeroProps> = ({ onOpenRegistration }) => {
+export const Hero: React.FC<HeroProps> = ({ onOpenRegistration, onNavigateTab }) => {
   const {
     pkbmInfo,
     stats,
@@ -238,20 +239,20 @@ export const Hero: React.FC<HeroProps> = ({ onOpenRegistration }) => {
                   </button>
 
                   <div className="grid grid-cols-2 sm:flex sm:items-center gap-2 sm:gap-3">
-                    <a
-                      href="#program-belajar"
-                      className="px-3 sm:px-5 py-2.5 sm:py-3.5 rounded-xl sm:rounded-2xl bg-gradient-to-r from-stone-900 to-[#1f1510] hover:from-stone-800 hover:to-[#2e1d15] text-orange-200 font-bold text-xs sm:text-sm border border-orange-400/40 transition-all flex items-center justify-center gap-1.5 shadow-sm text-center"
+                    <button
+                      onClick={() => onNavigateTab ? onNavigateTab('program-belajar') : undefined}
+                      className="px-3 sm:px-5 py-2.5 sm:py-3.5 rounded-xl sm:rounded-2xl bg-gradient-to-r from-stone-900 to-[#1f1510] hover:from-stone-800 hover:to-[#2e1d15] text-orange-200 font-bold text-xs sm:text-sm border border-orange-400/40 transition-all flex items-center justify-center gap-1.5 shadow-sm text-center cursor-pointer"
                     >
                       <BookOpen className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-300" />
                       <span>Kurikulum</span>
-                    </a>
+                    </button>
 
-                    <a
-                      href="#tentang-kami"
-                      className="px-3 sm:px-4 py-2.5 sm:py-3.5 rounded-xl sm:rounded-2xl bg-stone-950/70 hover:bg-stone-900 text-stone-300 hover:text-white font-semibold text-xs sm:text-sm border border-stone-700 transition-all text-center flex items-center justify-center"
+                    <button
+                      onClick={() => onNavigateTab ? onNavigateTab('tentang-kami') : undefined}
+                      className="px-3 sm:px-4 py-2.5 sm:py-3.5 rounded-xl sm:rounded-2xl bg-stone-950/70 hover:bg-stone-900 text-stone-300 hover:text-white font-semibold text-xs sm:text-sm border border-stone-700 transition-all text-center flex items-center justify-center cursor-pointer"
                     >
                       Profil
-                    </a>
+                    </button>
                   </div>
                 </div>
 
