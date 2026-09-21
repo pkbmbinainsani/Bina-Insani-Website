@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
-import { motion } from 'motion/react';
-import { Newspaper, Calendar, Clock, User, ArrowRight, Search, X, Share2, Tag, BookOpen, PlusCircle, ShieldCheck, Sparkles, ChevronRight } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
+import { Newspaper, Calendar, Clock, User, ArrowRight, Search, X, Share2, Tag, BookOpen, PlusCircle, ShieldCheck, Sparkles, ChevronDown, ChevronUp, Check } from 'lucide-react';
 import { usePKBM } from '../context/PKBMContext';
 import { NewsItem } from '../types';
 import { sortNewsByDateDesc } from '../utils/dateHelper';
@@ -11,9 +11,33 @@ interface NewsSectionProps {
 
 export const NewsSection: React.FC<NewsSectionProps> = ({ onOpenAdmin }) => {
   const { news, isAdminAuthenticated } = usePKBM();
-  const [selectedArticle, setSelectedArticle] = useState<NewsItem | null>(null);
+  const [expandedArticles, setExpandedArticles] = useState<Record<string, boolean>>({});
+  const [copiedId, setCopiedId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('Semua');
+
+  // Toggle expand in place
+  const toggleArticleExpand = (articleId: string) => {
+    setExpandedArticles((prev) => ({
+      ...prev,
+      [articleId]: !prev[articleId],
+    }));
+  };
+
+  const handleShareArticle = (article: NewsItem) => {
+    const url = `${window.location.origin}${window.location.pathname}#berita`;
+    if (navigator.share) {
+      navigator.share({
+        title: article.title,
+        text: article.summary,
+        url,
+      }).catch(() => {});
+    } else {
+      navigator.clipboard.writeText(`${article.title}\n\n${article.summary}\n${url}`);
+      setCopiedId(article.id);
+      setTimeout(() => setCopiedId(null), 2500);
+    }
+  };
 
   // Urutkan berita berdasarkan tanggal terbit terbaru di atas
   const sortedNews = useMemo(() => sortNewsByDateDesc(news), [news]);
@@ -34,12 +58,6 @@ export const NewsSection: React.FC<NewsSectionProps> = ({ onOpenAdmin }) => {
   // Separate the single latest news item and the previous news items
   const latestArticle = filteredNews.length > 0 ? filteredNews[0] : null;
   const previousNews = filteredNews.length > 1 ? filteredNews.slice(1) : [];
-
-  // Check if an article is long and doesn't fit entirely in the preview
-  const isArticleLong = (article: NewsItem) => {
-    const wordCount = (article.summary + ' ' + (article.content ? article.content.join(' ') : '')).split(/\s+/).length;
-    return wordCount > 45 || (article.content && article.content.length > 1) || article.summary.length > 200;
-  };
 
   return (
     <section id="berita" className="py-20 bg-slate-50 relative">
@@ -112,20 +130,23 @@ export const NewsSection: React.FC<NewsSectionProps> = ({ onOpenAdmin }) => {
           </div>
         </div>
 
-        {/* 1. Satu Berita Terbaru Dibuat Lebar agar Langsung Mudah Dibaca */}
+        {/* 1. Satu Berita Terbaru: Membentang Ke Bawah Saat Diklik Baca Selengkapnya */}
         {latestArticle && (
           <motion.article
+            layout
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="mb-14 bg-white rounded-3xl border border-stone-200 shadow-sm hover:shadow-xl hover:border-orange-300 transition-all duration-300 overflow-hidden group"
+            transition={{ duration: 0.4 }}
+            className={`mb-14 bg-white rounded-3xl border transition-all duration-300 overflow-hidden shadow-sm hover:shadow-xl ${
+              expandedArticles[latestArticle.id] ? 'border-orange-400 ring-2 ring-orange-400/20' : 'border-stone-200 hover:border-orange-300'
+            }`}
           >
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-0">
               {/* Kolom Gambar Berita Terbaru */}
               <div
-                onClick={() => setSelectedArticle(latestArticle)}
-                className="lg:col-span-5 relative h-64 sm:h-80 lg:h-full min-h-[260px] lg:min-h-[400px] overflow-hidden bg-stone-100 cursor-pointer"
+                onClick={() => toggleArticleExpand(latestArticle.id)}
+                className="lg:col-span-5 relative h-64 sm:h-80 lg:h-full min-h-[260px] lg:min-h-[380px] overflow-hidden bg-stone-100 cursor-pointer group"
               >
                 <img
                   src={latestArticle.image}
@@ -167,64 +188,107 @@ export const NewsSection: React.FC<NewsSectionProps> = ({ onOpenAdmin }) => {
                     </span>
                   </div>
 
-                  {/* Judul Berita yang Jelas dan Mudah Dibaca */}
+                  {/* Judul Berita */}
                   <h3
-                    onClick={() => setSelectedArticle(latestArticle)}
-                    className="text-xl sm:text-2xl lg:text-3xl font-black text-slate-900 group-hover:text-orange-600 transition-colors leading-snug cursor-pointer"
+                    onClick={() => toggleArticleExpand(latestArticle.id)}
+                    className="text-xl sm:text-2xl lg:text-3xl font-black text-slate-900 hover:text-orange-600 transition-colors leading-snug cursor-pointer"
                   >
                     {latestArticle.title}
                   </h3>
 
-                  {/* Isi Berita Langsung Terbaca di Layar */}
+                  {/* Isi Ringkasan Berita */}
                   <div className="space-y-3 text-stone-700">
                     <p className="text-sm sm:text-base leading-relaxed font-medium text-slate-800">
                       {latestArticle.summary}
                     </p>
 
-                    {/* Paragraf pertama jika tersedia untuk memperjelas konteks berita */}
-                    {latestArticle.content && latestArticle.content.length > 0 && latestArticle.content[0] !== latestArticle.summary && (
-                      <p className="text-xs sm:text-sm text-stone-600 leading-relaxed line-clamp-3">
+                    {/* Preview paragraf jika belum dibentangkan */}
+                    {!expandedArticles[latestArticle.id] && latestArticle.content && latestArticle.content.length > 0 && latestArticle.content[0] !== latestArticle.summary && (
+                      <p className="text-xs sm:text-sm text-stone-600 leading-relaxed line-clamp-2">
                         {latestArticle.content[0]}
                       </p>
                     )}
                   </div>
+
+                  {/* Pembentangan Teks Berita Secara Luas Ke Bawah (Inline Expansion) */}
+                  <AnimatePresence>
+                    {expandedArticles[latestArticle.id] && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.35, ease: 'easeInOut' }}
+                        className="pt-4 border-t border-stone-200 space-y-4 overflow-hidden"
+                      >
+                        <div className="space-y-3.5 text-stone-800 text-sm sm:text-base leading-relaxed">
+                          {latestArticle.content && latestArticle.content.length > 0 ? (
+                            latestArticle.content.map((paragraph, pIdx) => (
+                              <p key={pIdx} className="leading-relaxed text-stone-700 font-normal">
+                                {paragraph}
+                              </p>
+                            ))
+                          ) : (
+                            <p className="text-stone-700">{latestArticle.summary}</p>
+                          )}
+                        </div>
+
+                        {/* Dokumentasi / Footer Metadata Tambahan */}
+                        {latestArticle.tags && latestArticle.tags.length > 0 && (
+                          <div className="flex flex-wrap items-center gap-2 pt-2">
+                            <Tag className="w-3.5 h-3.5 text-orange-500" />
+                            {latestArticle.tags.map((tag, tIdx) => (
+                              <span key={tIdx} className="px-2.5 py-1 bg-stone-100 text-stone-600 rounded-lg text-xs font-semibold">
+                                #{tag}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
 
-                {/* Bagian Bawah: Teks / Tombol "baca selengkapnya" jika berita panjang / ada isi lengkap */}
-                {isArticleLong(latestArticle) ? (
-                  <div className="pt-4 border-t border-stone-100 flex flex-wrap items-center justify-between gap-3">
-                    <button
-                      onClick={() => setSelectedArticle(latestArticle)}
-                      className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-bold text-xs sm:text-sm shadow-md shadow-orange-950/20 transition-all cursor-pointer group/btn"
-                    >
-                      <span>baca selengkapnya</span>
-                      <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
-                    </button>
+                {/* Bagian Tombol Aksi Pembentang Berita (Tanpa Popup) */}
+                <div className="pt-4 border-t border-stone-100 flex flex-wrap items-center justify-between gap-3">
+                  <button
+                    onClick={() => toggleArticleExpand(latestArticle.id)}
+                    className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition-all cursor-pointer shadow-sm ${
+                      expandedArticles[latestArticle.id]
+                        ? 'bg-stone-900 text-white hover:bg-stone-800'
+                        : 'bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white shadow-orange-950/20'
+                    }`}
+                  >
+                    <span>{expandedArticles[latestArticle.id] ? 'Tutup / Perkecil Berita' : 'baca selengkapnya'}</span>
+                    {expandedArticles[latestArticle.id] ? (
+                      <ChevronUp className="w-4 h-4" />
+                    ) : (
+                      <ChevronDown className="w-4 h-4" />
+                    )}
+                  </button>
 
-                    <button
-                      onClick={() => setSelectedArticle(latestArticle)}
-                      className="text-xs text-stone-500 hover:text-orange-600 font-medium transition-colors cursor-pointer"
-                    >
-                      Buka artikel lengkap & dokumentasi foto →
-                    </button>
-                  </div>
-                ) : (
-                  <div className="pt-4 border-t border-stone-100 flex items-center justify-between">
-                    <button
-                      onClick={() => setSelectedArticle(latestArticle)}
-                      className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-orange-600 hover:text-orange-700 transition-colors cursor-pointer"
-                    >
-                      <span>baca selengkapnya</span>
-                      <ArrowRight className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-                )}
+                  <button
+                    onClick={() => handleShareArticle(latestArticle)}
+                    className="inline-flex items-center gap-1.5 text-xs text-stone-500 hover:text-orange-600 font-medium transition-colors cursor-pointer"
+                  >
+                    {copiedId === latestArticle.id ? (
+                      <>
+                        <Check className="w-3.5 h-3.5 text-emerald-600" />
+                        <span className="text-emerald-600 font-bold">Tautan Disalin!</span>
+                      </>
+                    ) : (
+                      <>
+                        <Share2 className="w-3.5 h-3.5" />
+                        <span>Bagikan Berita</span>
+                      </>
+                    )}
+                  </button>
+                </div>
               </div>
             </div>
           </motion.article>
         )}
 
-        {/* 2. Berita-Berita Terdahulu Tampak Sebagaimana Tampilan Berita Saat Ini */}
+        {/* 2. Berita-Berita Terdahulu: Teks Juga Membentang Luas Ke Bawah Saat Diklik */}
         {previousNews.length > 0 && (
           <div className="space-y-6">
             <div className="flex items-center justify-between border-b border-stone-200 pb-4">
@@ -239,68 +303,125 @@ export const NewsSection: React.FC<NewsSectionProps> = ({ onOpenAdmin }) => {
               </span>
             </div>
 
-            {/* Grid 3 Kolom Berita Terdahulu */}
-            <div className="grid md:grid-cols-3 gap-8">
-              {previousNews.map((article, idx) => (
-                <motion.article
-                  key={article.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: idx * 0.1 }}
-                  className="bg-white rounded-3xl border border-stone-200 shadow-sm hover:shadow-xl hover:border-orange-300 transition-all duration-300 overflow-hidden flex flex-col justify-between group"
-                >
-                  <div>
-                    {/* Image Container */}
-                    <div className="relative h-48 overflow-hidden">
-                      <img
-                        src={article.image}
-                        alt={article.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                      />
-                      <div className="absolute top-3 left-3">
-                        <span className="px-2.5 py-1 rounded-lg text-[10px] font-extrabold bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-sm">
-                          {article.category}
-                        </span>
+            {/* Grid Berita Terdahulu */}
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 items-start">
+              {previousNews.map((article, idx) => {
+                const isExpanded = !!expandedArticles[article.id];
+
+                return (
+                  <motion.article
+                    key={article.id}
+                    layout
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.4, delay: idx * 0.08 }}
+                    className={`bg-white rounded-3xl border transition-all duration-300 overflow-hidden flex flex-col justify-between shadow-sm hover:shadow-xl ${
+                      isExpanded ? 'border-orange-400 ring-2 ring-orange-400/20' : 'border-stone-200 hover:border-orange-300'
+                    }`}
+                  >
+                    <div>
+                      {/* Image Container */}
+                      <div
+                        onClick={() => toggleArticleExpand(article.id)}
+                        className="relative h-48 overflow-hidden cursor-pointer group"
+                      >
+                        <img
+                          src={article.image}
+                          alt={article.title}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
+                        <div className="absolute top-3 left-3">
+                          <span className="px-2.5 py-1 rounded-lg text-[10px] font-extrabold bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-sm">
+                            {article.category}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Article Meta & Content */}
+                      <div className="p-6 space-y-3">
+                        <div className="flex items-center gap-3 text-stone-500 text-xs">
+                          <span className="flex items-center gap-1">
+                            <Calendar className="w-3.5 h-3.5 text-orange-600" />
+                            {article.date}
+                          </span>
+                          <span>•</span>
+                          <span className="flex items-center gap-1">
+                            <Clock className="w-3.5 h-3.5 text-orange-600" />
+                            {article.readTime}
+                          </span>
+                        </div>
+
+                        <h3
+                          onClick={() => toggleArticleExpand(article.id)}
+                          className={`font-extrabold text-slate-900 text-base sm:text-lg hover:text-orange-600 transition-colors leading-snug cursor-pointer ${
+                            isExpanded ? '' : 'line-clamp-2'
+                          }`}
+                        >
+                          {article.title}
+                        </h3>
+
+                        <p className={`text-stone-600 text-xs sm:text-sm leading-relaxed ${isExpanded ? '' : 'line-clamp-3'}`}>
+                          {article.summary}
+                        </p>
+
+                        {/* Paragraf Lengkap Saat Dibentangkan */}
+                        <AnimatePresence>
+                          {isExpanded && article.content && article.content.length > 0 && (
+                            <motion.div
+                              initial={{ opacity: 0, height: 0 }}
+                              animate={{ opacity: 1, height: 'auto' }}
+                              exit={{ opacity: 0, height: 0 }}
+                              transition={{ duration: 0.35, ease: 'easeInOut' }}
+                              className="pt-3 mt-3 border-t border-stone-100 space-y-2.5 text-stone-700 text-xs sm:text-sm leading-relaxed"
+                            >
+                              {article.content.map((p, pIdx) => (
+                                <p key={pIdx} className="leading-relaxed">
+                                  {p}
+                                </p>
+                              ))}
+
+                              {/* Author meta */}
+                              <div className="pt-2 flex items-center justify-between text-[11px] text-stone-500 border-t border-stone-100">
+                                <span>Penulis: <strong>{article.author}</strong></span>
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleShareArticle(article);
+                                  }}
+                                  className="text-orange-600 hover:underline flex items-center gap-1 cursor-pointer font-bold"
+                                >
+                                  <Share2 className="w-3 h-3" />
+                                  <span>Bagikan</span>
+                                </button>
+                              </div>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
                       </div>
                     </div>
 
-                    {/* Article Meta & Content */}
-                    <div className="p-6 space-y-3">
-                      <div className="flex items-center gap-3 text-stone-500 text-xs">
-                        <span className="flex items-center gap-1">
-                          <Calendar className="w-3.5 h-3.5 text-orange-600" />
-                          {article.date}
-                        </span>
-                        <span>•</span>
-                        <span className="flex items-center gap-1">
-                          <Clock className="w-3.5 h-3.5 text-orange-600" />
-                          {article.readTime}
-                        </span>
-                      </div>
-
-                      <h3 className="font-extrabold text-slate-900 text-base sm:text-lg group-hover:text-orange-600 transition-colors line-clamp-2 leading-snug">
-                        {article.title}
-                      </h3>
-
-                      <p className="text-stone-600 text-xs line-clamp-3 leading-relaxed">
-                        {article.summary}
-                      </p>
+                    {/* Card Footer Toggle Button (Membentang Tanpa Popup) */}
+                    <div className="px-6 pb-6 pt-2">
+                      <button
+                        onClick={() => toggleArticleExpand(article.id)}
+                        className={`w-full py-2.5 px-4 rounded-xl font-bold text-xs border transition-all flex items-center justify-center gap-2 cursor-pointer shadow-sm ${
+                          isExpanded
+                            ? 'bg-stone-900 text-white border-stone-900 hover:bg-stone-800'
+                            : 'bg-stone-50 hover:bg-orange-50 text-stone-700 hover:text-orange-700 border-stone-200 hover:border-orange-200'
+                        }`}
+                      >
+                        <span>{isExpanded ? 'Tutup / Perkecil Berita' : 'baca selengkapnya'}</span>
+                        {isExpanded ? (
+                          <ChevronUp className="w-3.5 h-3.5" />
+                        ) : (
+                          <ChevronDown className="w-3.5 h-3.5" />
+                        )}
+                      </button>
                     </div>
-                  </div>
-
-                  {/* Card Footer Read Button */}
-                  <div className="px-6 pb-6 pt-2">
-                    <button
-                      onClick={() => setSelectedArticle(article)}
-                      className="w-full py-2.5 px-4 rounded-xl bg-stone-50 hover:bg-orange-50 text-stone-700 hover:text-orange-700 font-bold text-xs border border-stone-200 hover:border-orange-200 transition-all flex items-center justify-center gap-2 cursor-pointer"
-                    >
-                      <span>baca selengkapnya</span>
-                      <ArrowRight className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-                </motion.article>
-              ))}
+                  </motion.article>
+                );
+              })}
             </div>
           </div>
         )}
@@ -322,94 +443,6 @@ export const NewsSection: React.FC<NewsSectionProps> = ({ onOpenAdmin }) => {
         )}
 
       </div>
-
-      {/* Full Article Modal Reader */}
-      {selectedArticle && (
-        <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
-            className="bg-white rounded-3xl max-w-3xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-stone-200 relative p-6 sm:p-10"
-          >
-            <button
-              onClick={() => setSelectedArticle(null)}
-              className="absolute top-5 right-5 p-2 rounded-full bg-stone-100 hover:bg-stone-200 text-stone-600 transition-colors cursor-pointer"
-            >
-              <X className="w-5 h-5" />
-            </button>
-
-            <div className="space-y-6">
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-xs">
-                  <span className="px-2.5 py-0.5 rounded-md bg-orange-100 text-orange-900 font-bold">
-                    {selectedArticle.category}
-                  </span>
-                  <span className="text-stone-400">•</span>
-                  <span className="text-stone-500 font-medium">{selectedArticle.date}</span>
-                </div>
-
-                <h2 className="text-2xl sm:text-3xl font-black text-slate-900 leading-tight">
-                  {selectedArticle.title}
-                </h2>
-
-                <div className="flex items-center gap-2 text-xs text-stone-500 pt-1">
-                  <User className="w-3.5 h-3.5 text-orange-600" />
-                  <span>Penulis: {selectedArticle.author}</span>
-                  <span>•</span>
-                  <span>Estimasi baca: {selectedArticle.readTime}</span>
-                </div>
-              </div>
-
-              {/* Main Image */}
-              <div className="rounded-2xl overflow-hidden h-64 sm:h-80 border border-stone-200">
-                <img
-                  src={selectedArticle.image}
-                  alt={selectedArticle.title}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-
-              {/* Full Paragraphs */}
-              <div className="space-y-4 text-stone-700 text-sm sm:text-base leading-relaxed">
-                {selectedArticle.content.map((paragraph, pIdx) => (
-                  <p key={pIdx}>{paragraph}</p>
-                ))}
-              </div>
-
-              {/* Share and Close */}
-              <div className="pt-6 border-t border-stone-200 flex items-center justify-between">
-                <button
-                  onClick={() => {
-                    if (navigator.share) {
-                      navigator.share({
-                        title: selectedArticle.title,
-                        text: selectedArticle.summary,
-                        url: window.location.href,
-                      }).catch(() => {});
-                    } else {
-                      navigator.clipboard.writeText(window.location.href);
-                      alert('Tautan berita berhasil disalin!');
-                    }
-                  }}
-                  className="px-4 py-2 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-bold flex items-center gap-2 transition-colors cursor-pointer"
-                >
-                  <Share2 className="w-3.5 h-3.5" />
-                  Bagikan Berita
-                </button>
-
-                <button
-                  onClick={() => setSelectedArticle(null)}
-                  className="px-5 py-2 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-400 hover:to-amber-400 text-white text-xs font-bold shadow-md shadow-orange-950/20 transition-colors cursor-pointer"
-                >
-                  Tutup Berita
-                </button>
-              </div>
-            </div>
-          </motion.div>
-        </div>
-      )}
-
     </section>
   );
 };

@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import { usePKBM } from '../context/PKBMContext';
 import { PersonaliaCategory, PersonaliaMember } from '../types';
+import { MediaShowcaseView, ShowcaseItem } from './MediaShowcaseView';
 
 interface PersonaliaSectionProps {
   onOpenAdmin?: () => void;
@@ -116,6 +117,28 @@ export const PersonaliaSection: React.FC<PersonaliaSectionProps> = ({ onOpenAdmi
       return matchCategory && matchSearch;
     });
   }, [personalia, selectedCategory, searchQuery]);
+
+  // Transform personalia members to 2-column showcase layout
+  const personaliaShowcaseItems: ShowcaseItem[] = filteredMembers.map((member) => {
+    const catConfig = CATEGORY_CONFIG[member.category] || CATEGORY_CONFIG.pendidik;
+    return {
+      id: member.id,
+      title: member.name,
+      subtitle: `${member.role} • ${catConfig.label}`,
+      description:
+        member.bio ||
+        `${member.name} mendedikasikan keahlian dan pengalamannya sebagai ${member.role} di ${pkbmInfo.name || 'PKBM Bina Insani Sumowono'} guna mendukung kemandirian dan kesetaraan pendidikan warga belajar.`,
+      image: member.photo,
+      category: catConfig.label,
+      badge: catConfig.shortLabel,
+      education: member.education,
+      specialization: member.specialization,
+      email: member.email,
+      nuptkOrNip: member.nuptkOrNip,
+      actionUrl: `https://wa.me/${pkbmInfo.whatsappNumber}?text=Halo%20PKBM%20Bina%20Insani,%20saya%20ingin%20berkonsultasi%20dengan%20${encodeURIComponent(member.name)}%20(${encodeURIComponent(member.role)})`,
+      actionLabel: `Hubungi / Konsultasi dengan ${member.name.split(',')[0]}`
+    };
+  });
 
   return (
     <section
@@ -291,6 +314,24 @@ export const PersonaliaSection: React.FC<PersonaliaSectionProps> = ({ onOpenAdmi
           </div>
         )}
 
+        {/* Tampilan Fokus Split 2 Kolom Sesuai Gambar Layout */}
+        {activeModalMember && (
+          <div className="mb-12">
+            <MediaShowcaseView
+              items={personaliaShowcaseItems}
+              activeId={activeModalMember.id}
+              onSelect={(item) => {
+                const found = personalia.find((p) => p.id === item.id);
+                if (found) setActiveModalMember(found);
+              }}
+              onClose={() => setActiveModalMember(null)}
+              sectionTitle="Profil Personalia & Tim Pengelola"
+              mediaType="person"
+              theme="dark"
+            />
+          </div>
+        )}
+
         {/* Personalia Grid */}
         {filteredMembers.length === 0 ? (
           <div className="text-center py-16 bg-stone-900/60 rounded-3xl border border-stone-800 p-8 space-y-4 max-w-xl mx-auto">
@@ -328,7 +369,12 @@ export const PersonaliaSection: React.FC<PersonaliaSectionProps> = ({ onOpenAdmi
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.4, delay: (idx % 4) * 0.1 }}
-                  className="rounded-3xl bg-gradient-to-b from-stone-900 via-[#1c1917] to-stone-950 border border-orange-400/30 hover:border-orange-400 shadow-xl hover:shadow-orange-400/10 transition-all flex flex-col justify-between overflow-hidden group backdrop-blur-md"
+                  onClick={() => setActiveModalMember(member)}
+                  className={`rounded-3xl bg-gradient-to-b from-stone-900 via-[#1c1917] to-stone-950 border shadow-xl transition-all flex flex-col justify-between overflow-hidden group backdrop-blur-md cursor-pointer ${
+                    activeModalMember?.id === member.id
+                      ? 'border-amber-400 ring-2 ring-amber-400/50 shadow-amber-500/20'
+                      : 'border-orange-400/30 hover:border-orange-400 hover:shadow-orange-400/10'
+                  }`}
                 >
                   {/* Card Top: Photo and Badge */}
                   <div>
@@ -444,140 +490,6 @@ export const PersonaliaSection: React.FC<PersonaliaSectionProps> = ({ onOpenAdmi
           </a>
         </div>
       </div>
-
-      {/* MODAL: DETAIL PERSON DETAIL VIEW */}
-      <AnimatePresence>
-        {activeModalMember && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-gradient-to-b from-stone-900 to-stone-950 text-white max-w-xl w-full rounded-3xl border-2 border-orange-400/60 shadow-2xl overflow-hidden relative max-h-[90vh] flex flex-col"
-            >
-              {/* Modal Close Button */}
-              <button
-                onClick={() => setActiveModalMember(null)}
-                className="absolute top-4 right-4 z-20 w-9 h-9 rounded-full bg-stone-950/80 text-amber-300 hover:text-white border border-orange-400/40 flex items-center justify-center cursor-pointer transition-all"
-              >
-                <X className="w-5 h-5" />
-              </button>
-
-              {/* Modal Scroll Content */}
-              <div className="overflow-y-auto p-6 sm:p-8 space-y-6">
-                <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 text-center sm:text-left">
-                  <div className="relative w-32 h-32 sm:w-36 sm:h-36 rounded-2xl overflow-hidden border-2 border-orange-400 shadow-xl shrink-0 bg-stone-950">
-                    <img
-                      src={activeModalMember.photo}
-                      alt={activeModalMember.name}
-                      className="w-full h-full object-cover object-top"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <span
-                      className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-black uppercase tracking-wider border ${
-                        CATEGORY_CONFIG[activeModalMember.category].badgeBg
-                      } ${CATEGORY_CONFIG[activeModalMember.category].badgeText} ${
-                        CATEGORY_CONFIG[activeModalMember.category].badgeBorder
-                      }`}
-                    >
-                      {CATEGORY_CONFIG[activeModalMember.category].label}
-                    </span>
-
-                    <h3 className="text-2xl font-black text-white leading-tight">
-                      {activeModalMember.name}
-                    </h3>
-                    <p className="text-sm font-bold text-amber-300">
-                      {activeModalMember.role}
-                    </p>
-
-                    {activeModalMember.nuptkOrNip && (
-                      <p className="text-xs font-mono text-amber-300 bg-stone-950/80 px-2.5 py-1 rounded-lg border border-orange-500/30 inline-block">
-                        NUPTK/NIP: {activeModalMember.nuptkOrNip}
-                      </p>
-                    )}
-                  </div>
-                </div>
-
-                {/* Key Attributes List */}
-                <div className="p-4 rounded-2xl bg-stone-950/70 border border-stone-800 space-y-3 text-xs">
-                  {activeModalMember.education && (
-                    <div className="flex items-start gap-3">
-                      <GraduationCap className="w-4 h-4 text-orange-400 shrink-0 mt-0.5" />
-                      <div>
-                        <span className="font-bold text-stone-400 block">Pendidikan Terakhir:</span>
-                        <span className="text-stone-200 font-semibold">{activeModalMember.education}</span>
-                      </div>
-                    </div>
-                  )}
-
-                  {activeModalMember.specialization && (
-                    <div className="flex items-start gap-3">
-                      <BookOpen className="w-4 h-4 text-orange-400 shrink-0 mt-0.5" />
-                      <div>
-                        <span className="font-bold text-stone-400 block">Bidang Keahlian / Mata Pelajaran:</span>
-                        <span className="text-stone-200 font-semibold">{activeModalMember.specialization}</span>
-                      </div>
-                    </div>
-                  )}
-
-                  {activeModalMember.email && (
-                    <div className="flex items-start gap-3">
-                      <Mail className="w-4 h-4 text-orange-400 shrink-0 mt-0.5" />
-                      <div>
-                        <span className="font-bold text-stone-400 block">Kontak Email:</span>
-                        <a
-                          href={`mailto:${activeModalMember.email}`}
-                          className="text-amber-300 hover:underline font-semibold"
-                        >
-                          {activeModalMember.email}
-                        </a>
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* Full Bio */}
-                {activeModalMember.bio && (
-                  <div className="space-y-2">
-                    <h4 className="text-xs font-black uppercase tracking-wider text-amber-300 flex items-center gap-1.5">
-                      <Sparkles className="w-3.5 h-3.5" />
-                      Profil & Pesan Inspiratif
-                    </h4>
-                    <p className="text-xs sm:text-sm text-stone-300 leading-relaxed font-medium bg-gradient-to-r from-stone-900 to-stone-950 p-4 rounded-2xl border border-stone-800">
-                      "{activeModalMember.bio}"
-                    </p>
-                  </div>
-                )}
-
-                {/* Modal Footer Actions */}
-                <div className="pt-2 flex flex-col sm:flex-row items-center justify-end gap-3">
-                  {isAdminAuthenticated && (
-                    <button
-                      onClick={() => {
-                        setActiveModalMember(null);
-                        onOpenAdmin?.();
-                      }}
-                      className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-stone-950 text-amber-300 border border-orange-400/50 text-xs font-black hover:bg-orange-500 hover:text-white transition-all flex items-center justify-center gap-2 cursor-pointer"
-                    >
-                      <Edit3 className="w-4 h-4" />
-                      <span>Edit di Admin Portal</span>
-                    </button>
-                  )}
-
-                  <button
-                    onClick={() => setActiveModalMember(null)}
-                    className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 text-white text-xs font-black hover:from-orange-400 hover:to-amber-400 transition-all cursor-pointer border border-orange-300"
-                  >
-                    Tutup Profil
-                  </button>
-                </div>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
     </section>
   );
 };

@@ -19,6 +19,7 @@ import {
 import { usePKBM } from '../context/PKBMContext';
 import { NewsItem } from '../types';
 import { sortNewsByDateDesc } from '../utils/dateHelper';
+import { MediaShowcaseView, ShowcaseItem } from './MediaShowcaseView';
 
 interface PrestasiSectionProps {
   onOpenAdmin?: () => void;
@@ -40,12 +41,22 @@ export const PrestasiSection: React.FC<PrestasiSectionProps> = ({ onOpenAdmin, o
     })
   );
 
+  // Transform prestasi items into showcase format
+  const prestasiShowcaseItems: ShowcaseItem[] = prestasiItems.map((item) => ({
+    id: item.id,
+    title: item.title,
+    subtitle: `Pencapaian Sah • Penulis: ${item.author || 'Tim PKBM Bina Insani'}`,
+    description: (item.content && item.content.length > 0)
+      ? item.content.join('\n\n')
+      : item.summary,
+    image: item.image,
+    category: item.category || 'Prestasi Warga Belajar',
+    date: item.date,
+    badge: 'Prestasi Warga Belajar'
+  }));
+
   const handleReadDetail = (item: NewsItem) => {
-    if (onOpenNewsReader) {
-      onOpenNewsReader(item);
-    } else {
-      setActiveArticleModal(item);
-    }
+    setActiveArticleModal(item);
   };
 
   return (
@@ -91,6 +102,24 @@ export const PrestasiSection: React.FC<PrestasiSectionProps> = ({ onOpenAdmin, o
           </div>
         </div>
 
+        {/* Showcase Tampilan Split 2 Kolom Sesuai Gambar Layout */}
+        {activeArticleModal && (
+          <div className="mb-12">
+            <MediaShowcaseView
+              items={prestasiShowcaseItems}
+              activeId={activeArticleModal.id}
+              onSelect={(item) => {
+                const found = prestasiItems.find((p) => p.id === item.id);
+                if (found) setActiveArticleModal(found);
+              }}
+              onClose={() => setActiveArticleModal(null)}
+              sectionTitle="Prestasi & Penghargaan Warga Belajar"
+              mediaType="achievement"
+              theme="dark"
+            />
+          </div>
+        )}
+
         {/* List of Prestasi Cards */}
         {prestasiItems.length > 0 ? (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
@@ -101,7 +130,12 @@ export const PrestasiSection: React.FC<PrestasiSectionProps> = ({ onOpenAdmin, o
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: idx * 0.12 }}
-                className="group bg-gradient-to-b from-stone-900/90 to-[#0f0e0d]/90 rounded-3xl overflow-hidden border-2 border-amber-500/30 hover:border-amber-400 shadow-2xl hover:shadow-amber-500/20 transition-all duration-300 flex flex-col justify-between"
+                onClick={() => handleReadDetail(item)}
+                className={`group bg-gradient-to-b from-stone-900/90 to-[#0f0e0d]/90 rounded-3xl overflow-hidden border-2 shadow-2xl transition-all duration-300 flex flex-col justify-between cursor-pointer ${
+                  activeArticleModal?.id === item.id
+                    ? 'border-amber-400 ring-2 ring-amber-400/50 shadow-amber-500/30'
+                    : 'border-amber-500/30 hover:border-amber-400 hover:shadow-amber-500/20'
+                }`}
               >
                 {/* Image Section with Trophy Badge */}
                 <div className="relative h-56 sm:h-64 overflow-hidden bg-stone-950">
@@ -200,93 +234,6 @@ export const PrestasiSection: React.FC<PrestasiSectionProps> = ({ onOpenAdmin, o
         )}
 
       </div>
-
-      {/* Reader Modal for Prestasi Articles */}
-      <AnimatePresence>
-        {activeArticleModal && (
-          <div className="fixed inset-0 z-60 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="bg-white text-slate-900 w-full max-w-3xl max-h-[92vh] rounded-3xl shadow-2xl border border-amber-200 overflow-y-auto p-6 sm:p-8 relative space-y-6"
-            >
-              {/* Close Button */}
-              <button
-                onClick={() => setActiveArticleModal(null)}
-                className="absolute top-5 right-5 p-2 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors cursor-pointer z-20"
-              >
-                <X className="w-5 h-5" />
-              </button>
-
-              {/* Modal Header */}
-              <div className="space-y-3">
-                <div className="flex flex-wrap items-center gap-2">
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-amber-100 text-amber-900 border border-amber-300">
-                    <Trophy className="w-3.5 h-3.5 text-amber-600" />
-                    Prestasi Warga Belajar
-                  </span>
-                  <span className="text-xs text-slate-500 font-semibold flex items-center gap-1">
-                    <Calendar className="w-3.5 h-3.5 text-orange-500" />
-                    {activeArticleModal.date}
-                  </span>
-                  {activeArticleModal.author && (
-                    <span className="text-xs text-slate-500 font-semibold flex items-center gap-1">
-                      <User className="w-3.5 h-3.5 text-orange-500" />
-                      {activeArticleModal.author}
-                    </span>
-                  )}
-                </div>
-
-                <h3 className="text-2xl sm:text-3xl font-black text-slate-950 leading-tight">
-                  {activeArticleModal.title}
-                </h3>
-              </div>
-
-              {/* Photo Showcase */}
-              {activeArticleModal.image && (
-                <div className="rounded-2xl overflow-hidden border border-slate-200 bg-slate-950 max-h-96">
-                  <img
-                    src={activeArticleModal.image}
-                    alt={activeArticleModal.title}
-                    className="w-full h-full max-h-96 object-contain mx-auto"
-                  />
-                </div>
-              )}
-
-              {/* Summary Callout */}
-              <div className="p-4 rounded-2xl bg-amber-50 border-l-4 border-amber-500 text-amber-950 text-sm font-semibold leading-relaxed">
-                {activeArticleModal.summary}
-              </div>
-
-              {/* Article Paragraphs */}
-              <div className="space-y-4 text-slate-700 text-sm sm:text-base leading-relaxed">
-                {activeArticleModal.content && activeArticleModal.content.length > 0 ? (
-                  activeArticleModal.content.map((paragraph, pIdx) => (
-                    <p key={pIdx}>{paragraph}</p>
-                  ))
-                ) : (
-                  <p>{activeArticleModal.summary}</p>
-                )}
-              </div>
-
-              {/* Footer Modal */}
-              <div className="pt-6 border-t border-slate-200 flex flex-wrap items-center justify-between gap-3">
-                <div className="flex items-center gap-2 text-xs font-bold text-slate-500">
-                  <BookmarkCheck className="w-4 h-4 text-emerald-600" />
-                  <span>Terdokumentasi Resmi di Portal PKBM Bina Insani</span>
-                </div>
-                <button
-                  onClick={() => setActiveArticleModal(null)}
-                  className="px-6 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-black text-xs transition-colors cursor-pointer"
-                >
-                  Tutup Rincian
-                </button>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
     </section>
   );
 };
