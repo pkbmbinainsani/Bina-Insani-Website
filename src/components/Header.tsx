@@ -51,7 +51,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenRegistration, onOpenAdmin 
       setIsScrolled(window.scrollY > 20);
 
       const sections = ['beranda', 'berita', 'prestasi', 'tentang-kami', 'personalia', 'program-belajar', 'vokasi', 'galeri', 'faq', 'kontak'];
-      const scrollPosition = window.scrollY + 140;
+      const scrollPosition = window.scrollY + 175;
 
       for (const section of sections) {
         const el = document.getElementById(section);
@@ -71,16 +71,16 @@ export const Header: React.FC<HeaderProps> = ({ onOpenRegistration, onOpenAdmin 
   }, []);
 
   const navLinks = [
-    { name: 'Beranda Utama', href: '#beranda', id: 'beranda', icon: BookOpen, desc: 'Informasi & Pendaftaran PWBB' },
-    { name: 'Berita & Pengumuman', href: '#berita', id: 'berita', icon: Newspaper, desc: 'Kabar Terbaru & Agenda' },
-    { name: 'Prestasi Warga Belajar', href: '#prestasi', id: 'prestasi', icon: Trophy, desc: 'Pencapaian & Juara Siswa' },
-    { name: 'Profil & Visi Misi', href: '#tentang-kami', id: 'tentang-kami', icon: Award, desc: 'Landasan & Karakter Lembaga' },
-    { name: 'Profil Personalia & Guru', href: '#personalia', id: 'personalia', icon: Users, desc: 'Pendiri, Pengurus, Tutor & Tendik' },
-    { name: 'Program Kesetaraan', href: '#program-belajar', id: 'program-belajar', icon: GraduationCap, desc: 'Paket A, Paket B, & Paket C' },
-    { name: 'Pelatihan Vokasi', href: '#vokasi', id: 'vokasi', icon: Wrench, desc: 'Kursus Keterampilan Siap Kerja' },
-    { name: 'Galeri Kegiatan', href: '#galeri', id: 'galeri', icon: ImageIcon, desc: 'Dokumentasi & Aktivitas Siswa' },
-    { name: 'Tanya Jawab (FAQ)', href: '#faq', id: 'faq', icon: HelpCircle, desc: 'Informasi & Syarat Belajar' },
-    { name: 'Kontak & Lokasi', href: '#kontak', id: 'kontak', icon: MapPin, desc: 'Alamat & WhatsApp Hotline' },
+    { name: 'Beranda Utama', shortName: 'Beranda', href: '#beranda', id: 'beranda', icon: BookOpen, desc: 'Informasi & Pendaftaran PWBB' },
+    { name: 'Berita & Pengumuman', shortName: 'Berita', href: '#berita', id: 'berita', icon: Newspaper, desc: 'Kabar Terbaru & Agenda' },
+    { name: 'Prestasi Warga Belajar', shortName: 'Prestasi', href: '#prestasi', id: 'prestasi', icon: Trophy, desc: 'Pencapaian & Juara Siswa' },
+    { name: 'Profil & Visi Misi', shortName: 'Profil', href: '#tentang-kami', id: 'tentang-kami', icon: Award, desc: 'Landasan & Karakter Lembaga' },
+    { name: 'Profil Personalia & Guru', shortName: 'Personalia', href: '#personalia', id: 'personalia', icon: Users, desc: 'Pendiri, Pengurus, Tutor & Tendik' },
+    { name: 'Program Kesetaraan', shortName: 'Program', href: '#program-belajar', id: 'program-belajar', icon: GraduationCap, desc: 'Paket A, Paket B, & Paket C' },
+    { name: 'Pelatihan Vokasi', shortName: 'Vokasi', href: '#vokasi', id: 'vokasi', icon: Wrench, desc: 'Kursus Keterampilan Siap Kerja' },
+    { name: 'Galeri Kegiatan', shortName: 'Galeri', href: '#galeri', id: 'galeri', icon: ImageIcon, desc: 'Dokumentasi & Aktivitas Siswa' },
+    { name: 'Tanya Jawab (FAQ)', shortName: 'FAQ', href: '#faq', id: 'faq', icon: HelpCircle, desc: 'Informasi & Syarat Belajar' },
+    { name: 'Kontak & Lokasi', shortName: 'Kontak', href: '#kontak', id: 'kontak', icon: MapPin, desc: 'Alamat & WhatsApp Hotline' },
   ];
 
   return (
@@ -242,15 +242,15 @@ export const Header: React.FC<HeaderProps> = ({ onOpenRegistration, onOpenAdmin 
                   <span>Daftar Online</span>
                 </button>
 
-                {/* THE 3-LINE MENU HAMBURGER BUTTON (FOR ALL SCREENS TO KEEP HEADER UNOBSTRUCTED) */}
+                {/* THE 3-LINE MENU HAMBURGER BUTTON (HANYA DITAMPILKAN PADA LAYAR MOBILE/TABLET KECIL) */}
                 <button
                   onClick={() => setMenuDrawerOpen(true)}
-                  className="p-2.5 sm:px-4 sm:py-3 rounded-2xl bg-gradient-to-r from-stone-900 to-[#1f1510] hover:from-stone-800 hover:to-[#2b1c14] text-white border-2 border-orange-400/60 shadow-lg hover:shadow-orange-400/20 transition-all flex items-center gap-2.5 cursor-pointer hover:scale-105 active:scale-95"
+                  className="md:hidden p-2 sm:px-3 sm:py-2.5 rounded-2xl bg-gradient-to-r from-stone-900 to-[#1f1510] hover:from-stone-800 hover:to-[#2b1c14] text-white border-2 border-orange-400/70 shadow-lg hover:shadow-orange-400/20 transition-all flex items-center gap-1.5 cursor-pointer hover:scale-105 active:scale-95"
                   aria-label="Buka Menu Navigasi Lengkap"
                   title="Buka Menu Halaman & Navigasi"
                 >
-                  <Menu className="w-5 h-5 sm:w-6 sm:h-6 text-amber-300" />
-                  <span className="hidden md:inline font-black text-xs sm:text-sm text-amber-300 tracking-wider uppercase">
+                  <Menu className="w-5 h-5 text-amber-300" />
+                  <span className="font-black text-xs text-amber-300 tracking-wider uppercase">
                     Menu
                   </span>
                 </button>
@@ -258,6 +258,36 @@ export const Header: React.FC<HeaderProps> = ({ onOpenRegistration, onOpenAdmin 
               </div>
 
             </div>
+          </div>
+        </div>
+
+        {/* TAB MENU ATAS UNTUK DESKTOP (1 BARIS DENGAN TEKS SINGKAT 1 KATA) */}
+        <div className="hidden md:block bg-gradient-to-r from-[#0a0807]/98 via-[#160f0b]/98 to-[#0a0807]/98 backdrop-blur-md border-b border-orange-500/30 shadow-md">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <nav
+              className="flex items-center justify-between py-1.5 gap-1 lg:gap-1.5 overflow-x-auto no-scrollbar"
+              aria-label="Navigasi Menu Utama PKBM Bina Insani"
+            >
+              {navLinks.map((link) => {
+                const isActive = activeSection === link.id;
+                const Icon = link.icon;
+                return (
+                  <a
+                    key={link.id}
+                    href={link.href}
+                    className={`px-2.5 lg:px-3.5 py-1.5 rounded-xl text-xs lg:text-[13px] font-black transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer select-none ${
+                      isActive
+                        ? 'bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 text-white shadow-md shadow-orange-950/40 border border-orange-300/60 scale-[1.02]'
+                        : 'text-orange-100/85 hover:text-amber-200 hover:bg-stone-800/80 hover:border-orange-500/30 border border-transparent'
+                    }`}
+                    title={link.name}
+                  >
+                    <Icon className={`w-3.5 h-3.5 shrink-0 ${isActive ? 'text-white' : 'text-orange-400'}`} />
+                    <span>{link.shortName}</span>
+                  </a>
+                );
+              })}
+            </nav>
           </div>
         </div>
       </header>

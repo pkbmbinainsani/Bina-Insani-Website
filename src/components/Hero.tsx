@@ -69,7 +69,7 @@ export const Hero: React.FC<HeroProps> = ({ onOpenRegistration }) => {
   const active = slides[currentSlide] || slides[0];
 
   return (
-    <section id="beranda" className="relative pt-24 sm:pt-28 pb-10 lg:pt-32 lg:pb-14 bg-gradient-to-b from-[#0c0a09] via-[#1c1917] to-[#0c0a09] text-white overflow-hidden">
+    <section id="beranda" className="relative pt-28 sm:pt-32 md:pt-40 lg:pt-44 pb-10 lg:pb-14 bg-gradient-to-b from-[#0c0a09] via-[#1c1917] to-[#0c0a09] text-white overflow-hidden">
       
       {/* Background Subtle Geometric Glow & Luxury Ambient Lighting */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(234,88,12,0.18),rgba(251,191,36,0.08),rgba(12,10,9,0.95))] pointer-events-none" />
