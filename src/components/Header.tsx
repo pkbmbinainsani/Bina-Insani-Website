@@ -92,7 +92,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenRegistration, onOpenAdmin 
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-9">
             
             {/* Left Notice with Golden-Orange Pulse */}
-            <div className="flex items-center space-x-3 overflow-hidden">
+            <div className="flex items-center space-x-3 overflow-hidden min-w-0 flex-1 mr-2">
               <span className="flex items-center gap-2 font-medium text-orange-100 truncate text-[11px] sm:text-xs">
                 <span className="w-2 h-2 rounded-full bg-orange-400 animate-ping shrink-0" />
                 <span className="truncate font-semibold text-amber-200">
@@ -130,18 +130,18 @@ export const Header: React.FC<HeaderProps> = ({ onOpenRegistration, onOpenAdmin 
           }`}
         >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center justify-between gap-2 sm:gap-4">
               
-              {/* Left Brand Identity: Emblem Logo Badge with ENLARGED Title */}
-              <div className="flex items-center gap-3 sm:gap-4 group shrink-0">
-                <div className="relative group/logo">
+              {/* Left Brand Identity: Emblem Logo Badge with Responsive Proportions */}
+              <div className="flex items-center gap-2 sm:gap-4 group min-w-0 flex-1 md:flex-initial">
+                <div className="relative group/logo min-w-0">
                   <a
                     href="#beranda"
-                    className="bg-gradient-to-br from-amber-50 via-white to-orange-50 p-2.5 sm:p-3 rounded-2xl shadow-xl border-2 border-orange-400/80 flex items-center gap-3 group-hover:scale-105 transition-all group-hover:shadow-orange-500/20 block"
+                    className="bg-gradient-to-br from-amber-50 via-white to-orange-50 p-1.5 sm:p-2.5 md:p-3 rounded-xl sm:rounded-2xl shadow-xl border-2 border-orange-400/80 flex items-center gap-2 sm:gap-3 group-hover:scale-105 transition-all group-hover:shadow-orange-500/20 block min-w-0"
                   >
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2 sm:gap-3 min-w-0">
                       <div
-                        className={`w-11 h-11 sm:w-13 sm:h-13 ${
+                        className={`w-9 h-9 sm:w-11 sm:h-11 md:w-13 md:h-13 ${
                           pkbmInfo.logoShape === 'circle'
                             ? 'rounded-full'
                             : pkbmInfo.logoShape === 'square'
@@ -153,21 +153,21 @@ export const Header: React.FC<HeaderProps> = ({ onOpenRegistration, onOpenAdmin 
                           <img
                             src={pkbmInfo.logoUrl}
                             alt={pkbmInfo.name}
-                            className="w-full h-full object-contain p-1"
+                            className="w-full h-full object-contain p-0.5 sm:p-1"
                           />
                         ) : (
-                          <BookOpen className="w-6 h-6 sm:w-7 sm:h-7 text-amber-200" />
+                          <BookOpen className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 text-amber-200" />
                         )}
                       </div>
-                      <div className="flex flex-col text-left pr-1 sm:pr-2">
-                        <span className="text-lg sm:text-2xl lg:text-3xl font-black tracking-tight text-orange-950 leading-tight uppercase font-sans drop-shadow-sm">
+                      <div className="flex flex-col text-left pr-1 sm:pr-2 min-w-0">
+                        <span className="text-sm xs:text-base sm:text-xl md:text-2xl lg:text-3xl font-black tracking-tight text-orange-950 leading-tight uppercase font-sans drop-shadow-sm truncate">
                           PKBM BINA INSANI
                         </span>
-                        <div className="flex items-center gap-2 mt-0.5">
-                          <span className="text-xs sm:text-sm font-black tracking-widest text-orange-700 uppercase">
+                        <div className="flex items-center gap-1.5 sm:gap-2 mt-0.5 min-w-0">
+                          <span className="text-[10px] xs:text-xs sm:text-sm font-black tracking-wider text-orange-700 uppercase shrink-0">
                             SUMOWONO
                           </span>
-                          <span className="text-[10px] sm:text-[11px] font-extrabold bg-gradient-to-r from-orange-900 to-stone-950 text-amber-300 px-2 py-0.5 rounded-md border border-orange-400/40 shadow-xs">
+                          <span className="text-[8.5px] xs:text-[9.5px] sm:text-[11px] font-extrabold bg-gradient-to-r from-orange-900 to-stone-950 text-amber-300 px-1.5 sm:px-2 py-0.5 rounded-md border border-orange-400/40 shadow-xs whitespace-nowrap shrink-0">
                             NPSN P9979993
                           </span>
                         </div>
@@ -183,9 +183,9 @@ export const Header: React.FC<HeaderProps> = ({ onOpenRegistration, onOpenAdmin 
                       setIsLogoModalOpen(true);
                     }}
                     title="Ganti Logo Lembaga"
-                    className="absolute -top-2 -left-2 p-1.5 rounded-full bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-400 hover:to-amber-400 text-white shadow-lg border-2 border-stone-900 transition-all opacity-0 group-hover/logo:opacity-100 scale-90 hover:scale-110 cursor-pointer z-20 flex items-center gap-1 text-[10px] font-black"
+                    className="absolute -top-1.5 -left-1.5 sm:-top-2 sm:-left-2 p-1 sm:p-1.5 rounded-full bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-400 hover:to-amber-400 text-white shadow-lg border-2 border-stone-900 transition-all opacity-0 group-hover/logo:opacity-100 scale-90 hover:scale-110 cursor-pointer z-20 flex items-center gap-1 text-[10px] font-black"
                   >
-                    <Camera className="w-3.5 h-3.5" />
+                    <Camera className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                   </button>
                 </div>
 
@@ -221,38 +221,35 @@ export const Header: React.FC<HeaderProps> = ({ onOpenRegistration, onOpenAdmin 
                 </div>
               </div>
 
-              {/* Right Side Control Panel: Search + Daftar Online + 3-LINE MENU DRAWER BUTTON */}
+              {/* Right Side Control Panel: Search & Daftar Online (Desktop) + 3-LINE MENU HAMBURGER BUTTON (Mobile) */}
               <div className="flex items-center gap-2 sm:gap-3 shrink-0">
                 
-                {/* Quick Search Button */}
+                {/* Quick Search Button (Desktop Only: hidden on mobile) */}
                 <button
                   onClick={() => setIsSearchOpen(true)}
-                  className="p-2.5 sm:p-3 rounded-2xl bg-stone-900/90 hover:bg-stone-800 text-amber-300 hover:text-white transition-all cursor-pointer border border-orange-400/40 shadow-md hover:scale-105"
+                  className="hidden md:flex p-2.5 sm:p-3 rounded-2xl bg-stone-900/90 hover:bg-stone-800 text-amber-300 hover:text-white transition-all cursor-pointer border border-orange-400/40 shadow-md hover:scale-105"
                   title="Cari Informasi"
                 >
                   <Search className="w-4 h-4 sm:w-5 sm:h-5" />
                 </button>
 
-                {/* Registration CTA - Luxury Gold-Orange Gradient Button */}
+                {/* Registration CTA (Desktop Only: hidden on mobile) */}
                 <button
                   onClick={() => onOpenRegistration()}
-                  className="px-4 sm:px-5 py-2.5 sm:py-3 rounded-2xl text-xs sm:text-sm font-black bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 hover:from-orange-400 hover:to-amber-500 text-white shadow-lg shadow-orange-950/50 transition-all flex items-center gap-2 cursor-pointer transform hover:scale-105 active:scale-95 whitespace-nowrap border border-orange-300"
+                  className="hidden md:flex px-4 sm:px-5 py-2.5 sm:py-3 rounded-2xl text-xs sm:text-sm font-black bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 hover:from-orange-400 hover:to-amber-500 text-white shadow-lg shadow-orange-950/50 transition-all items-center gap-2 cursor-pointer transform hover:scale-105 active:scale-95 whitespace-nowrap border border-orange-300"
                 >
                   <UserPlus className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-white" />
                   <span>Daftar Online</span>
                 </button>
 
-                {/* THE 3-LINE MENU HAMBURGER BUTTON (HANYA DITAMPILKAN PADA LAYAR MOBILE/TABLET KECIL) */}
+                {/* THE 3-LINE MENU HAMBURGER BUTTON (TAMPIL DI LAYAR PONSEL / < md) - HANYA IKON GARIS TIGA */}
                 <button
                   onClick={() => setMenuDrawerOpen(true)}
-                  className="md:hidden p-2 sm:px-3 sm:py-2.5 rounded-2xl bg-gradient-to-r from-stone-900 to-[#1f1510] hover:from-stone-800 hover:to-[#2b1c14] text-white border-2 border-orange-400/70 shadow-lg hover:shadow-orange-400/20 transition-all flex items-center gap-1.5 cursor-pointer hover:scale-105 active:scale-95"
+                  className="md:hidden p-2.5 rounded-2xl bg-gradient-to-r from-stone-900 to-[#1f1510] hover:from-stone-800 hover:to-[#2b1c14] text-white border-2 border-orange-400/70 shadow-lg hover:shadow-orange-400/20 transition-all flex items-center justify-center cursor-pointer hover:scale-105 active:scale-95 shrink-0"
                   aria-label="Buka Menu Navigasi Lengkap"
-                  title="Buka Menu Halaman & Navigasi"
+                  title="Buka Menu Navigasi"
                 >
-                  <Menu className="w-5 h-5 text-amber-300" />
-                  <span className="font-black text-xs text-amber-300 tracking-wider uppercase">
-                    Menu
-                  </span>
+                  <Menu className="w-5 h-5 sm:w-6 sm:h-6 text-amber-300" />
                 </button>
 
               </div>
@@ -385,10 +382,42 @@ export const Header: React.FC<HeaderProps> = ({ onOpenRegistration, onOpenAdmin 
               </div>
 
               {/* Drawer Middle: Navigation Link List */}
-              <div className="flex-1 p-5 sm:p-6 space-y-2 overflow-y-auto custom-scrollbar">
+              <div className="flex-1 p-4 sm:p-6 space-y-3 overflow-y-auto custom-scrollbar">
                 
+                {/* Relocated Actions for Mobile: Pencarian & Daftar Online */}
+                <div className="space-y-2 p-3 rounded-2xl bg-stone-950/80 border border-orange-500/30 shadow-inner">
+                  {/* Quick Search Button */}
+                  <button
+                    onClick={() => {
+                      setMenuDrawerOpen(false);
+                      setIsSearchOpen(true);
+                    }}
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-stone-900 hover:bg-stone-800 text-left text-stone-300 border border-orange-400/40 flex items-center justify-between transition-all cursor-pointer shadow-sm group"
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <Search className="w-4 h-4 text-amber-300 group-hover:scale-110 transition-transform" />
+                      <span className="text-xs font-semibold text-stone-200">Cari info, berita, program...</span>
+                    </div>
+                    <span className="text-[10px] font-bold bg-orange-950 text-amber-300 px-2 py-0.5 rounded-md border border-orange-500/40">
+                      Cari
+                    </span>
+                  </button>
+
+                  {/* Pendaftaran Online CTA */}
+                  <button
+                    onClick={() => {
+                      setMenuDrawerOpen(false);
+                      onOpenRegistration();
+                    }}
+                    className="w-full py-2.5 px-3.5 rounded-xl bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 hover:from-orange-400 hover:to-amber-400 text-white font-black text-xs sm:text-sm shadow-md flex items-center justify-center gap-2 cursor-pointer border border-orange-300 transform active:scale-98 transition-all"
+                  >
+                    <UserPlus className="w-4 h-4" />
+                    <span>Daftar Online Warga Belajar (PWBB)</span>
+                  </button>
+                </div>
+
                 {/* Quick Motto Tag in Drawer */}
-                <div className="bg-gradient-to-r from-stone-950 via-stone-900 to-stone-950 p-3.5 rounded-2xl border border-orange-400/60 shadow-inner mb-4 flex items-center justify-between">
+                <div className="bg-gradient-to-r from-stone-950 via-stone-900 to-stone-950 p-3 rounded-2xl border border-orange-400/60 shadow-inner flex items-center justify-between">
                   <div>
                     <span className="text-[10px] font-extrabold uppercase tracking-widest text-orange-400">
                       Motto Pendidikan
@@ -491,6 +520,60 @@ export const Header: React.FC<HeaderProps> = ({ onOpenRegistration, onOpenAdmin 
           </>
         )}
       </AnimatePresence>
+
+      {/* MOBILE BOTTOM NAVIGATION & ACTION BAR (HANYA DITAMPILKAN PADA PONSEL / < md) */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#0c0a09]/95 backdrop-blur-lg border-t border-orange-500/40 px-3 pt-1.5 pb-safe shadow-[0_-5px_20px_rgba(0,0,0,0.5)]">
+        <div className="max-w-md mx-auto grid grid-cols-4 gap-1.5 items-center">
+          
+          {/* 1. Beranda */}
+          <a
+            href="#beranda"
+            className={`min-h-[44px] flex flex-col items-center justify-center py-1 rounded-xl text-[10px] font-bold transition-all ${
+              activeSection === 'beranda'
+                ? 'text-amber-300 bg-orange-950/70 border border-orange-500/40'
+                : 'text-stone-400 hover:text-stone-200'
+            }`}
+          >
+            <BookOpen className="w-4 h-4 mb-0.5" />
+            <span>Beranda</span>
+          </a>
+
+          {/* 2. Tombol Pencarian */}
+          <button
+            onClick={() => setIsSearchOpen(true)}
+            className="min-h-[44px] flex flex-col items-center justify-center py-1 rounded-xl text-[10px] font-bold text-stone-300 hover:text-amber-300 transition-all cursor-pointer"
+            title="Cari Berita & Program"
+          >
+            <Search className="w-4 h-4 mb-0.5 text-amber-400" />
+            <span>Cari</span>
+          </button>
+
+          {/* 3. Tombol Daftar Online (CTA Utama Menonjol) */}
+          <button
+            onClick={() => onOpenRegistration()}
+            className="min-h-[44px] flex flex-col items-center justify-center py-1 px-2 rounded-xl text-[10px] font-black bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 text-white shadow-lg shadow-orange-950/70 border border-orange-300/80 cursor-pointer transform active:scale-95 transition-all"
+            title="Daftar Online Warga Belajar Baru (PWBB)"
+          >
+            <UserPlus className="w-4 h-4 mb-0.5 text-white" />
+            <span className="whitespace-nowrap">Daftar</span>
+          </button>
+
+          {/* 4. Tombol Menu Garis Tiga */}
+          <button
+            onClick={() => setMenuDrawerOpen(true)}
+            className={`min-h-[44px] flex flex-col items-center justify-center py-1 rounded-xl text-[10px] font-bold transition-all cursor-pointer ${
+              menuDrawerOpen
+                ? 'text-amber-300 bg-orange-950/70 border border-orange-500/40'
+                : 'text-stone-300 hover:text-amber-300'
+            }`}
+            title="Buka Menu Halaman"
+          >
+            <Menu className="w-4 h-4 mb-0.5 text-amber-300" />
+            <span>Menu</span>
+          </button>
+
+        </div>
+      </div>
 
       {/* Logo Manager Modal */}
       <LogoManagerModal

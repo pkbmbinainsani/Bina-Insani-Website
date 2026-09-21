@@ -44,7 +44,7 @@ function MainAppContent() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans antialiased selection:bg-orange-100 selection:text-orange-900">
+    <div className="min-h-screen pb-20 md:pb-0 bg-slate-50 text-slate-900 font-sans antialiased selection:bg-orange-100 selection:text-orange-900">
       {/* Header Bar with dynamic logo, navigation, and Admin Portal trigger */}
       <Header
         onOpenRegistration={handleOpenRegistration}

@@ -26,7 +26,7 @@ export const FloatingWidget: React.FC<FloatingWidgetProps> = () => {
   };
 
   return (
-    <div className="fixed bottom-5 right-5 z-40 flex flex-col items-end space-y-3">
+    <div className="fixed bottom-16 sm:bottom-5 right-3 sm:right-5 z-40 flex flex-col items-end space-y-3">
       
       {/* Expanded Quick Options */}
       {isOpen && (
