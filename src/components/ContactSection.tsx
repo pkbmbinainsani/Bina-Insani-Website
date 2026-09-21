@@ -45,24 +45,22 @@ ${formData.pesan}`;
   };
 
   return (
-    <section id="kontak" className="py-20 bg-stone-100 relative overflow-hidden">
+    <section id="kontak" className="pt-4 sm:pt-6 pb-16 bg-stone-100 relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        {/* Section Title Header */}
-        <div className="text-center max-w-3xl mx-auto space-y-3 mb-16">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-orange-100 text-orange-800 text-xs font-extrabold uppercase tracking-wider">
-            <MessageSquare className="w-4 h-4 text-orange-600" />
-            Layanan Informasi & Kontak
+        {/* Compact Contact Service Strip */}
+        <div className="flex flex-wrap items-center justify-between gap-2 mb-5 p-2 sm:px-3 rounded-xl bg-white border border-stone-200 shadow-xs text-xs">
+          <div className="flex items-center gap-2 text-stone-700 font-semibold">
+            <MessageSquare className="w-3.5 h-3.5 text-orange-600" />
+            <span>Layanan Sekretariat & Konsultasi Pendaftaran PKBM Bina Insani Sumowono</span>
           </div>
-          <h2 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">
-            Hubungi <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-600 to-amber-600">PKBM Bina Insani Sumowono</span>
-          </h2>
-          <p className="text-stone-600 text-sm sm:text-base leading-relaxed">
-            Punya pertanyaan mengenai syarat pendaftaran, jadwal konsultasi, atau lokasi tempat belajar? Tim sekretariat kami siap membantu Anda dengan ramah.
-          </p>
+          <span className="flex items-center gap-1 text-[11px] text-emerald-700 font-bold bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-md">
+            <Clock className="w-3 h-3 text-emerald-600" />
+            Buka Senin - Sabtu (08.00 - 16.00 WIB)
+          </span>
         </div>
 
-        <div className="grid lg:grid-cols-12 gap-8 items-start">
+        <div className="grid lg:grid-cols-12 gap-6 items-start">
           
           {/* Left Side: Institutional Contact Info Card */}
           <div className="lg:col-span-5 space-y-6">

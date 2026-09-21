@@ -127,51 +127,26 @@ export const GallerySection: React.FC<GallerySectionProps> = ({ onOpenAdmin }) =
   }));
 
   return (
-    <section id="galeri" className="py-20 bg-slate-50/70 relative overflow-hidden">
+    <section id="galeri" className="pt-4 sm:pt-6 pb-16 bg-slate-50/70 relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto space-y-3 mb-10">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-orange-100 text-orange-900 text-xs font-extrabold uppercase tracking-wider">
-            <ImageIcon className="w-4 h-4 text-orange-600" />
-            Dokumentasi & Aktivitas Warga Belajar
-          </div>
-          <h2 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">
-            Galeri Kegiatan <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-600 to-amber-600">PKBM Bina Insani Sumowono</span>
-          </h2>
-          <p className="text-slate-600 text-sm sm:text-base leading-relaxed">
-            Potret nyata dan video dokumentasi pembelajaran kesetaraan Paket A, B, C, pelatihan vokasi terapan, simulasi ujian berbasis komputer, serta kegiatan kemandirian warga belajar.
-          </p>
-
-          {onOpenAdmin && (
-            <div className="pt-2 flex flex-wrap items-center justify-center gap-2">
-              <button
-                onClick={onOpenAdmin}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-amber-300 font-extrabold text-xs shadow-md shadow-slate-950/20 transition-all cursor-pointer border border-orange-500/40"
-              >
-                <PlusCircle className="w-4 h-4 text-orange-400" />
-                <span>Kelola Galeri Foto & Video (Admin)</span>
-              </button>
-            </div>
-          )}
-        </div>
-
-        {/* Media Switcher Tab: Foto vs Video */}
-        <div className="flex justify-center mb-8">
-          <div className="inline-flex p-1.5 bg-white rounded-3xl border border-slate-200 shadow-sm">
+        {/* Compact Media Control & Switcher Bar */}
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mb-6 p-2 sm:px-3 bg-white rounded-2xl border border-slate-200 shadow-xs">
+          {/* Media Switcher Tab: Foto vs Video */}
+          <div className="inline-flex p-1 bg-stone-100 rounded-xl border border-stone-200">
             <button
               onClick={() => setActiveMediaTab('photos')}
-              className={`flex items-center gap-2 px-6 py-2.5 rounded-2xl text-xs sm:text-sm font-extrabold transition-all cursor-pointer ${
+              className={`flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-xs font-extrabold transition-all cursor-pointer ${
                 activeMediaTab === 'photos'
-                  ? 'bg-gradient-to-r from-orange-600 to-amber-600 text-white shadow-md shadow-orange-950/20'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                  ? 'bg-gradient-to-r from-orange-600 to-amber-600 text-white shadow-xs'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
               }`}
             >
-              <Camera className="w-4 h-4" />
+              <Camera className="w-3.5 h-3.5" />
               <span>Foto Kegiatan</span>
               <span
-                className={`text-[11px] px-2 py-0.5 rounded-full font-bold ${
-                  activeMediaTab === 'photos' ? 'bg-orange-900/40 text-amber-100' : 'bg-slate-100 text-slate-600'
+                className={`text-[10px] px-1.5 py-0.2 rounded-md font-bold ${
+                  activeMediaTab === 'photos' ? 'bg-orange-950/40 text-amber-100' : 'bg-white text-slate-600'
                 }`}
               >
                 {combinedGallery.length}
@@ -180,23 +155,34 @@ export const GallerySection: React.FC<GallerySectionProps> = ({ onOpenAdmin }) =
 
             <button
               onClick={() => setActiveMediaTab('videos')}
-              className={`flex items-center gap-2 px-6 py-2.5 rounded-2xl text-xs sm:text-sm font-extrabold transition-all cursor-pointer ${
+              className={`flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-xs font-extrabold transition-all cursor-pointer ${
                 activeMediaTab === 'videos'
-                  ? 'bg-gradient-to-r from-red-600 to-pink-600 text-white shadow-md shadow-red-950/20'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                  ? 'bg-gradient-to-r from-orange-600 to-amber-600 text-white shadow-xs'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
               }`}
             >
-              <Film className="w-4 h-4" />
-              <span>Galeri Video</span>
+              <Video className="w-3.5 h-3.5" />
+              <span>Video Resmi</span>
               <span
-                className={`text-[11px] px-2 py-0.5 rounded-full font-bold ${
-                  activeMediaTab === 'videos' ? 'bg-red-950/40 text-red-100' : 'bg-red-50 text-red-600 border border-red-200'
+                className={`text-[10px] px-1.5 py-0.2 rounded-md font-bold ${
+                  activeMediaTab === 'videos' ? 'bg-orange-950/40 text-amber-100' : 'bg-white text-slate-600'
                 }`}
               >
                 {videos.length}
               </span>
             </button>
           </div>
+
+          {/* Admin Action Button */}
+          {onOpenAdmin && (
+            <button
+              onClick={onOpenAdmin}
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 text-amber-300 font-extrabold text-[11px] shadow-xs transition-all cursor-pointer border border-orange-500/40"
+            >
+              <PlusCircle className="w-3.5 h-3.5 text-orange-400" />
+              <span>Kelola Galeri (Admin)</span>
+            </button>
+          )}
         </div>
 
         {/* ==================== TAB 1: FOTO KEGIATAN ==================== */}

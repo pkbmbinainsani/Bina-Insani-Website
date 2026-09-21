@@ -71,13 +71,20 @@ export const HomeHighlights: React.FC<HomeHighlightsProps> = ({
               className="bg-white rounded-3xl overflow-hidden border border-orange-200/80 hover:border-orange-400 shadow-md hover:shadow-xl transition-all flex flex-col justify-between cursor-pointer group"
             >
               {item.image && (
-                <div className="relative h-44 overflow-hidden bg-slate-950">
+                <div className="relative h-48 overflow-hidden bg-stone-950 flex items-center justify-center">
+                  {/* Ambient background blur */}
+                  <img
+                    src={item.image}
+                    alt=""
+                    className="absolute inset-0 w-full h-full object-cover blur-xl opacity-35 scale-125 pointer-events-none"
+                  />
+                  {/* Sharp uncropped photo */}
                   <img
                     src={item.image}
                     alt={item.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    className="relative z-10 w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
                   />
-                  <div className="absolute top-3 left-3 px-2.5 py-1 rounded-lg bg-black/75 backdrop-blur-md text-amber-300 text-[10px] font-black uppercase">
+                  <div className="absolute top-3 left-3 px-2.5 py-1 rounded-lg bg-black/75 backdrop-blur-md text-amber-300 text-[10px] font-black uppercase z-20">
                     {item.category}
                   </div>
                 </div>
@@ -96,7 +103,7 @@ export const HomeHighlights: React.FC<HomeHighlightsProps> = ({
                   </p>
                 </div>
                 <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-black text-orange-600">
-                  <span>Baca Selengkapnya</span>
+                  <span>Lanjutkan Membaca</span>
                   <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </div>
               </div>

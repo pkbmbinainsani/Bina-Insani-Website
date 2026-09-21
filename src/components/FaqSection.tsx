@@ -12,25 +12,22 @@ export const FaqSection: React.FC = () => {
   };
 
   return (
-    <section id="faq" className="py-20 bg-white relative">
+    <section id="faq" className="pt-4 sm:pt-6 pb-16 bg-white relative">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        {/* Section Header */}
-        <div className="text-center space-y-3 mb-14">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-amber-100 text-amber-800 text-xs font-extrabold uppercase tracking-wider">
-            <HelpCircle className="w-4 h-4 text-amber-700" />
-            Tanya Jawab Seputar PKBM
+        {/* Compact FAQ Info Strip */}
+        <div className="flex flex-wrap items-center justify-between gap-2 mb-5 p-2 sm:px-3 rounded-xl bg-amber-50/80 border border-amber-200/80 text-xs">
+          <div className="flex items-center gap-2 text-stone-700 font-semibold">
+            <HelpCircle className="w-3.5 h-3.5 text-amber-600" />
+            <span>Informasi Legalitas Ijazah, Jadwal & Persyaratan ({faqs.length} Tanya Jawab)</span>
           </div>
-          <h2 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">
-            Pertanyaan Yang Sering Diajukan (FAQ)
-          </h2>
-          <p className="text-slate-600 text-sm sm:text-base leading-relaxed">
-            Informasi lengkap mengenai status keabsahan ijazah, masa studi, serta kemudahan proses pendaftaran di {pkbmInfo.name}.
-          </p>
+          <span className="text-[11px] text-amber-800 font-bold bg-amber-100 px-2 py-0.5 rounded-md">
+            Ijazah Resmi Terakreditasi
+          </span>
         </div>
 
         {/* FAQ Accordion List */}
-        <div className="space-y-4">
+        <div className="space-y-3">
           {faqs.map((faq, idx) => {
             const isOpen = openIndex === idx;
 

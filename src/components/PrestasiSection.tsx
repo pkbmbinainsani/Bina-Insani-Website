@@ -60,46 +60,43 @@ export const PrestasiSection: React.FC<PrestasiSectionProps> = ({ onOpenAdmin, o
   };
 
   return (
-    <section id="prestasi" className="py-20 sm:py-24 bg-gradient-to-b from-stone-950 via-[#141210] to-[#0c0a09] text-white relative overflow-hidden">
+    <section id="prestasi" className="pt-4 sm:pt-6 pb-16 bg-gradient-to-b from-stone-950 via-[#141210] to-[#0c0a09] text-white relative overflow-hidden">
       {/* Decorative Glow Elements */}
-      <div className="absolute top-0 left-1/4 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-orange-500/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-0 left-1/4 w-72 h-72 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-0 right-1/4 w-72 h-72 bg-orange-500/10 rounded-full blur-3xl pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         
-        {/* Header Bagian Prestasi */}
-        <div className="text-center max-w-3xl mx-auto space-y-4 mb-16">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-amber-500/20 to-orange-500/20 border border-amber-400/40 text-amber-300 text-xs sm:text-sm font-black uppercase tracking-widest shadow-lg backdrop-blur-md">
-            <Trophy className="w-4 h-4 text-amber-400 animate-bounce" />
-            Prestasi & Rekam Jejak Unggulan
-          </div>
-
-          <h2 className="text-3xl sm:text-5xl font-black text-white tracking-tight">
-            Prestasi Warga Belajar{' '}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-orange-400 to-yellow-300">
-              {pkbmInfo.name || 'PKBM Bina Insani'}
+        {/* Compact Institutional Highlights Strip & Admin Action */}
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-2.5 mb-5 p-2 sm:px-3 rounded-xl bg-stone-900/80 border border-amber-500/25 backdrop-blur-md">
+          <div className="flex flex-wrap items-center gap-2 text-xs">
+            <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-amber-500/20 text-amber-300 font-extrabold text-[11px] border border-amber-400/30">
+              <Trophy className="w-3.5 h-3.5 text-amber-400" />
+              <span>{prestasiItems.length} Prestasi Tercatat</span>
             </span>
-          </h2>
-
-          <p className="text-stone-300 text-sm sm:text-base leading-relaxed font-medium">
-            Apresiasi dan bukti nyata dedikasi para peserta didik kesetaraan Paket A, B, C, serta pelatihan vokasi wirausaha yang berhasil menorehkan pencapaian membanggakan.
-          </p>
-
-          {/* Institutional Highlight Strip */}
-          <div className="pt-2 flex flex-wrap items-center justify-center gap-3 sm:gap-6 text-xs text-amber-200/90 font-semibold">
-            <span className="flex items-center gap-1.5 bg-stone-900/80 px-3.5 py-1.5 rounded-full border border-amber-500/30">
-              <Medal className="w-3.5 h-3.5 text-amber-400" />
-              Juara Vokasi & Keterampilan
+            <span className="hidden md:flex items-center gap-1.5 text-stone-300 text-[11px]">
+              <Medal className="w-3 h-3 text-amber-400" />
+              <span>Kejuaraan Vokasi</span>
             </span>
-            <span className="flex items-center gap-1.5 bg-stone-900/80 px-3.5 py-1.5 rounded-full border border-amber-500/30">
-              <GraduationCap className="w-3.5 h-3.5 text-amber-400" />
-              Kelulusan & Lanjut Kuliah PTN/PTS
+            <span className="hidden lg:flex items-center gap-1.5 text-stone-300 text-[11px]">
+              <GraduationCap className="w-3 h-3 text-amber-400" />
+              <span>Kelulusan Lanjut PTN/PTS</span>
             </span>
-            <span className="flex items-center gap-1.5 bg-stone-900/80 px-3.5 py-1.5 rounded-full border border-amber-500/30">
-              <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-              Kemandirian Wirausaha Desa
+            <span className="hidden sm:flex items-center gap-1.5 text-stone-300 text-[11px]">
+              <Sparkles className="w-3 h-3 text-amber-400" />
+              <span>Wirausaha Mandiri</span>
             </span>
           </div>
+
+          {onOpenAdmin && (
+            <button
+              onClick={onOpenAdmin}
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-400 hover:to-amber-400 text-white font-extrabold text-[11px] shadow-sm transition-all cursor-pointer border border-orange-300/40"
+            >
+              <PlusCircle className="w-3.5 h-3.5 text-white" />
+              <span>{isAdminAuthenticated ? 'Tambah Prestasi Baru' : 'Kelola Prestasi (Admin)'}</span>
+            </button>
+          )}
         </div>
 
         {/* Showcase Tampilan Split 2 Kolom Sesuai Gambar Layout */}

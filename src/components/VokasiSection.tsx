@@ -26,28 +26,31 @@ export const VokasiSection: React.FC = () => {
   const { vokasiPrograms, pkbmInfo } = usePKBM();
 
   return (
-    <section id="vokasi" className="py-20 bg-[#0c0a09] text-white relative overflow-hidden">
+    <section id="vokasi" className="pt-4 sm:pt-6 pb-16 bg-[#0c0a09] text-white relative overflow-hidden">
       <div className="absolute top-0 right-0 w-80 h-80 bg-orange-600/10 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-80 h-80 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         
-        {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto space-y-3 mb-16">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-orange-500/20 text-orange-300 border border-orange-500/30 text-xs font-extrabold uppercase tracking-wider">
-            <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-            Penguatan Kemandirian & Kreativitas Warga Belajar
+        {/* Compact Highlight Strip */}
+        <div className="flex flex-wrap items-center justify-between gap-2.5 mb-5 p-2 sm:px-3.5 rounded-xl bg-stone-900/80 border border-orange-500/30 backdrop-blur-md text-xs">
+          <div className="flex flex-wrap items-center gap-2 font-semibold text-stone-200">
+            <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-orange-500/20 text-amber-300 font-extrabold text-[11px] border border-orange-500/30">
+              <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+              <span>{vokasiPrograms.length} Bidang Keahlian Praktis</span>
+            </span>
+            <span className="hidden sm:inline text-stone-600">•</span>
+            <span className="hidden sm:inline text-[11px] text-stone-300">Siap Kerja & Wirausaha Mandiri</span>
+            <span className="hidden md:inline text-stone-600">•</span>
+            <span className="hidden md:inline text-[11px] text-stone-300">Sertifikat Keterampilan Terapan Lembaga</span>
           </div>
-          <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
-            Program Keterampilan <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-amber-300 to-yellow-400">Vokasional & Wirausaha</span>
-          </h2>
-          <p className="text-stone-300 text-sm sm:text-base leading-relaxed">
-            Tidak hanya sekadar mendapatkan ijazah formal, setiap warga belajar di {pkbmInfo.name} dibekali dengan keahlian terapan untuk siap kerja dan berwirausaha secara mandiri.
-          </p>
+          <span className="text-[11px] text-amber-300/80 font-mono hidden lg:inline">
+            Gratis Untuk Warga Belajar Aktif
+          </span>
         </div>
 
         {/* Vokasi Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
           {vokasiPrograms.map((vokasi, idx) => (
             <motion.div
               key={vokasi.title + idx}

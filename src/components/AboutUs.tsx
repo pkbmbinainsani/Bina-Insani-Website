@@ -12,55 +12,61 @@ export const AboutUs: React.FC<AboutUsProps> = ({ onOpenAdmin }) => {
   const [activeTab, setActiveTab] = useState<'visi-misi' | 'motto' | 'tujuan'>('visi-misi');
 
   return (
-    <section id="tentang-kami" className="py-24 bg-gradient-to-b from-[#0c0a09] via-[#1c1917] to-[#0c0a09] text-white relative overflow-hidden">
+    <section id="tentang-kami" className="pt-4 sm:pt-6 pb-16 bg-gradient-to-b from-[#0c0a09] via-[#1c1917] to-[#0c0a09] text-white relative overflow-hidden">
       {/* Decorative luxury background glow */}
-      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-orange-500/10 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-0 right-0 w-80 h-80 bg-orange-500/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-80 h-80 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         
-        {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto space-y-4 mb-20">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-stone-900 to-stone-950 text-amber-300 border border-orange-500/40 text-xs sm:text-sm font-black uppercase tracking-widest shadow-md">
-            <Building2 className="w-4 h-4 text-orange-400" />
-            Profil & Landasan Karakter Lembaga
+        {/* Compact Institutional Identity Banner */}
+        <div className="mb-6 p-3.5 sm:p-4 rounded-2xl bg-stone-900/85 border border-orange-500/30 backdrop-blur-md flex flex-col md:flex-row md:items-center justify-between gap-3 shadow-md">
+          <div className="flex items-start sm:items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-orange-500/20 border border-orange-400/40 text-amber-300 flex items-center justify-center shrink-0">
+              <Building2 className="w-5 h-5 text-orange-400" />
+            </div>
+            <div>
+              <div className="text-xs font-bold uppercase tracking-wider text-amber-300">Profil & Landasan Karakter Lembaga</div>
+              <p className="text-stone-300 text-xs sm:text-sm font-medium leading-snug line-clamp-2">
+                {aboutProfile}
+              </p>
+            </div>
           </div>
-          <h2 className="text-3xl sm:text-5xl font-black text-white tracking-tight">
-            Tentang <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-amber-300 to-yellow-400">{pkbmInfo.name}</span>
-          </h2>
-          <p className="text-stone-300 text-sm sm:text-lg leading-relaxed font-medium">
-            {aboutProfile}
-          </p>
+          <div className="flex items-center gap-2 shrink-0 self-end md:self-center">
+            <span className="px-2.5 py-1 rounded-lg bg-black/50 text-amber-300 border border-orange-500/30 text-[11px] font-mono font-semibold">
+              NPSN: {pkbmInfo.npsn}
+            </span>
+          </div>
         </div>
 
-        {/* Tagline Card Breakdown: ENLARGED HEBAT - MANDIRI - KREATIF PILLARS */}
-        <div className="grid md:grid-cols-3 gap-6 lg:gap-8 mb-20">
+        {/* Tagline Card Breakdown: Compact HEBAT - MANDIRI - KREATIF PILLARS */}
+        <div className="grid md:grid-cols-3 gap-4 lg:gap-5 mb-10">
           {mottoValues.map((motto, idx) => (
             <motion.div
               key={motto.title + idx}
-              initial={{ opacity: 0, y: 25 }}
+              initial={{ opacity: 0, y: 15 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: idx * 0.15 }}
-              className="p-7 sm:p-8 rounded-3xl bg-gradient-to-b from-stone-900/90 to-[#0c0a09]/90 border-2 border-orange-500/40 shadow-2xl hover:border-orange-400 hover:shadow-orange-500/20 transition-all relative overflow-hidden group backdrop-blur-md"
+              transition={{ duration: 0.4, delay: idx * 0.1 }}
+              className="p-4 sm:p-5 rounded-2xl bg-gradient-to-b from-stone-900/90 to-[#0c0a09]/90 border border-orange-500/35 shadow-lg hover:border-orange-400 transition-all relative overflow-hidden group backdrop-blur-md"
             >
-              <div className="absolute top-0 right-0 w-32 h-32 bg-orange-500/10 rounded-full blur-2xl group-hover:bg-orange-500/20 transition-all pointer-events-none" />
+              <div className="absolute top-0 right-0 w-24 h-24 bg-orange-500/10 rounded-full blur-xl group-hover:bg-orange-500/20 transition-all pointer-events-none" />
               
-              <div className="flex items-center justify-between mb-6">
-                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-orange-400 via-amber-400 to-yellow-500 text-slate-950 flex items-center justify-center font-black text-2xl shadow-xl group-hover:scale-110 transition-transform border border-amber-200">
+              <div className="flex items-center justify-between mb-3">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-400 via-amber-400 to-yellow-500 text-slate-950 flex items-center justify-center font-black text-lg shadow-md group-hover:scale-105 transition-transform border border-amber-200">
                   {motto.title[0]}
                 </div>
-                <span className="text-xs font-black tracking-widest uppercase bg-stone-950/80 text-amber-300 px-3 py-1 rounded-xl border border-orange-500/40">
+                <span className="text-[10px] font-black tracking-widest uppercase bg-stone-950/80 text-amber-300 px-2.5 py-0.5 rounded-lg border border-orange-500/40">
                   Pilar {idx + 1}
                 </span>
               </div>
 
-              <h3 className="text-2xl sm:text-3xl font-black mb-3 text-amber-300 tracking-tight flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-orange-400" />
+              <h3 className="text-lg sm:text-xl font-black mb-1.5 text-amber-300 tracking-tight flex items-center gap-1.5">
+                <Sparkles className="w-4 h-4 text-orange-400" />
                 {motto.title}
               </h3>
 
-              <p className="text-stone-300 text-sm sm:text-base leading-relaxed font-medium">
+              <p className="text-stone-300 text-xs sm:text-[13px] leading-relaxed font-normal">
                 {motto.description}
               </p>
             </motion.div>
