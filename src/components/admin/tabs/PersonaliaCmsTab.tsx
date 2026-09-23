@@ -228,7 +228,7 @@ export const PersonaliaCmsTab: React.FC<PersonaliaCmsTabProps> = ({ onShowToast 
       {/* Top Banner / Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
         <div>
-          <div className="flex items-center gap-2 text-xs font-black text-[#006633] uppercase tracking-wider">
+          <div className="flex items-center gap-2 text-xs font-black text-[#193B63] uppercase tracking-wider">
             <Users className="w-4 h-4" />
             <span>Manajemen Personalia & SDM Lembaga</span>
           </div>
@@ -261,7 +261,7 @@ export const PersonaliaCmsTab: React.FC<PersonaliaCmsTabProps> = ({ onShowToast 
 
           <button
             onClick={handleOpenAdd}
-            className="px-4 py-2.5 rounded-2xl bg-[#006633] hover:bg-[#004d26] text-white text-xs font-black transition-all flex items-center gap-2 shadow-md hover:shadow-lg cursor-pointer"
+            className="px-4 py-2.5 rounded-2xl bg-[#193B63] hover:bg-[#122C4B] text-white text-xs font-black transition-all flex items-center gap-2 shadow-md hover:shadow-lg cursor-pointer"
           >
             <Plus className="w-4 h-4" />
             <span>Tambah Personalia Baru</span>
@@ -373,7 +373,7 @@ export const PersonaliaCmsTab: React.FC<PersonaliaCmsTabProps> = ({ onShowToast 
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Cari nama, mapel, posisi..."
-            className="w-full pl-9 pr-8 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-900 focus:outline-none focus:border-[#006633] focus:bg-white"
+            className="w-full pl-9 pr-8 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-900 focus:outline-none focus:border-[#F97316] focus:bg-white"
           />
           {searchQuery && (
             <button
@@ -423,10 +423,10 @@ export const PersonaliaCmsTab: React.FC<PersonaliaCmsTabProps> = ({ onShowToast 
 
                     <div className="min-w-0 flex-1">
                       <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 border border-slate-200">
-                        <CatIcon className="w-3 h-3 text-[#006633]" />
+                        <CatIcon className="w-3 h-3 text-[#F97316]" />
                         {catMeta.label.split(' ')[0]}
                       </span>
-                      <h4 className="text-sm font-black text-slate-900 mt-1 truncate group-hover:text-[#006633] transition-colors">
+                      <h4 className="text-sm font-black text-slate-900 mt-1 truncate group-hover:text-[#F97316] transition-colors">
                         {item.name}
                       </h4>
                       <p className="text-xs font-semibold text-amber-700 truncate">{item.role}</p>
@@ -470,7 +470,7 @@ export const PersonaliaCmsTab: React.FC<PersonaliaCmsTabProps> = ({ onShowToast 
                     onClick={() => handleOpenEdit(item)}
                     className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer"
                   >
-                    <Edit3 className="w-3.5 h-3.5 text-[#006633]" />
+                    <Edit3 className="w-3.5 h-3.5 text-[#193B63]" />
                     <span>Edit</span>
                   </button>
 
@@ -501,7 +501,7 @@ export const PersonaliaCmsTab: React.FC<PersonaliaCmsTabProps> = ({ onShowToast 
               {/* Modal Header */}
               <div className="p-5 sm:p-6 bg-slate-900 text-white flex items-center justify-between shrink-0">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-2xl bg-[#006633] text-amber-300 flex items-center justify-center font-bold">
+                  <div className="w-10 h-10 rounded-2xl bg-[#193B63] text-[#F4B942] flex items-center justify-center font-bold">
                     <Users className="w-5 h-5" />
                   </div>
                   <div>
@@ -536,7 +536,7 @@ export const PersonaliaCmsTab: React.FC<PersonaliaCmsTabProps> = ({ onShowToast 
                       value={formData.name}
                       onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
                       placeholder="Contoh: Drs. H. Mulyadi, M.Pd."
-                      className="w-full p-2.5 rounded-xl border border-slate-300 text-xs focus:outline-none focus:border-[#006633] focus:ring-1 focus:ring-[#006633]"
+                      className="w-full p-2.5 rounded-xl border border-slate-300 text-xs focus:outline-none focus:border-[#F97316] focus:ring-1 focus:ring-[#F97316]"
                     />
                   </div>
 
@@ -549,7 +549,7 @@ export const PersonaliaCmsTab: React.FC<PersonaliaCmsTabProps> = ({ onShowToast 
                       onChange={(e) =>
                         setFormData((prev) => ({ ...prev, category: e.target.value as PersonaliaCategory }))
                       }
-                      className="w-full p-2.5 rounded-xl border border-slate-300 text-xs bg-white focus:outline-none focus:border-[#006633]"
+                      className="w-full p-2.5 rounded-xl border border-slate-300 text-xs bg-white focus:outline-none focus:border-[#F97316]"
                     >
                       {CATEGORY_OPTIONS.map((cat) => (
                         <option key={cat.value} value={cat.value}>
@@ -572,7 +572,7 @@ export const PersonaliaCmsTab: React.FC<PersonaliaCmsTabProps> = ({ onShowToast 
                       value={formData.role}
                       onChange={(e) => setFormData((prev) => ({ ...prev, role: e.target.value }))}
                       placeholder="Contoh: Ketua PKBM & Tutor Paket C"
-                      className="w-full p-2.5 rounded-xl border border-slate-300 text-xs focus:outline-none focus:border-[#006633] focus:ring-1 focus:ring-[#006633]"
+                      className="w-full p-2.5 rounded-xl border border-slate-300 text-xs focus:outline-none focus:border-[#F97316] focus:ring-1 focus:ring-[#F97316]"
                     />
                   </div>
 
@@ -585,7 +585,7 @@ export const PersonaliaCmsTab: React.FC<PersonaliaCmsTabProps> = ({ onShowToast 
                       value={formData.education}
                       onChange={(e) => setFormData((prev) => ({ ...prev, education: e.target.value }))}
                       placeholder="Contoh: S1 Pendidikan Matematika / S2 Manajemen"
-                      className="w-full p-2.5 rounded-xl border border-slate-300 text-xs focus:outline-none focus:border-[#006633]"
+                      className="w-full p-2.5 rounded-xl border border-slate-300 text-xs focus:outline-none focus:border-[#F97316]"
                     />
                   </div>
                 </div>
@@ -601,7 +601,7 @@ export const PersonaliaCmsTab: React.FC<PersonaliaCmsTabProps> = ({ onShowToast 
                       value={formData.specialization}
                       onChange={(e) => setFormData((prev) => ({ ...prev, specialization: e.target.value }))}
                       placeholder="Contoh: Bahasa Indonesia & Kurikulum Merdeka"
-                      className="w-full p-2.5 rounded-xl border border-slate-300 text-xs focus:outline-none focus:border-[#006633]"
+                      className="w-full p-2.5 rounded-xl border border-slate-300 text-xs focus:outline-none focus:border-[#F97316]"
                     />
                   </div>
 
@@ -614,7 +614,7 @@ export const PersonaliaCmsTab: React.FC<PersonaliaCmsTabProps> = ({ onShowToast 
                       value={formData.nuptkOrNip}
                       onChange={(e) => setFormData((prev) => ({ ...prev, nuptkOrNip: e.target.value }))}
                       placeholder="Contoh: PEG-001, 19650412..., atau 001"
-                      className="w-full p-2.5 rounded-xl border border-slate-300 text-xs font-mono focus:outline-none focus:border-[#006633]"
+                      className="w-full p-2.5 rounded-xl border border-slate-300 text-xs font-mono focus:outline-none focus:border-[#F97316]"
                     />
                     <p className="text-[10px] text-slate-500">
                       Digunakan untuk urutan tampil otomatis per kelompok serta tautan langsung.
@@ -631,7 +631,7 @@ export const PersonaliaCmsTab: React.FC<PersonaliaCmsTabProps> = ({ onShowToast 
                       value={formData.email}
                       onChange={(e) => setFormData((prev) => ({ ...prev, email: e.target.value }))}
                       placeholder="nama@pkbmbinainsani.sch.id"
-                      className="w-full p-2.5 rounded-xl border border-slate-300 text-xs focus:outline-none focus:border-[#006633]"
+                      className="w-full p-2.5 rounded-xl border border-slate-300 text-xs focus:outline-none focus:border-[#F97316]"
                     />
                   </div>
 
@@ -642,7 +642,7 @@ export const PersonaliaCmsTab: React.FC<PersonaliaCmsTabProps> = ({ onShowToast 
                       value={formData.phone}
                       onChange={(e) => setFormData((prev) => ({ ...prev, phone: e.target.value }))}
                       placeholder="+62 852-xxxx-xxxx"
-                      className="w-full p-2.5 rounded-xl border border-slate-300 text-xs focus:outline-none focus:border-[#006633]"
+                      className="w-full p-2.5 rounded-xl border border-slate-300 text-xs focus:outline-none focus:border-[#F97316]"
                     />
                   </div>
                 </div>
@@ -657,7 +657,7 @@ export const PersonaliaCmsTab: React.FC<PersonaliaCmsTabProps> = ({ onShowToast 
                     value={formData.bio}
                     onChange={(e) => setFormData((prev) => ({ ...prev, bio: e.target.value }))}
                     placeholder="Tuliskan pengalaman dedikasi atau pesan motivasi kepada warga belajar..."
-                    className="w-full p-2.5 rounded-xl border border-slate-300 text-xs focus:outline-none focus:border-[#006633]"
+                    className="w-full p-2.5 rounded-xl border border-slate-300 text-xs focus:outline-none focus:border-[#F97316]"
                   />
                 </div>
 
@@ -669,7 +669,7 @@ export const PersonaliaCmsTab: React.FC<PersonaliaCmsTabProps> = ({ onShowToast 
 
                   <div className="flex flex-col sm:flex-row items-center gap-4">
                     {/* Live Preview Avatar */}
-                    <div className="relative w-20 h-24 rounded-2xl overflow-hidden bg-slate-900 border-2 border-[#006633] shrink-0 shadow-md flex items-center justify-center">
+                    <div className="relative w-20 h-24 rounded-2xl overflow-hidden bg-slate-900 border-2 border-[#193B63] shrink-0 shadow-md flex items-center justify-center">
                       <img
                         src={formData.photo}
                         alt="Preview Foto"
@@ -684,12 +684,12 @@ export const PersonaliaCmsTab: React.FC<PersonaliaCmsTabProps> = ({ onShowToast 
                         value={formData.photo}
                         onChange={(e) => setFormData((prev) => ({ ...prev, photo: e.target.value }))}
                         placeholder="Tempel tautan URL foto gambar..."
-                        className="w-full p-2 rounded-xl border border-slate-300 text-xs focus:outline-none focus:border-[#006633]"
+                        className="w-full p-2 rounded-xl border border-slate-300 text-xs focus:outline-none focus:border-[#F97316]"
                       />
 
                       {/* File Upload Button */}
                       <label className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold border border-slate-300 cursor-pointer transition-all">
-                        <Upload className="w-3.5 h-3.5 text-[#006633]" />
+                        <Upload className="w-3.5 h-3.5 text-[#F97316]" />
                         <span>Unggah Foto dari Komputer / HP</span>
                         <input
                           type="file"
@@ -714,7 +714,7 @@ export const PersonaliaCmsTab: React.FC<PersonaliaCmsTabProps> = ({ onShowToast 
                           onClick={() => setFormData((prev) => ({ ...prev, photo: preset.url }))}
                           className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-all border cursor-pointer ${
                             formData.photo === preset.url
-                              ? 'bg-[#006633] text-white border-[#006633]'
+                              ? 'bg-[#193B63] text-white border-[#193B63]'
                               : 'bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-200'
                           }`}
                         >
@@ -737,7 +737,7 @@ export const PersonaliaCmsTab: React.FC<PersonaliaCmsTabProps> = ({ onShowToast 
 
                   <button
                     type="submit"
-                    className="px-6 py-2.5 rounded-xl bg-[#006633] hover:bg-[#004d26] text-white text-xs font-black transition-all flex items-center gap-2 shadow-md cursor-pointer"
+                    className="px-6 py-2.5 rounded-xl bg-[#193B63] hover:bg-[#122C4B] text-white text-xs font-black transition-all flex items-center gap-2 shadow-md cursor-pointer"
                   >
                     <Save className="w-4 h-4" />
                     <span>{editingId ? 'Simpan Perubahan' : 'Tambah Personalia'}</span>

@@ -70,10 +70,6 @@ export const NewsSection: React.FC<NewsSectionProps> = ({ onOpenAdmin, onShareCu
     activeReadingArticle.id !== defaultLatestArticle.id
   );
 
-  // Artikel untuk daftar kartu di bawah:
-  // Ketika berita lama sedang dibaca di bagian atas, tampilkan seluruh filteredNews agar berita terbaru tetap dapat diakses,
-  // dan kartu berita yang sedang dibaca memiliki tanda visual serta tombol ciutkan.
-  // Jika dalam kondisi normal, tampilkan filteredNews.slice(1).
   const listArticles = isReadingOlderArticle ? filteredNews : filteredNews.length > 1 ? filteredNews.slice(1) : [];
 
   // Handler buka berita lengkap di bagian atas
@@ -172,19 +168,19 @@ export const NewsSection: React.FC<NewsSectionProps> = ({ onOpenAdmin, onShareCu
   );
 
   return (
-    <section id="berita" className="pt-4 sm:pt-6 pb-16 bg-slate-50 relative">
+    <section id="berita" className="pt-4 sm:pt-6 pb-16 bg-[#F8FAFC] relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Compact Admin Action Bar (if applicable) */}
         {onOpenAdmin && (
-          <div className="mb-3 flex items-center justify-between p-2 sm:px-3 rounded-xl bg-orange-100/60 border border-orange-300/40 text-xs">
-            <div className="flex items-center gap-2 text-stone-700 font-semibold">
-              <Newspaper className="w-3.5 h-3.5 text-orange-600" />
+          <div className="mb-3 flex items-center justify-between p-2 sm:px-3 rounded-xl bg-[#FFF7ED] border border-[#FDBA74] text-xs">
+            <div className="flex items-center gap-2 text-[#193B63] font-semibold">
+              <Newspaper className="w-3.5 h-3.5 text-[#F97316]" />
               <span>Kanal Berita & Pengumuman Resmi • Total {filteredNews.length} Artikel</span>
             </div>
             <button
               onClick={onOpenAdmin}
-              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-400 hover:to-amber-400 text-white font-extrabold text-[11px] shadow-sm transition-all cursor-pointer border border-orange-300/40"
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-[#F97316] hover:bg-[#EA580C] text-white font-extrabold text-[11px] shadow-xs transition-all cursor-pointer border border-[#FDBA74]/50"
             >
               <PlusCircle className="w-3.5 h-3.5 text-white" />
               <span>{isAdminAuthenticated ? 'Posting Berita Baru' : 'Kelola Berita (Admin)'}</span>
@@ -192,8 +188,8 @@ export const NewsSection: React.FC<NewsSectionProps> = ({ onOpenAdmin, onShareCu
           </div>
         )}
 
-        {/* Filter and Search Bar (Compact & Space-Efficient) */}
-        <div className="flex flex-col md:flex-row items-center justify-between gap-2.5 mb-5 bg-white p-2.5 sm:px-3 sm:py-2 rounded-xl border border-stone-200 shadow-xs">
+        {/* Filter and Search Bar */}
+        <div className="flex flex-col md:flex-row items-center justify-between gap-2.5 mb-5 bg-white p-2.5 sm:px-3 sm:py-2 rounded-xl border border-[#E2E8F0] shadow-xs">
           {/* Category Tabs */}
           <div className="flex flex-wrap items-center gap-1.5 w-full md:w-auto">
             {availableCategories.map((cat) => (
@@ -202,8 +198,8 @@ export const NewsSection: React.FC<NewsSectionProps> = ({ onOpenAdmin, onShareCu
                 onClick={() => setSelectedCategory(cat)}
                 className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                   selectedCategory === cat
-                    ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-xs'
-                    : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
+                    ? 'bg-[#F97316] text-white shadow-xs border border-[#FDBA74]/50'
+                    : 'bg-[#F8FAFC] text-[#486581] hover:bg-[#FFF7ED] hover:text-[#EA580C]'
                 }`}
               >
                 {cat}
@@ -213,18 +209,18 @@ export const NewsSection: React.FC<NewsSectionProps> = ({ onOpenAdmin, onShareCu
 
           {/* Search Box */}
           <div className="relative w-full md:w-60">
-            <Search className="w-3.5 h-3.5 text-stone-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
+            <Search className="w-3.5 h-3.5 text-[#486581] absolute left-2.5 top-1/2 -translate-y-1/2" />
             <input
               type="text"
               placeholder="Cari berita..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-8 pr-7 py-1.5 rounded-lg text-xs bg-stone-50 border border-stone-200 focus:outline-none focus:border-orange-500 focus:bg-white text-slate-800"
+              className="w-full pl-8 pr-7 py-1.5 rounded-lg text-xs bg-[#F8FAFC] border border-[#E2E8F0] focus:outline-none focus:border-[#F97316] focus:bg-white text-[#1E293B] shadow-xs"
             />
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery('')}
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600"
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-[#486581] hover:text-[#1E293B]"
               >
                 <X className="w-3.5 h-3.5" />
               </button>
@@ -232,30 +228,30 @@ export const NewsSection: React.FC<NewsSectionProps> = ({ onOpenAdmin, onShareCu
           </div>
         </div>
 
-        {/* 1. AREA PEMBACA ATAS: Menampilkan Berita yang Sedang Dibaca (atau Berita Terbaru Default) */}
+        {/* 1. AREA PEMBACA ATAS: Menampilkan Berita yang Sedang Dibaca */}
         <div id="berita-top-reader" className="scroll-mt-24">
           {topArticle && (() => {
             return isTopArticleExpanded ? (
               /* ================= MODE DIBACA LENGKAP DI BAGIAN ATAS ================= */
               <div className="mb-12">
-                {/* Banner Status Jika Berita yang Dibaca Adalah Berita Lama / Bukan Berita Terbaru Default */}
+                {/* Banner Status Jika Berita yang Dibaca Adalah Berita Lama */}
                 {isReadingOlderArticle && (
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 p-3 sm:px-4 rounded-2xl bg-gradient-to-r from-orange-600 via-amber-600 to-orange-600 text-white shadow-md mb-4 animate-in fade-in duration-300">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 p-3 sm:px-4 rounded-2xl bg-[#FFF7ED] border border-[#FDBA74] text-[#193B63] shadow-xs mb-4">
                     <div className="flex items-center gap-2.5 text-xs sm:text-sm font-bold min-w-0">
                       <span className="relative flex h-2.5 w-2.5 shrink-0">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-200 opacity-75"></span>
-                        <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-amber-300"></span>
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#FDBA74] opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#F97316]"></span>
                       </span>
-                      <BookOpen className="w-4 h-4 text-amber-200 shrink-0" />
+                      <BookOpen className="w-4 h-4 text-[#EA580C] shrink-0" />
                       <span className="truncate">
-                        Menampilkan Berita: <strong className="text-white">{topArticle.title}</strong>
+                        Menampilkan Berita: <strong className="text-[#193B63]">{topArticle.title}</strong>
                       </span>
                     </div>
                     <button
                       onClick={() => handleCollapseArticle(topArticle.id)}
-                      className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-stone-950/85 hover:bg-stone-950 text-amber-300 hover:text-white font-extrabold text-xs transition-all cursor-pointer shadow border border-amber-400/40 hover:scale-105 active:scale-95 shrink-0"
+                      className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-[#193B63] hover:bg-[#EA580C] text-white font-extrabold text-xs transition-all cursor-pointer shadow-xs shrink-0"
                     >
-                      <ChevronUp className="w-3.5 h-3.5" />
+                      <ChevronUp className="w-3.5 h-3.5 text-[#F4B942]" />
                       <span>Ciutkan Berita (Kembali)</span>
                     </button>
                   </div>
@@ -266,18 +262,16 @@ export const NewsSection: React.FC<NewsSectionProps> = ({ onOpenAdmin, onShareCu
                   initial={{ opacity: 0, y: 15 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.35 }}
-                  className="bg-white rounded-3xl border-2 border-orange-400 ring-4 ring-orange-400/15 overflow-hidden shadow-xl"
+                  className="bg-white rounded-3xl border-2 border-[#FDBA74] ring-4 ring-[#FDBA74]/15 overflow-hidden shadow-md"
                 >
                   {/* FOTO BESAR DI BAGIAN ATAS TEKS BERITA (UTUH TANPA TERPOTONG) */}
-                  <div className="relative w-full h-72 sm:h-96 md:h-[460px] lg:h-[520px] bg-stone-950 overflow-hidden flex items-center justify-center group">
-                    {/* Ambient blurred backdrop untuk estetika latar yang serasi tanpa ruang hampa */}
+                  <div className="relative w-full h-72 sm:h-96 md:h-[460px] lg:h-[520px] bg-[#1E293B] overflow-hidden flex items-center justify-center group">
                     <img
                       src={topArticle.image}
                       alt=""
                       className="absolute inset-0 w-full h-full object-cover blur-2xl opacity-40 scale-125 pointer-events-none"
                     />
                     
-                    {/* Foto Tajam Utuh 100% Tanpa Terpotong */}
                     <img
                       src={topArticle.image}
                       alt={topArticle.title}
@@ -287,14 +281,14 @@ export const NewsSection: React.FC<NewsSectionProps> = ({ onOpenAdmin, onShareCu
 
                     {/* Badge Status & Kategori */}
                     <div className="absolute top-4 left-4 flex flex-wrap items-center gap-2 z-20">
-                      <span className="px-3 py-1 rounded-xl text-xs font-black bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-md flex items-center gap-1.5">
+                      <span className="px-3 py-1 rounded-xl text-xs font-black bg-[#F97316] text-white shadow-xs flex items-center gap-1.5">
                         <Sparkles className="w-3.5 h-3.5" />
                         {topArticle.id === defaultLatestArticle?.id ? 'Berita Terbaru' : 'Berita Pilihan'}
                       </span>
-                      <span className="px-2.5 py-1 rounded-xl text-xs font-extrabold bg-stone-900/85 backdrop-blur-sm text-white shadow-md">
+                      <span className="px-2.5 py-1 rounded-xl text-xs font-extrabold bg-[#193B63]/90 backdrop-blur-sm text-white shadow-xs">
                         {topArticle.category}
                       </span>
-                      <span className="px-2.5 py-1 rounded-xl text-xs font-bold bg-amber-400 text-stone-950 shadow-md">
+                      <span className="px-2.5 py-1 rounded-xl text-xs font-bold bg-[#FEF9C3] text-[#854D0E] border border-[#F4B942] shadow-xs">
                         Sedang Dibaca
                       </span>
                     </div>
@@ -304,7 +298,7 @@ export const NewsSection: React.FC<NewsSectionProps> = ({ onOpenAdmin, onShareCu
                       onClick={() => setLightboxImage({ url: topArticle.image, title: topArticle.title })}
                       className="absolute bottom-4 right-4 z-20 px-3 py-1.5 rounded-xl bg-black/80 hover:bg-black text-white text-xs font-bold flex items-center gap-1.5 border border-stone-700 shadow-lg cursor-pointer transition-all"
                     >
-                      <Maximize2 className="w-3.5 h-3.5 text-amber-400" />
+                      <Maximize2 className="w-3.5 h-3.5 text-[#F4B942]" />
                       <span>Perbesar Foto</span>
                     </button>
                   </div>
@@ -312,20 +306,20 @@ export const NewsSection: React.FC<NewsSectionProps> = ({ onOpenAdmin, onShareCu
                   {/* KONTEN BERITA LENGKAP DI BAWAH FOTO */}
                   <div className="p-6 sm:p-9 lg:p-12 space-y-6">
                     {/* Meta Bar */}
-                    <div className="flex flex-wrap items-center justify-between gap-3 text-stone-500 text-xs sm:text-sm border-b border-stone-100 pb-4">
+                    <div className="flex flex-wrap items-center justify-between gap-3 text-[#486581] text-xs sm:text-sm border-b border-[#E2E8F0] pb-4">
                       <div className="flex flex-wrap items-center gap-3 sm:gap-4">
                         <span className="flex items-center gap-1.5 font-medium">
-                          <Calendar className="w-4 h-4 text-orange-600" />
+                          <Calendar className="w-4 h-4 text-[#F97316]" />
                           {topArticle.date}
                         </span>
-                        <span className="text-stone-300">•</span>
+                        <span className="text-[#CBD5E1]">•</span>
                         <span className="flex items-center gap-1.5 font-medium">
-                          <Clock className="w-4 h-4 text-orange-600" />
+                          <Clock className="w-4 h-4 text-[#F97316]" />
                           {topArticle.readTime}
                         </span>
-                        <span className="text-stone-300">•</span>
+                        <span className="text-[#CBD5E1]">•</span>
                         <span className="flex items-center gap-1.5 font-medium">
-                          <User className="w-4 h-4 text-orange-600" />
+                          <User className="w-4 h-4 text-[#F97316]" />
                           {topArticle.author}
                         </span>
                       </div>
@@ -333,7 +327,7 @@ export const NewsSection: React.FC<NewsSectionProps> = ({ onOpenAdmin, onShareCu
                       {/* Tombol Bagikan Cepat */}
                       <button
                         onClick={() => handleShareArticle(topArticle)}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-orange-50 hover:bg-orange-100 text-orange-700 font-bold text-xs cursor-pointer transition-colors"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#FFF7ED] hover:bg-[#FDBA74]/30 text-[#EA580C] font-bold text-xs cursor-pointer transition-colors border border-[#FDBA74]"
                       >
                         {copiedId === topArticle.id ? (
                           <>
@@ -350,36 +344,36 @@ export const NewsSection: React.FC<NewsSectionProps> = ({ onOpenAdmin, onShareCu
                     </div>
 
                     {/* Judul Berita Utama */}
-                    <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-slate-900 leading-tight">
+                    <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-[#193B63] leading-tight">
                       {topArticle.title}
                     </h2>
 
                     {/* Kotak Ringkasan / Lead Paragraph */}
-                    <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-orange-50 via-amber-50/60 to-orange-50/30 border-l-4 border-orange-500 shadow-xs">
-                      <p className="text-sm sm:text-base md:text-lg font-semibold text-slate-800 leading-relaxed">
+                    <div className="p-4 sm:p-5 rounded-2xl bg-[#FFF7ED] border-l-4 border-[#F97316] shadow-xs">
+                      <p className="text-sm sm:text-base md:text-lg font-semibold text-[#193B63] leading-relaxed">
                         {topArticle.summary}
                       </p>
                     </div>
 
                     {/* Paragraf-paragraf Berita Lengkap */}
-                    <div className="space-y-4 text-stone-700 text-sm sm:text-base leading-relaxed pt-2">
+                    <div className="space-y-4 text-[#1E293B] text-sm sm:text-base leading-relaxed pt-2">
                       {topArticle.content && topArticle.content.length > 0 ? (
                         topArticle.content.map((paragraph, pIdx) => (
-                          <p key={pIdx} className="leading-relaxed font-normal text-stone-800">
+                          <p key={pIdx} className="leading-relaxed font-normal text-[#1E293B]">
                             {paragraph}
                           </p>
                         ))
                       ) : (
-                        <p className="text-stone-800">{topArticle.summary}</p>
+                        <p className="text-[#1E293B]">{topArticle.summary}</p>
                       )}
                     </div>
 
                     {/* Tagar Berita */}
                     {topArticle.tags && topArticle.tags.length > 0 && (
-                      <div className="flex flex-wrap items-center gap-2 pt-4 border-t border-stone-200">
-                        <Tag className="w-3.5 h-3.5 text-orange-500" />
+                      <div className="flex flex-wrap items-center gap-2 pt-4 border-t border-[#E2E8F0]">
+                        <Tag className="w-3.5 h-3.5 text-[#F97316]" />
                         {topArticle.tags.map((tag, tIdx) => (
-                          <span key={tIdx} className="px-2.5 py-1 bg-stone-100 text-stone-600 rounded-lg text-xs font-semibold">
+                          <span key={tIdx} className="px-2.5 py-1 bg-[#F8FAFC] text-[#486581] border border-[#E2E8F0] rounded-lg text-xs font-semibold">
                             #{tag}
                           </span>
                         ))}
@@ -387,16 +381,16 @@ export const NewsSection: React.FC<NewsSectionProps> = ({ onOpenAdmin, onShareCu
                     )}
 
                     {/* Tombol Ciutkan Berita & Kembali Ke Posisi Semula */}
-                    <div className="pt-6 border-t border-stone-200 flex flex-wrap items-center justify-between gap-3">
+                    <div className="pt-6 border-t border-[#E2E8F0] flex flex-wrap items-center justify-between gap-3">
                       <button
                         onClick={() => handleCollapseArticle(topArticle.id)}
-                        className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-extrabold text-xs sm:text-sm bg-stone-900 text-white hover:bg-stone-800 transition-all cursor-pointer shadow-md hover:scale-105 active:scale-95"
+                        className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-extrabold text-xs sm:text-sm bg-[#193B63] text-white hover:bg-[#EA580C] transition-all cursor-pointer shadow-xs"
                       >
-                        <ChevronUp className="w-4 h-4 text-amber-400" />
+                        <ChevronUp className="w-4 h-4 text-[#F4B942]" />
                         <span>Ciutkan Berita</span>
                       </button>
 
-                      <span className="text-xs text-stone-500 font-medium">
+                      <span className="text-xs text-[#486581] font-medium">
                         Kanal Publikasi Resmi PKBM Bina Insani Sumowono
                       </span>
                     </div>
@@ -411,21 +405,19 @@ export const NewsSection: React.FC<NewsSectionProps> = ({ onOpenAdmin, onShareCu
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.4 }}
-                className="mb-12 bg-white rounded-3xl border border-stone-200 hover:border-orange-300 transition-all duration-300 overflow-hidden shadow-sm hover:shadow-xl"
+                className="mb-12 bg-white rounded-3xl border border-[#E2E8F0] hover:border-[#FDBA74] transition-all duration-300 overflow-hidden shadow-xs hover:shadow-md"
               >
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-0">
                   {/* Kolom Gambar Berita Terbaru */}
                   <div
                     onClick={() => handleOpenArticle(topArticle.id)}
-                    className="lg:col-span-5 relative h-64 sm:h-80 lg:min-h-[340px] overflow-hidden bg-stone-950 cursor-pointer group flex items-center justify-center"
+                    className="lg:col-span-5 relative h-64 sm:h-80 lg:min-h-[340px] overflow-hidden bg-[#1E293B] cursor-pointer group flex items-center justify-center"
                   >
-                    {/* Ambient background blur */}
                     <img
                       src={topArticle.image}
                       alt=""
                       className="absolute inset-0 w-full h-full object-cover blur-xl opacity-35 scale-125 pointer-events-none"
                     />
-                    {/* Sharp uncropped foreground image */}
                     <img
                       src={topArticle.image}
                       alt={topArticle.title}
@@ -434,18 +426,18 @@ export const NewsSection: React.FC<NewsSectionProps> = ({ onOpenAdmin, onShareCu
                     
                     {/* Badge Unggulan & Kategori */}
                     <div className="absolute top-4 left-4 flex flex-wrap items-center gap-2 z-20">
-                      <span className="px-3 py-1 rounded-xl text-xs font-black bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-md flex items-center gap-1.5">
+                      <span className="px-3 py-1 rounded-xl text-xs font-black bg-[#F97316] text-white shadow-xs flex items-center gap-1.5">
                         <Sparkles className="w-3.5 h-3.5" />
                         Berita Terbaru
                       </span>
-                      <span className="px-2.5 py-1 rounded-xl text-xs font-extrabold bg-stone-900/80 backdrop-blur-sm text-white shadow-md">
+                      <span className="px-2.5 py-1 rounded-xl text-xs font-extrabold bg-[#193B63]/85 backdrop-blur-sm text-white shadow-xs">
                         {topArticle.category}
                       </span>
                     </div>
 
                     {/* Hover Prompt */}
                     <div className="absolute bottom-3 right-3 z-20 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <span className="px-2.5 py-1 rounded-lg bg-black/80 text-amber-300 text-[11px] font-bold backdrop-blur-sm flex items-center gap-1">
+                      <span className="px-2.5 py-1 rounded-lg bg-black/80 text-[#F4B942] text-[11px] font-bold backdrop-blur-sm flex items-center gap-1">
                         <BookOpen className="w-3 h-3" />
                         Klik Baca Selengkapnya
                       </span>
@@ -456,19 +448,19 @@ export const NewsSection: React.FC<NewsSectionProps> = ({ onOpenAdmin, onShareCu
                   <div className="lg:col-span-7 p-6 sm:p-8 lg:p-9 flex flex-col justify-between space-y-4">
                     <div className="space-y-3">
                       {/* Meta Bar */}
-                      <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-stone-500 text-xs sm:text-sm">
+                      <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-[#486581] text-xs sm:text-sm">
                         <span className="flex items-center gap-1.5 font-medium">
-                          <Calendar className="w-4 h-4 text-orange-600" />
+                          <Calendar className="w-4 h-4 text-[#F97316]" />
                           {topArticle.date}
                         </span>
-                        <span className="text-stone-300">•</span>
+                        <span className="text-[#CBD5E1]">•</span>
                         <span className="flex items-center gap-1.5 font-medium">
-                          <Clock className="w-4 h-4 text-orange-600" />
+                          <Clock className="w-4 h-4 text-[#F97316]" />
                           {topArticle.readTime}
                         </span>
-                        <span className="text-stone-300">•</span>
+                        <span className="text-[#CBD5E1]">•</span>
                         <span className="flex items-center gap-1.5 font-medium">
-                          <User className="w-4 h-4 text-orange-600" />
+                          <User className="w-4 h-4 text-[#F97316]" />
                           {topArticle.author}
                         </span>
                       </div>
@@ -476,22 +468,22 @@ export const NewsSection: React.FC<NewsSectionProps> = ({ onOpenAdmin, onShareCu
                       {/* Judul Berita */}
                       <h3
                         onClick={() => handleOpenArticle(topArticle.id)}
-                        className="text-xl sm:text-2xl lg:text-3xl font-black text-slate-900 hover:text-orange-600 transition-colors leading-snug cursor-pointer"
+                        className="text-xl sm:text-2xl lg:text-3xl font-black text-[#193B63] hover:text-[#EA580C] transition-colors leading-snug cursor-pointer"
                       >
                         {topArticle.title}
                       </h3>
 
                       {/* Isi Ringkasan Berita */}
-                      <p className="text-sm sm:text-base leading-relaxed font-medium text-slate-800 line-clamp-3">
+                      <p className="text-sm sm:text-base leading-relaxed font-medium text-[#486581] line-clamp-3">
                         {topArticle.summary}
                       </p>
                     </div>
 
                     {/* Bagian Tombol Baca Selengkapnya */}
-                    <div className="pt-4 border-t border-stone-100 flex flex-wrap items-center justify-between gap-3">
+                    <div className="pt-4 border-t border-[#E2E8F0] flex flex-wrap items-center justify-between gap-3">
                       <button
                         onClick={() => handleOpenArticle(topArticle.id)}
-                        className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-xs sm:text-sm bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white shadow-sm shadow-orange-950/20 transition-all cursor-pointer hover:scale-105 active:scale-95"
+                        className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-xs sm:text-sm bg-[#F97316] hover:bg-[#EA580C] text-white shadow-xs transition-all cursor-pointer border border-[#FDBA74]/50"
                       >
                         <span>Baca Selengkapnya</span>
                         <ArrowRight className="w-4 h-4" />
@@ -499,7 +491,7 @@ export const NewsSection: React.FC<NewsSectionProps> = ({ onOpenAdmin, onShareCu
 
                       <button
                         onClick={() => handleShareArticle(topArticle)}
-                        className="inline-flex items-center gap-1.5 text-xs text-stone-500 hover:text-orange-600 font-medium transition-colors cursor-pointer"
+                        className="inline-flex items-center gap-1.5 text-xs text-[#486581] hover:text-[#EA580C] font-medium transition-colors cursor-pointer"
                       >
                         {copiedId === topArticle.id ? (
                           <>
@@ -521,22 +513,22 @@ export const NewsSection: React.FC<NewsSectionProps> = ({ onOpenAdmin, onShareCu
           })()}
         </div>
 
-        {/* 2. DAFTAR BERITA LAINNYA: Seluruh Berita Menciut Rapi Otomatis Agar Tidak Membuang Ruang Website */}
+        {/* 2. DAFTAR BERITA LAINNYA */}
         {listArticles.length > 0 && (
           <div className="space-y-6">
-            <div className="flex items-center justify-between border-b border-stone-200 pb-4">
+            <div className="flex items-center justify-between border-b border-[#E2E8F0] pb-4">
               <div className="flex items-center gap-2">
-                <BookOpen className="w-5 h-5 text-orange-600" />
-                <h3 className="text-lg sm:text-xl font-black text-slate-900">
+                <BookOpen className="w-5 h-5 text-[#F97316]" />
+                <h3 className="text-lg sm:text-xl font-black text-[#193B63]">
                   {isReadingOlderArticle ? 'Daftar Seluruh Berita' : 'Berita Terdahulu'}
                 </h3>
               </div>
-              <span className="text-xs font-bold text-stone-500 bg-stone-100 px-3 py-1 rounded-full">
+              <span className="text-xs font-bold text-[#486581] bg-[#F8FAFC] border border-[#E2E8F0] px-3 py-1 rounded-full">
                 {listArticles.length} Berita Tersedia
               </span>
             </div>
 
-            {/* Grid Berita: Seluruh Berita Tetap Kompak/Menciut Rapi */}
+            {/* Grid Berita */}
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 items-start">
               {listArticles.map((article, idx) => {
                 const isCurrentlyReadingThis = activeReadingId === article.id;
@@ -549,10 +541,10 @@ export const NewsSection: React.FC<NewsSectionProps> = ({ onOpenAdmin, onShareCu
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.35, delay: idx * 0.05 }}
-                    className={`bg-white rounded-3xl border transition-all duration-300 overflow-hidden flex flex-col justify-between shadow-sm hover:shadow-xl scroll-mt-28 ${
+                    className={`bg-white rounded-3xl border transition-all duration-300 overflow-hidden flex flex-col justify-between shadow-xs hover:shadow-md scroll-mt-28 ${
                       isCurrentlyReadingThis
-                        ? 'border-2 border-orange-500 ring-4 ring-orange-400/25 bg-orange-50/15'
-                        : 'border-stone-200 hover:border-orange-300'
+                        ? 'border-2 border-[#F97316] ring-4 ring-[#F97316]/20 bg-[#FFF7ED]/30'
+                        : 'border-[#E2E8F0] hover:border-[#FDBA74]'
                     }`}
                   >
                     <div>
@@ -565,15 +557,13 @@ export const NewsSection: React.FC<NewsSectionProps> = ({ onOpenAdmin, onShareCu
                             handleOpenArticle(article.id);
                           }
                         }}
-                        className="relative h-48 sm:h-52 bg-stone-950 overflow-hidden cursor-pointer group flex items-center justify-center"
+                        className="relative h-48 sm:h-52 bg-[#1E293B] overflow-hidden cursor-pointer group flex items-center justify-center"
                       >
-                        {/* Ambient background blur */}
                         <img
                           src={article.image}
                           alt=""
                           className="absolute inset-0 w-full h-full object-cover blur-xl opacity-35 scale-125 pointer-events-none"
                         />
-                        {/* Sharp uncropped foreground photo */}
                         <img
                           src={article.image}
                           alt={article.title}
@@ -581,11 +571,11 @@ export const NewsSection: React.FC<NewsSectionProps> = ({ onOpenAdmin, onShareCu
                         />
                         
                         <div className="absolute top-3 left-3 flex items-center gap-1.5 z-20">
-                          <span className="px-2.5 py-1 rounded-lg text-[10px] font-extrabold bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-sm">
+                          <span className="px-2.5 py-1 rounded-lg text-[10px] font-extrabold bg-[#F97316] text-white shadow-xs">
                             {article.category}
                           </span>
                           {isCurrentlyReadingThis && (
-                            <span className="px-2 py-0.5 rounded-lg text-[10px] font-black bg-stone-900 text-amber-300 border border-amber-400/40 shadow-sm flex items-center gap-1">
+                            <span className="px-2 py-0.5 rounded-lg text-[10px] font-black bg-[#193B63] text-[#F4B942] border border-[#FDBA74] shadow-xs flex items-center gap-1">
                               <span>Sedang Dibaca di Atas</span>
                               <span>⬆️</span>
                             </span>
@@ -601,20 +591,20 @@ export const NewsSection: React.FC<NewsSectionProps> = ({ onOpenAdmin, onShareCu
                           className="absolute bottom-2.5 right-2.5 z-20 p-1.5 rounded-lg bg-black/70 hover:bg-black text-white text-xs opacity-0 group-hover:opacity-100 transition-opacity border border-stone-700"
                           title="Perbesar Foto"
                         >
-                          <Maximize2 className="w-3.5 h-3.5 text-amber-400" />
+                          <Maximize2 className="w-3.5 h-3.5 text-[#F4B942]" />
                         </button>
                       </div>
 
-                      {/* Konten Teks Ringkas (Menciut Rapi Tanpa Memakan Ruang) */}
+                      {/* Konten Teks Ringkas */}
                       <div className="p-5 sm:p-6 space-y-2.5">
-                        <div className="flex items-center gap-2.5 text-stone-500 text-xs">
+                        <div className="flex items-center gap-2.5 text-[#486581] text-xs">
                           <span className="flex items-center gap-1 font-medium">
-                            <Calendar className="w-3.5 h-3.5 text-orange-600" />
+                            <Calendar className="w-3.5 h-3.5 text-[#F97316]" />
                             {article.date}
                           </span>
                           <span>•</span>
                           <span className="flex items-center gap-1 font-medium">
-                            <Clock className="w-3.5 h-3.5 text-orange-600" />
+                            <Clock className="w-3.5 h-3.5 text-[#F97316]" />
                             {article.readTime}
                           </span>
                         </div>
@@ -627,14 +617,14 @@ export const NewsSection: React.FC<NewsSectionProps> = ({ onOpenAdmin, onShareCu
                               handleOpenArticle(article.id);
                             }
                           }}
-                          className={`font-black text-slate-900 leading-snug cursor-pointer hover:text-orange-600 transition-colors text-base sm:text-lg line-clamp-2 ${
-                            isCurrentlyReadingThis ? 'text-orange-600' : ''
+                          className={`font-black text-[#193B63] leading-snug cursor-pointer hover:text-[#EA580C] transition-colors text-base sm:text-lg line-clamp-2 ${
+                            isCurrentlyReadingThis ? 'text-[#EA580C]' : ''
                           }`}
                         >
                           {article.title}
                         </h3>
 
-                        <p className="text-stone-600 text-xs sm:text-sm leading-relaxed line-clamp-3">
+                        <p className="text-[#486581] text-xs sm:text-sm leading-relaxed line-clamp-3">
                           {article.summary}
                         </p>
                       </div>
@@ -652,13 +642,13 @@ export const NewsSection: React.FC<NewsSectionProps> = ({ onOpenAdmin, onShareCu
                         }}
                         className={`flex-1 py-2 px-3.5 rounded-xl font-bold text-xs border transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs ${
                           isCurrentlyReadingThis
-                            ? 'bg-stone-900 text-amber-300 border-stone-900 hover:bg-stone-800'
-                            : 'bg-stone-50 hover:bg-gradient-to-r hover:from-orange-500 hover:to-amber-500 text-stone-700 hover:text-white border-stone-200 hover:border-orange-500'
+                            ? 'bg-[#193B63] text-white border-[#193B63] hover:bg-[#EA580C]'
+                            : 'bg-[#F8FAFC] hover:bg-[#F97316] text-[#193B63] hover:text-white border-[#E2E8F0] hover:border-[#F97316]'
                         }`}
                       >
                         {isCurrentlyReadingThis ? (
                           <>
-                            <ChevronUp className="w-3.5 h-3.5" />
+                            <ChevronUp className="w-3.5 h-3.5 text-[#F4B942]" />
                             <span>Ciutkan Berita</span>
                           </>
                         ) : (
@@ -671,7 +661,7 @@ export const NewsSection: React.FC<NewsSectionProps> = ({ onOpenAdmin, onShareCu
 
                       <button
                         onClick={() => handleShareArticle(article)}
-                        className="p-2 rounded-xl bg-stone-100 hover:bg-orange-50 text-stone-600 hover:text-orange-600 border border-stone-200 hover:border-orange-200 transition-colors cursor-pointer"
+                        className="p-2 rounded-xl bg-[#F8FAFC] hover:bg-[#FFF7ED] text-[#486581] hover:text-[#EA580C] border border-[#E2E8F0] hover:border-[#FDBA74] transition-colors cursor-pointer"
                         title="Bagikan Berita"
                       >
                         {copiedId === article.id ? (
@@ -689,14 +679,14 @@ export const NewsSection: React.FC<NewsSectionProps> = ({ onOpenAdmin, onShareCu
         )}
 
         {filteredNews.length === 0 && (
-          <div className="text-center py-16 px-4 bg-white rounded-3xl border border-stone-200 shadow-sm max-w-xl mx-auto space-y-3">
-            <div className="w-12 h-12 rounded-2xl bg-orange-50 text-orange-700 flex items-center justify-center mx-auto">
+          <div className="text-center py-16 px-4 bg-white rounded-3xl border border-[#E2E8F0] shadow-xs max-w-xl mx-auto space-y-3">
+            <div className="w-12 h-12 rounded-2xl bg-[#FFF7ED] text-[#EA580C] border border-[#FDBA74] flex items-center justify-center mx-auto">
               <Newspaper className="w-6 h-6" />
             </div>
-            <h3 className="text-base font-bold text-slate-800">
+            <h3 className="text-base font-bold text-[#193B63]">
               {news.length === 0 ? 'Belum Ada Berita yang Dipublikasikan' : 'Tidak ada berita yang sesuai dengan pencarian Anda'}
             </h3>
-            <p className="text-stone-500 text-xs sm:text-sm max-w-md mx-auto leading-relaxed">
+            <p className="text-[#486581] text-xs sm:text-sm max-w-md mx-auto leading-relaxed">
               {news.length === 0
                 ? 'Pengumuman resmi, agenda kegiatan, dan kabar terbaru PKBM Bina Insani Sumowono akan ditampilkan di sini.'
                 : 'Coba ubah kata kunci pencarian atau pilih kategori berita lainnya.'}
@@ -706,7 +696,7 @@ export const NewsSection: React.FC<NewsSectionProps> = ({ onOpenAdmin, onShareCu
 
       </div>
 
-      {/* Lightbox Modal: Menampilkan Foto Utuh Resolusi Tinggi Tanpa Terpotong */}
+      {/* Lightbox Modal */}
       <AnimatePresence>
         {lightboxImage && (
           <motion.div
@@ -736,7 +726,7 @@ export const NewsSection: React.FC<NewsSectionProps> = ({ onOpenAdmin, onShareCu
               <p className="mt-3 text-center text-white text-sm sm:text-base font-bold max-w-2xl px-4">
                 {lightboxImage.title}
               </p>
-              <span className="text-xs text-amber-300/90 mt-1 font-medium">
+              <span className="text-xs text-[#F4B942] mt-1 font-medium">
                 Foto Dokumentasi Utuh • Resolusi Penuh Tanpa Terpotong
               </span>
             </div>

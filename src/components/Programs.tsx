@@ -16,35 +16,55 @@ export const Programs: React.FC<ProgramsProps> = ({ onOpenRegistration, onShareC
   const getBadgeStyle = (code: string) => {
     switch (code) {
       case 'Paket A':
-        return { bg: 'bg-orange-100 text-orange-900 border-orange-300', btn: 'bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-400 hover:to-orange-500 shadow-orange-950/20' };
+        return {
+          bg: 'bg-[#FFF7ED] text-[#EA580C] border-[#FDBA74]',
+          btn: 'bg-[#F97316] hover:bg-[#EA580C] text-white border border-[#FDBA74]/50',
+          border: 'border-[#FDBA74]',
+          checkColor: 'text-[#F97316]'
+        };
       case 'Paket B':
-        return { bg: 'bg-amber-100 text-amber-900 border-amber-300', btn: 'bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 shadow-amber-950/20' };
+        return {
+          bg: 'bg-[#F0F9FF] text-[#0284C7] border-[#BAE6FD]',
+          btn: 'bg-[#0284C7] hover:bg-[#0369A1] text-white border border-sky-300/50',
+          border: 'border-[#BAE6FD]',
+          checkColor: 'text-[#0284C7]'
+        };
       case 'Paket C':
-        return { bg: 'bg-orange-200 text-orange-950 border-orange-400', btn: 'bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 shadow-orange-950/20' };
+        return {
+          bg: 'bg-[#EFF6FF] text-[#1E40AF] border-[#BFDBFE]',
+          btn: 'bg-[#1E40AF] hover:bg-[#1D4ED8] text-white border border-blue-300/50',
+          border: 'border-[#BFDBFE]',
+          checkColor: 'text-[#1E40AF]'
+        };
       default:
-        return { bg: 'bg-stone-100 text-stone-800 border-stone-300', btn: 'bg-stone-800 hover:bg-stone-900' };
+        return {
+          bg: 'bg-[#F8FAFC] text-[#0F294A] border-[#E2E8F0]',
+          btn: 'bg-[#F97316] hover:bg-[#EA580C] text-white',
+          border: 'border-[#E2E8F0]',
+          checkColor: 'text-[#F97316]'
+        };
     }
   };
 
   return (
-    <section id="program-belajar" className="pt-4 sm:pt-6 pb-16 bg-stone-50 relative">
+    <section id="program-belajar" className="pt-4 sm:pt-6 pb-16 bg-[#F8FAFC] relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Compact Key Benefits Strip */}
-        <div className="flex flex-wrap items-center justify-between gap-2.5 mb-6 p-2 sm:px-3.5 rounded-xl bg-white border border-stone-200 shadow-xs text-xs">
-          <div className="flex flex-wrap items-center gap-2 font-semibold text-slate-700">
-            <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-orange-100 text-orange-900 font-extrabold text-[11px]">
-              <GraduationCap className="w-3.5 h-3.5 text-orange-600" />
+        <div className="flex flex-wrap items-center justify-between gap-2.5 mb-6 p-2 sm:px-3.5 rounded-xl bg-white border border-[#E2E8F0] shadow-xs text-xs">
+          <div className="flex flex-wrap items-center gap-2 font-semibold text-[#0F172A]">
+            <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#FFF7ED] text-[#EA580C] font-extrabold text-[11px] border border-[#FDBA74]">
+              <GraduationCap className="w-3.5 h-3.5 text-[#F97316]" />
               <span>Pilihan Program Kesetaraan</span>
             </span>
-            <span className="hidden sm:inline text-stone-300">•</span>
-            <span className="hidden sm:inline text-[11px] text-stone-600">Ijazah Resmi Kemendikbudristek</span>
-            <span className="hidden md:inline text-stone-300">•</span>
-            <span className="hidden md:inline text-[11px] text-stone-600">SPP 100% Gratis (Usia Sekolah Tercover BOSP)</span>
+            <span className="hidden sm:inline text-[#CBD5E1]">•</span>
+            <span className="hidden sm:inline text-[11px] text-slate-600">Ijazah Resmi Kemendikbudristek</span>
+            <span className="hidden md:inline text-[#CBD5E1]">•</span>
+            <span className="hidden md:inline text-[11px] text-slate-600">SPP 100% Gratis (Usia Sekolah Tercover BOSP)</span>
           </div>
           <button
             onClick={() => onOpenRegistration()}
-            className="inline-flex items-center gap-1 px-3 py-1 rounded-lg bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-400 hover:to-amber-400 text-white font-extrabold text-[11px] shadow-xs transition-all cursor-pointer"
+            className="inline-flex items-center gap-1 px-3 py-1 rounded-lg bg-[#F97316] hover:bg-[#EA580C] text-white font-extrabold text-[11px] shadow-xs transition-all cursor-pointer border border-[#FDBA74]/50"
           >
             <span>Daftar Sekarang</span>
             <ArrowRight className="w-3 h-3" />
@@ -63,19 +83,19 @@ export const Programs: React.FC<ProgramsProps> = ({ onOpenRegistration, onShareC
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: idx * 0.15 }}
-                className="bg-white rounded-3xl border border-stone-200/90 shadow-sm hover:shadow-xl hover:border-orange-300 transition-all duration-300 overflow-hidden flex flex-col group"
+                className={`bg-white rounded-3xl border-2 ${style.border} shadow-xs hover:shadow-md transition-all duration-300 overflow-hidden flex flex-col group`}
               >
                 {/* Program Header Image & Badge */}
-                <div className="relative h-48 overflow-hidden">
+                <div className="relative h-48 overflow-hidden bg-[#1E293B]">
                   <img
                     src={prog.image}
                     alt={prog.title}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#0c0a09]/90 via-[#0c0a09]/30 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
                   
                   <div className="absolute top-4 left-4">
-                    <span className={`px-3 py-1 rounded-full text-xs font-extrabold border shadow-sm ${style.bg}`}>
+                    <span className={`px-3 py-1 rounded-full text-xs font-extrabold border shadow-xs ${style.bg}`}>
                       {prog.equivalency}
                     </span>
                   </div>
@@ -90,34 +110,34 @@ export const Programs: React.FC<ProgramsProps> = ({ onOpenRegistration, onShareC
                 {/* Card Content Body */}
                 <div className="p-6 flex-1 flex flex-col justify-between space-y-6">
                   <div className="space-y-4">
-                    <p className="text-stone-600 text-sm leading-relaxed">
+                    <p className="text-slate-600 text-sm leading-relaxed">
                       {prog.description}
                     </p>
 
                     {/* Program Meta Info */}
-                    <div className="bg-stone-50 p-3.5 rounded-2xl border border-stone-100 space-y-2 text-xs">
-                      <div className="flex items-center justify-between text-stone-700">
-                        <span className="flex items-center gap-1.5 font-medium">
-                          <Users className="w-3.5 h-3.5 text-orange-600" />
+                    <div className="bg-[#F8FAFC] p-3.5 rounded-2xl border border-[#E2E8F0] space-y-2 text-xs">
+                      <div className="flex items-center justify-between text-[#0F172A]">
+                        <span className="flex items-center gap-1.5 font-medium text-slate-500">
+                          <Users className="w-3.5 h-3.5 text-[#F97316]" />
                           Target Usia:
                         </span>
-                        <span className="font-bold text-stone-900">{prog.targetAge}</span>
+                        <span className="font-bold text-[#0F294A]">{prog.targetAge}</span>
                       </div>
-                      <div className="flex items-center justify-between text-stone-700">
-                        <span className="flex items-center gap-1.5 font-medium">
-                          <Clock className="w-3.5 h-3.5 text-orange-600" />
+                      <div className="flex items-center justify-between text-[#0F172A]">
+                        <span className="flex items-center gap-1.5 font-medium text-slate-500">
+                          <Clock className="w-3.5 h-3.5 text-[#F97316]" />
                           Lama Studi:
                         </span>
-                        <span className="font-bold text-stone-900">{prog.duration}</span>
+                        <span className="font-bold text-[#0F294A]">{prog.duration}</span>
                       </div>
                     </div>
 
                     {/* Key Features List */}
                     <div className="space-y-2 pt-2">
-                      <p className="text-xs font-bold text-stone-900 uppercase tracking-wider">Keunggulan Utama:</p>
+                      <p className="text-xs font-bold text-[#0F294A] uppercase tracking-wider">Keunggulan Utama:</p>
                       {prog.features.slice(0, 3).map((feat, fIdx) => (
-                        <div key={fIdx} className="flex items-start gap-2 text-xs text-stone-700">
-                          <CheckCircle className="w-4 h-4 text-orange-600 shrink-0 mt-0.5" />
+                        <div key={fIdx} className="flex items-start gap-2 text-xs text-[#0F172A]">
+                          <CheckCircle className={`w-4 h-4 ${style.checkColor} shrink-0 mt-0.5`} />
                           <span>{feat}</span>
                         </div>
                       ))}
@@ -125,10 +145,10 @@ export const Programs: React.FC<ProgramsProps> = ({ onOpenRegistration, onShareC
                   </div>
 
                   {/* Actions Buttons */}
-                  <div className="pt-4 border-t border-stone-100 space-y-2">
+                  <div className="pt-4 border-t border-[#E2E8F0] space-y-2">
                     <button
                       onClick={() => onOpenRegistration(prog.code)}
-                      className={`w-full py-3 px-4 rounded-xl text-white font-bold text-sm transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer ${style.btn}`}
+                      className={`w-full py-3 px-4 rounded-xl text-white font-bold text-sm transition-all shadow-xs flex items-center justify-center gap-2 cursor-pointer ${style.btn}`}
                     >
                       <span>Daftar {prog.code}</span>
                       <ArrowRight className="w-4 h-4" />
@@ -137,9 +157,9 @@ export const Programs: React.FC<ProgramsProps> = ({ onOpenRegistration, onShareC
                     <div className="flex items-center gap-2">
                       <button
                         onClick={() => setSelectedProgramModal(prog)}
-                        className="flex-1 py-2 px-3 rounded-xl text-stone-700 hover:text-orange-700 font-semibold text-xs transition-colors hover:bg-orange-50 flex items-center justify-center gap-1.5 cursor-pointer border border-stone-200"
+                        className="flex-1 py-2 px-3 rounded-xl text-[#0F294A] hover:text-[#EA580C] font-semibold text-xs transition-colors hover:bg-[#FFF7ED] flex items-center justify-center gap-1.5 cursor-pointer border border-[#E2E8F0]"
                       >
-                        <HelpCircle className="w-3.5 h-3.5 text-stone-500" />
+                        <HelpCircle className="w-3.5 h-3.5 text-slate-500" />
                         <span>Detail & Syarat</span>
                       </button>
 
@@ -154,7 +174,7 @@ export const Programs: React.FC<ProgramsProps> = ({ onOpenRegistration, onShareC
                               category: 'Program Kesetaraan'
                             })
                           }
-                          className="p-2 rounded-xl text-orange-600 hover:bg-orange-50 border border-orange-200 cursor-pointer transition-colors"
+                          className="p-2 rounded-xl text-[#EA580C] hover:bg-[#FFF7ED] border border-[#E2E8F0] cursor-pointer transition-colors"
                           title={`Bagikan info ${prog.code}`}
                         >
                           <Share2 className="w-4 h-4" />
@@ -170,22 +190,22 @@ export const Programs: React.FC<ProgramsProps> = ({ onOpenRegistration, onShareC
         </div>
 
         {/* Kurikulum & Modalitas Banner */}
-        <div className="mt-16 bg-gradient-to-br from-[#0c0a09] via-[#1c1917] to-stone-900 text-white rounded-3xl p-8 sm:p-10 shadow-2xl border border-orange-500/30 flex flex-col lg:flex-row items-center justify-between gap-8">
+        <div className="mt-16 bg-gradient-to-r from-white via-[#FFF7ED]/35 to-white text-[#0F172A] rounded-3xl p-8 sm:p-10 shadow-sm border-2 border-[#FDBA74] flex flex-col lg:flex-row items-center justify-between gap-8">
           <div className="space-y-2 max-w-2xl">
-            <span className="px-3 py-1 rounded-full bg-orange-950 text-amber-300 text-xs font-extrabold border border-orange-700">
+            <span className="px-3 py-1 rounded-full bg-white text-[#EA580C] text-xs font-extrabold border border-[#FDBA74]">
               SISTEM PEMBELAJARAN FLEKSIBEL
             </span>
-            <h3 className="text-2xl sm:text-3xl font-black">
+            <h3 className="text-2xl sm:text-3xl font-black text-[#0F294A]">
               Cocok Bagi Anak Usia Sekolah Maupun Warga Belajar Pekerja
             </h3>
-            <p className="text-stone-300 text-sm leading-relaxed">
+            <p className="text-slate-600 text-sm leading-relaxed">
               PKBM Bina Insani Sumowono memadukan sistem Tatap Muka (KBM), Tutorial Mandiri, serta Modul Digital sehingga proses belajar dapat disesuaikan dengan kesibukan warga belajar tanpa mengurangi mutu lulusan.
             </p>
           </div>
 
           <button
             onClick={() => onOpenRegistration()}
-            className="px-6 py-3.5 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-400 hover:to-amber-400 text-white font-extrabold text-sm transition-all shadow-lg shadow-orange-950/40 whitespace-nowrap cursor-pointer border border-orange-300/40"
+            className="px-6 py-3.5 rounded-xl bg-[#F97316] hover:bg-[#EA580C] text-white font-extrabold text-sm transition-all shadow-sm whitespace-nowrap cursor-pointer border border-[#FDBA74]/50"
           >
             Konsultasi Pendaftaran Gratis
           </button>
@@ -195,45 +215,45 @@ export const Programs: React.FC<ProgramsProps> = ({ onOpenRegistration, onShareC
 
       {/* Program Detail Popup Modal */}
       {selectedProgramModal && (
-        <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+        <div className="fixed inset-0 z-50 bg-[#1E293B]/70 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
-            className="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-stone-200 p-6 sm:p-8 relative"
+            className="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-[#E2E8F0] p-6 sm:p-8 relative"
           >
             <button
               onClick={() => setSelectedProgramModal(null)}
-              className="absolute top-5 right-5 p-2 rounded-full bg-stone-100 hover:bg-stone-200 text-stone-600 transition-colors cursor-pointer"
+              className="absolute top-5 right-5 p-2 rounded-full bg-[#F8FAFC] hover:bg-[#E2E8F0] text-[#486581] transition-colors cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
 
             <div className="space-y-6">
               <div className="flex items-center gap-3">
-                <span className="px-3 py-1 rounded-full text-xs font-extrabold bg-orange-100 text-orange-900 border border-orange-300">
+                <span className="px-3 py-1 rounded-full text-xs font-extrabold bg-[#FFF7ED] text-[#EA580C] border border-[#FDBA74]">
                   {selectedProgramModal.equivalency}
                 </span>
-                <span className="text-xs text-stone-500 font-semibold">{selectedProgramModal.duration}</span>
+                <span className="text-xs text-[#486581] font-semibold">{selectedProgramModal.duration}</span>
               </div>
 
               <div>
-                <h3 className="text-2xl sm:text-3xl font-black text-slate-900">
+                <h3 className="text-2xl sm:text-3xl font-black text-[#193B63]">
                   {selectedProgramModal.title}
                 </h3>
-                <p className="text-orange-600 font-semibold text-sm mt-1">
+                <p className="text-[#EA580C] font-semibold text-sm mt-1">
                   {selectedProgramModal.subtitle}
                 </p>
               </div>
 
-              <p className="text-stone-600 text-sm leading-relaxed">
+              <p className="text-[#486581] text-sm leading-relaxed">
                 {selectedProgramModal.description}
               </p>
 
               {/* Schedules */}
-              <div className="bg-stone-50 p-4 rounded-2xl border border-stone-200 space-y-2">
-                <p className="text-xs font-extrabold text-slate-900 uppercase tracking-wider">Metode & Mode Belajar:</p>
-                <ul className="list-disc list-inside text-xs text-stone-700 space-y-1">
+              <div className="bg-[#F8FAFC] p-4 rounded-2xl border border-[#E2E8F0] space-y-2">
+                <p className="text-xs font-extrabold text-[#193B63] uppercase tracking-wider">Metode & Mode Belajar:</p>
+                <ul className="list-disc list-inside text-xs text-[#1E293B] space-y-1">
                   {selectedProgramModal.schedule.map((s, idx) => (
                     <li key={idx}>{s}</li>
                   ))}
@@ -242,11 +262,11 @@ export const Programs: React.FC<ProgramsProps> = ({ onOpenRegistration, onShareC
 
               {/* All Features */}
               <div className="space-y-3">
-                <p className="text-xs font-extrabold text-slate-900 uppercase tracking-wider">Fasilitas & Layanan Program:</p>
+                <p className="text-xs font-extrabold text-[#193B63] uppercase tracking-wider">Fasilitas & Layanan Program:</p>
                 <div className="space-y-2">
                   {selectedProgramModal.features.map((feat, idx) => (
-                    <div key={idx} className="flex items-start gap-2.5 text-xs text-stone-700">
-                      <CheckCircle className="w-4 h-4 text-orange-600 shrink-0 mt-0.5" />
+                    <div key={idx} className="flex items-start gap-2.5 text-xs text-[#1E293B]">
+                      <CheckCircle className="w-4 h-4 text-[#F97316] shrink-0 mt-0.5" />
                       <span>{feat}</span>
                     </div>
                   ))}
@@ -254,9 +274,9 @@ export const Programs: React.FC<ProgramsProps> = ({ onOpenRegistration, onShareC
               </div>
 
               {/* Requirement Checklist */}
-              <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 text-xs text-amber-900 space-y-1.5">
-                <p className="font-bold flex items-center gap-1.5 text-amber-800">
-                  <Sparkles className="w-4 h-4 text-amber-600" />
+              <div className="p-4 rounded-2xl bg-[#FFF7ED] border border-[#FDBA74] text-xs text-[#1E293B] space-y-1.5">
+                <p className="font-bold flex items-center gap-1.5 text-[#EA580C]">
+                  <Sparkles className="w-4 h-4 text-[#F97316]" />
                   Berkas Pendaftaran {selectedProgramModal.code}:
                 </p>
                 <p>1. Fotokopi Kartu Keluarga (KK) & KTP (jika sudah punya)</p>
@@ -272,7 +292,7 @@ export const Programs: React.FC<ProgramsProps> = ({ onOpenRegistration, onShareC
                     setSelectedProgramModal(null);
                     onOpenRegistration(code);
                   }}
-                  className="flex-1 py-3 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-400 hover:to-amber-400 text-white font-bold text-sm shadow-md shadow-orange-950/20 transition-all text-center border border-orange-300/40 cursor-pointer"
+                  className="flex-1 py-3 rounded-xl bg-[#F97316] hover:bg-[#EA580C] text-white font-bold text-sm shadow-xs transition-all text-center border border-[#FDBA74]/50 cursor-pointer"
                 >
                   Daftar Sekarang untuk {selectedProgramModal.code}
                 </button>

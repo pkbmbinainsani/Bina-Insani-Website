@@ -129,26 +129,26 @@ export const GallerySection: React.FC<GallerySectionProps> = ({ onOpenAdmin, onS
   }));
 
   return (
-    <section id="galeri" className="pt-4 sm:pt-6 pb-16 bg-slate-50/70 relative overflow-hidden">
+    <section id="galeri" className="pt-4 sm:pt-6 pb-16 bg-[#F8FAFC] relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Compact Media Control & Switcher Bar */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mb-6 p-2 sm:px-3 bg-white rounded-2xl border border-slate-200 shadow-xs">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mb-6 p-2 sm:px-3 bg-white rounded-2xl border border-[#E2E8F0] shadow-xs">
           {/* Media Switcher Tab: Foto vs Video */}
-          <div className="inline-flex p-1 bg-stone-100 rounded-xl border border-stone-200">
+          <div className="inline-flex p-1 bg-[#F8FAFC] rounded-xl border border-[#E2E8F0]">
             <button
               onClick={() => setActiveMediaTab('photos')}
               className={`flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-xs font-extrabold transition-all cursor-pointer ${
                 activeMediaTab === 'photos'
-                  ? 'bg-gradient-to-r from-orange-600 to-amber-600 text-white shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
+                  ? 'bg-[#F97316] text-white shadow-xs border border-[#FDBA74]/50'
+                  : 'text-[#486581] hover:text-[#193B63] hover:bg-[#FFF7ED]'
               }`}
             >
               <Camera className="w-3.5 h-3.5" />
               <span>Foto Kegiatan</span>
               <span
                 className={`text-[10px] px-1.5 py-0.2 rounded-md font-bold ${
-                  activeMediaTab === 'photos' ? 'bg-orange-950/40 text-amber-100' : 'bg-white text-slate-600'
+                  activeMediaTab === 'photos' ? 'bg-white/25 text-white' : 'bg-white text-[#486581] border border-[#E2E8F0]'
                 }`}
               >
                 {combinedGallery.length}
@@ -159,15 +159,15 @@ export const GallerySection: React.FC<GallerySectionProps> = ({ onOpenAdmin, onS
               onClick={() => setActiveMediaTab('videos')}
               className={`flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-xs font-extrabold transition-all cursor-pointer ${
                 activeMediaTab === 'videos'
-                  ? 'bg-gradient-to-r from-orange-600 to-amber-600 text-white shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
+                  ? 'bg-[#F97316] text-white shadow-xs border border-[#FDBA74]/50'
+                  : 'text-[#486581] hover:text-[#193B63] hover:bg-[#FFF7ED]'
               }`}
             >
               <Video className="w-3.5 h-3.5" />
               <span>Video Resmi</span>
               <span
                 className={`text-[10px] px-1.5 py-0.2 rounded-md font-bold ${
-                  activeMediaTab === 'videos' ? 'bg-orange-950/40 text-amber-100' : 'bg-white text-slate-600'
+                  activeMediaTab === 'videos' ? 'bg-white/25 text-white' : 'bg-white text-[#486581] border border-[#E2E8F0]'
                 }`}
               >
                 {videos.length}
@@ -179,9 +179,9 @@ export const GallerySection: React.FC<GallerySectionProps> = ({ onOpenAdmin, onS
           {onOpenAdmin && (
             <button
               onClick={onOpenAdmin}
-              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 text-amber-300 font-extrabold text-[11px] shadow-xs transition-all cursor-pointer border border-orange-500/40"
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-[#193B63] hover:bg-[#EA580C] text-white font-extrabold text-[11px] shadow-xs transition-all cursor-pointer border border-white/20"
             >
-              <PlusCircle className="w-3.5 h-3.5 text-orange-400" />
+              <PlusCircle className="w-3.5 h-3.5 text-[#F4B942]" />
               <span>Kelola Galeri (Admin)</span>
             </button>
           )}
@@ -225,8 +225,8 @@ export const GallerySection: React.FC<GallerySectionProps> = ({ onOpenAdmin, onS
                   onClick={() => setSelectedPhotoCategory(cat)}
                   className={`px-4 py-2 rounded-2xl text-xs font-bold transition-all cursor-pointer ${
                     selectedPhotoCategory === cat
-                      ? 'bg-slate-900 text-white shadow-md'
-                      : 'bg-white text-slate-600 hover:bg-slate-200 border border-slate-200'
+                      ? 'bg-[#193B63] text-white shadow-xs'
+                      : 'bg-white text-[#486581] hover:bg-[#FFF7ED] hover:text-[#EA580C] border border-[#E2E8F0]'
                   }`}
                 >
                   {cat}
@@ -244,36 +244,36 @@ export const GallerySection: React.FC<GallerySectionProps> = ({ onOpenAdmin, onS
                   viewport={{ once: true }}
                   transition={{ duration: 0.4, delay: idx * 0.05 }}
                   onClick={() => setSelectedPhoto(item)}
-                  className="group bg-white rounded-3xl overflow-hidden border border-slate-200 shadow-sm hover:shadow-xl hover:border-orange-300 transition-all duration-300 cursor-pointer flex flex-col justify-between"
+                  className="group bg-white rounded-3xl overflow-hidden border border-[#E2E8F0] shadow-xs hover:shadow-md hover:border-[#FDBA74] transition-all duration-300 cursor-pointer flex flex-col justify-between"
                 >
-                  <div className="relative h-60 overflow-hidden bg-slate-100">
+                  <div className="relative h-60 overflow-hidden bg-[#1E293B]">
                     <img
                       src={item.image}
                       alt={item.title}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent opacity-80 group-hover:opacity-90 transition-opacity" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-80 group-hover:opacity-90 transition-opacity" />
                     
                     <div className="absolute top-3 left-3">
-                      <span className="px-2.5 py-1 rounded-lg text-[10px] font-extrabold bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-sm">
+                      <span className="px-2.5 py-1 rounded-lg text-[10px] font-extrabold bg-[#F97316] text-white shadow-xs border border-[#FDBA74]/50">
                         {item.category}
                       </span>
                     </div>
 
                     <div className="absolute bottom-3 left-3 right-3 text-white">
-                      <span className="text-[11px] text-amber-300 font-semibold flex items-center gap-1 mb-1">
+                      <span className="text-[11px] text-[#F4B942] font-semibold flex items-center gap-1 mb-1">
                         <Calendar className="w-3 h-3" />
                         {item.date}
                       </span>
-                      <h3 className="font-extrabold text-sm sm:text-base leading-snug line-clamp-2 drop-shadow-sm">
+                      <h3 className="font-extrabold text-sm sm:text-base leading-snug line-clamp-2 drop-shadow-sm text-white">
                         {item.title}
                       </h3>
                     </div>
                   </div>
 
                   {item.description && (
-                    <div className="p-4 bg-slate-50 border-t border-slate-100">
-                      <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed">
+                    <div className="p-4 bg-[#F8FAFC] border-t border-[#E2E8F0]">
+                      <p className="text-xs text-[#486581] line-clamp-2 leading-relaxed">
                         {item.description}
                       </p>
                     </div>
@@ -283,14 +283,14 @@ export const GallerySection: React.FC<GallerySectionProps> = ({ onOpenAdmin, onS
             </div>
 
             {filteredGallery.length === 0 && (
-              <div className="text-center py-16 px-4 bg-white rounded-3xl border border-slate-200 shadow-sm max-w-xl mx-auto space-y-3">
-                <div className="w-12 h-12 rounded-2xl bg-orange-50 text-orange-700 flex items-center justify-center mx-auto">
+              <div className="text-center py-16 px-4 bg-white rounded-3xl border border-[#E2E8F0] shadow-xs max-w-xl mx-auto space-y-3">
+                <div className="w-12 h-12 rounded-2xl bg-[#FFF7ED] text-[#EA580C] border border-[#FDBA74] flex items-center justify-center mx-auto">
                   <Camera className="w-6 h-6" />
                 </div>
-                <h3 className="text-base font-bold text-slate-800">
+                <h3 className="text-base font-bold text-[#193B63]">
                   {gallery.length === 0 ? 'Belum Ada Foto Kegiatan' : 'Belum ada foto dalam kategori ini'}
                 </h3>
-                <p className="text-slate-500 text-xs sm:text-sm max-w-md mx-auto leading-relaxed">
+                <p className="text-[#486581] text-xs sm:text-sm max-w-md mx-auto leading-relaxed">
                   {gallery.length === 0
                     ? 'Dokumentasi foto kegiatan pembelajaran dan pelatihan vokasi akan segera diunggah.'
                     : 'Silakan pilih kategori galeri lain di atas.'}
@@ -331,10 +331,10 @@ export const GallerySection: React.FC<GallerySectionProps> = ({ onOpenAdmin, onS
             )}
 
             {/* Platform & Category Filter Row */}
-            <div className="flex flex-col md:flex-row items-center justify-between gap-4 bg-white p-4 rounded-3xl border border-slate-200 shadow-sm">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4 bg-white p-4 rounded-3xl border border-[#E2E8F0] shadow-xs">
               {/* Platform Badges */}
               <div className="flex items-center gap-1.5 overflow-x-auto w-full md:w-auto pb-1 md:pb-0">
-                <span className="text-xs font-bold text-slate-500 whitespace-nowrap hidden sm:inline mr-1">
+                <span className="text-xs font-bold text-[#486581] whitespace-nowrap hidden sm:inline mr-1">
                   Sumber Platform:
                 </span>
                 {[
@@ -349,8 +349,8 @@ export const GallerySection: React.FC<GallerySectionProps> = ({ onOpenAdmin, onS
                     onClick={() => setSelectedVideoPlatform(p.id)}
                     className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
                       selectedVideoPlatform === p.id
-                        ? 'bg-slate-900 text-white shadow-xs'
-                        : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                        ? 'bg-[#193B63] text-white shadow-xs'
+                        : 'bg-[#F8FAFC] text-[#486581] hover:bg-[#FFF7ED] hover:text-[#EA580C] border border-[#E2E8F0]'
                     }`}
                   >
                     {p.label}
@@ -360,13 +360,13 @@ export const GallerySection: React.FC<GallerySectionProps> = ({ onOpenAdmin, onS
 
               {/* Category Dropdown/Pills */}
               <div className="flex items-center gap-2 w-full md:w-auto justify-end">
-                <span className="text-xs font-bold text-slate-500 whitespace-nowrap hidden sm:inline">
+                <span className="text-xs font-bold text-[#486581] whitespace-nowrap hidden sm:inline">
                   Kategori:
                 </span>
                 <select
                   value={selectedVideoCategory}
                   onChange={(e) => setSelectedVideoCategory(e.target.value)}
-                  className="px-3 py-1.5 rounded-xl border border-slate-300 text-xs font-semibold text-slate-800 bg-white focus:outline-none focus:border-orange-500"
+                  className="px-3 py-1.5 rounded-xl border border-[#CBD5E1] text-xs font-semibold text-[#1E293B] bg-white focus:outline-none focus:border-[#F97316]"
                 >
                   {videoCategories.map((c) => (
                     <option key={c} value={c}>
@@ -391,21 +391,21 @@ export const GallerySection: React.FC<GallerySectionProps> = ({ onOpenAdmin, onS
                     viewport={{ once: true }}
                     transition={{ duration: 0.4, delay: idx * 0.05 }}
                     onClick={() => setSelectedVideo(video)}
-                    className="group bg-white rounded-3xl overflow-hidden border border-slate-200 shadow-sm hover:shadow-xl hover:border-red-300 transition-all duration-300 cursor-pointer flex flex-col justify-between"
+                    className="group bg-white rounded-3xl overflow-hidden border border-[#E2E8F0] shadow-xs hover:shadow-md hover:border-[#FDBA74] transition-all duration-300 cursor-pointer flex flex-col justify-between"
                   >
                     <div>
                       {/* Video Thumbnail with Play Button */}
-                      <div className="relative h-56 bg-slate-950 overflow-hidden">
+                      <div className="relative h-56 bg-[#1E293B] overflow-hidden">
                         <img
                           src={thumbUrl}
                           alt={video.title}
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90 group-hover:opacity-100"
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/20 to-slate-950/30" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-black/30" />
 
                         {/* Centered Play Button Overlay */}
                         <div className="absolute inset-0 flex items-center justify-center">
-                          <div className="w-14 h-14 rounded-full bg-white/90 text-slate-950 flex items-center justify-center shadow-xl group-hover:scale-115 group-hover:bg-red-600 group-hover:text-white transition-all duration-300">
+                          <div className="w-14 h-14 rounded-full bg-white/90 text-[#193B63] flex items-center justify-center shadow-lg group-hover:scale-115 group-hover:bg-[#F97316] group-hover:text-white transition-all duration-300">
                             <Play className="w-6 h-6 fill-current ml-1" />
                           </div>
                         </div>
@@ -413,12 +413,12 @@ export const GallerySection: React.FC<GallerySectionProps> = ({ onOpenAdmin, onS
                         {/* Platform Badge */}
                         <div className="absolute top-3 left-3 flex items-center gap-1.5">
                           <span
-                            className={`px-2.5 py-1 rounded-xl text-[10px] font-black uppercase tracking-wider shadow-sm ${platformInfo.badgeColor}`}
+                            className={`px-2.5 py-1 rounded-xl text-[10px] font-black uppercase tracking-wider shadow-xs ${platformInfo.badgeColor}`}
                           >
                             {platformInfo.label}
                           </span>
                           {video.featured && (
-                            <span className="px-2 py-1 rounded-xl text-[10px] font-black bg-amber-400 text-slate-950 shadow-sm flex items-center gap-1">
+                            <span className="px-2 py-1 rounded-xl text-[10px] font-black bg-[#FEF9C3] text-[#854D0E] border border-[#F4B942] shadow-xs flex items-center gap-1">
                               <Sparkles className="w-2.5 h-2.5" /> Unggulan
                             </span>
                           )}
@@ -430,7 +430,7 @@ export const GallerySection: React.FC<GallerySectionProps> = ({ onOpenAdmin, onS
                             {video.category}
                           </span>
                           {video.duration && (
-                            <span className="px-2.5 py-0.5 rounded-lg bg-black/70 backdrop-blur-xs font-mono font-bold flex items-center gap-1 text-amber-300">
+                            <span className="px-2.5 py-0.5 rounded-lg bg-black/70 backdrop-blur-xs font-mono font-bold flex items-center gap-1 text-[#F4B942]">
                               <Clock className="w-3 h-3" />
                               {video.duration}
                             </span>
@@ -440,17 +440,17 @@ export const GallerySection: React.FC<GallerySectionProps> = ({ onOpenAdmin, onS
 
                       {/* Video Info Content */}
                       <div className="p-5 space-y-2">
-                        <span className="text-[11px] text-slate-400 font-medium flex items-center gap-1.5">
-                          <Calendar className="w-3.5 h-3.5 text-orange-600" />
+                        <span className="text-[11px] text-[#486581] font-medium flex items-center gap-1.5">
+                          <Calendar className="w-3.5 h-3.5 text-[#F97316]" />
                           {video.date}
                         </span>
 
-                        <h3 className="font-extrabold text-sm sm:text-base text-slate-900 leading-snug line-clamp-2 group-hover:text-red-700 transition-colors">
+                        <h3 className="font-extrabold text-sm sm:text-base text-[#193B63] leading-snug line-clamp-2 group-hover:text-[#EA580C] transition-colors">
                           {video.title}
                         </h3>
 
                         {video.description && (
-                          <p className="text-slate-600 text-xs leading-relaxed line-clamp-2">
+                          <p className="text-[#486581] text-xs leading-relaxed line-clamp-2">
                             {video.description}
                           </p>
                         )}
@@ -458,12 +458,12 @@ export const GallerySection: React.FC<GallerySectionProps> = ({ onOpenAdmin, onS
                     </div>
 
                     {/* Card Footer Call to Action */}
-                    <div className="px-5 py-3.5 bg-slate-50 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-slate-700 group-hover:bg-red-50/50 transition-colors">
-                      <span className="flex items-center gap-1 text-red-600">
+                    <div className="px-5 py-3.5 bg-[#F8FAFC] border-t border-[#E2E8F0] flex items-center justify-between text-xs font-bold text-[#193B63] group-hover:bg-[#FFF7ED] transition-colors">
+                      <span className="flex items-center gap-1 text-[#EA580C]">
                         <Play className="w-3.5 h-3.5 fill-current" />
                         <span>Putar Video</span>
                       </span>
-                      <span className="text-[11px] text-slate-500 group-hover:translate-x-1 transition-transform flex items-center gap-0.5">
+                      <span className="text-[11px] text-[#486581] group-hover:translate-x-1 transition-transform flex items-center gap-0.5">
                         Tonton <ArrowRight className="w-3 h-3" />
                       </span>
                     </div>
@@ -473,14 +473,14 @@ export const GallerySection: React.FC<GallerySectionProps> = ({ onOpenAdmin, onS
             </div>
 
             {filteredVideos.length === 0 && (
-              <div className="text-center py-16 px-4 bg-white rounded-3xl border border-slate-200 shadow-sm max-w-xl mx-auto space-y-3">
-                <div className="w-12 h-12 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center mx-auto">
+              <div className="text-center py-16 px-4 bg-white rounded-3xl border border-[#E2E8F0] shadow-xs max-w-xl mx-auto space-y-3">
+                <div className="w-12 h-12 rounded-2xl bg-[#FFF7ED] text-[#EA580C] border border-[#FDBA74] flex items-center justify-center mx-auto">
                   <Film className="w-6 h-6" />
                 </div>
-                <h3 className="text-base font-bold text-slate-800">
+                <h3 className="text-base font-bold text-[#193B63]">
                   {videos.length === 0 ? 'Belum Ada Galeri Video' : 'Tidak Ada Video Sesuai Filter'}
                 </h3>
-                <p className="text-slate-500 text-xs sm:text-sm max-w-md mx-auto leading-relaxed">
+                <p className="text-[#486581] text-xs sm:text-sm max-w-md mx-auto leading-relaxed">
                   {videos.length === 0
                     ? 'Video dokumentasi pembelajaran YouTube, Facebook, dan Instagram akan segera ditayangkan.'
                     : 'Coba pilih filter platform atau kategori video lainnya.'}

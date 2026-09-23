@@ -239,8 +239,8 @@ export const LogoManagerModal: React.FC<LogoManagerModalProps> = ({ isOpen, onCl
                         onError={() => showToast('Gambar tidak dapat dimuat dari tautan tersebut.', 'error')}
                       />
                     ) : (
-                      <div className="w-full h-full rounded-lg bg-gradient-to-br from-[#00552b] to-[#002b15] flex items-center justify-center text-white font-bold">
-                        <BookOpen className="w-5 h-5 text-amber-300" />
+                      <div className="w-full h-full rounded-lg bg-gradient-to-br from-[#193B63] to-[#0F2742] flex items-center justify-center text-white font-bold">
+                        <BookOpen className="w-5 h-5 text-[#F4B942]" />
                       </div>
                     )}
                   </div>
@@ -274,8 +274,8 @@ export const LogoManagerModal: React.FC<LogoManagerModalProps> = ({ isOpen, onCl
                         className="w-full h-full object-contain"
                       />
                     ) : (
-                      <div className="w-full h-full rounded-lg bg-[#006633] flex items-center justify-center text-white font-bold">
-                        <BookOpen className="w-5 h-5 text-amber-300" />
+                      <div className="w-full h-full rounded-lg bg-[#193B63] flex items-center justify-center text-white font-bold">
+                        <BookOpen className="w-5 h-5 text-[#F4B942]" />
                       </div>
                     )}
                   </div>
@@ -311,7 +311,7 @@ export const LogoManagerModal: React.FC<LogoManagerModalProps> = ({ isOpen, onCl
                           className="w-full h-full object-contain"
                         />
                       ) : (
-                        <div className="w-full h-full rounded-xs bg-[#00552b] flex items-center justify-center text-amber-300">
+                        <div className="w-full h-full rounded-xs bg-[#193B63] flex items-center justify-center text-[#F4B942]">
                           <BookOpen className="w-2.5 h-2.5" />
                         </div>
                       )}
@@ -451,7 +451,7 @@ export const LogoManagerModal: React.FC<LogoManagerModalProps> = ({ isOpen, onCl
                   </div>
                   <button
                     type="button"
-                    className="px-5 py-2.5 rounded-xl bg-[#006633] hover:bg-[#00552b] text-white font-bold text-xs shadow-md transition-colors pointer-events-none"
+                    className="px-5 py-2.5 rounded-xl bg-[#193B63] hover:bg-[#122C4B] text-white font-bold text-xs shadow-md transition-colors pointer-events-none"
                   >
                     Pilih File Gambar
                   </button>

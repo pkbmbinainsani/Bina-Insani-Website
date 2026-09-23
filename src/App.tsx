@@ -231,7 +231,7 @@ function MainAppContent() {
   };
 
   return (
-    <div className="min-h-screen pb-20 md:pb-0 bg-slate-50 text-slate-900 font-sans antialiased selection:bg-orange-100 selection:text-orange-900 flex flex-col justify-between">
+    <div className="min-h-screen pb-20 md:pb-0 bg-[#F8FAFC] text-[#1E293B] font-sans antialiased selection:bg-[#FDBA74] selection:text-[#193B63] flex flex-col justify-between">
       {/* Header Bar with dynamic logo, tab navigation, and Admin Portal trigger */}
       <Header
         activeTab={activeTab}
