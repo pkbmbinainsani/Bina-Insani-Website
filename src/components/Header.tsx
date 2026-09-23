@@ -251,11 +251,11 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
         </div>
 
-        {/* BARIS TAB MENU UTAMA (Oranye dengan Teks Putih & Indikator Aktif yang Sesuai) */}
-        <div className="bg-gradient-to-r from-[#EA580C] via-[#F97316] to-[#EA580C] border-b border-[#C2410C] shadow-md">
+        {/* BARIS TAB MENU UTAMA (Sleek Compact, Oranye dengan Teks Huruf Kapital & Font Bersih Modern) */}
+        <div className="bg-gradient-to-r from-[#EA580C] via-[#F97316] to-[#EA580C] border-b border-[#C2410C]/80 shadow-sm">
           <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
             <nav
-              className="flex items-center justify-start md:justify-between py-1.5 sm:py-2 gap-1 sm:gap-1.5 overflow-x-auto no-scrollbar scroll-smooth"
+              className="flex items-center justify-start md:justify-between py-1 gap-1 sm:gap-1.5 overflow-x-auto no-scrollbar scroll-smooth"
               aria-label="Navigasi Menu Utama PKBM Bina Insani"
             >
               {navLinks.map((link) => {
@@ -266,17 +266,17 @@ export const Header: React.FC<HeaderProps> = ({
                     key={link.id}
                     href={link.href}
                     onClick={(e) => handleNavClick(e, link.id)}
-                    className={`px-2.5 sm:px-3 py-1.5 rounded-xl text-xs lg:text-[13px] transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer select-none shrink-0 ${
+                    className={`px-2 sm:px-2.5 lg:px-3 py-1 rounded-lg text-[10.5px] sm:text-[11px] lg:text-[11.5px] font-sans uppercase tracking-wider leading-none transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer select-none shrink-0 ${
                       isActive
-                        ? 'bg-white text-[#EA580C] shadow-md font-black ring-2 ring-white/50 scale-[1.02]'
-                        : 'text-white font-bold hover:bg-white/20 hover:text-white active:bg-white/30 border border-transparent'
+                        ? 'bg-white text-[#EA580C] shadow-xs font-black ring-1 ring-white/70 scale-[1.02]'
+                        : 'text-white/95 font-extrabold hover:bg-white/20 hover:text-white active:bg-white/30 border border-transparent'
                     }`}
                     title={link.name}
                   >
-                    <Icon className={`w-3.5 h-3.5 shrink-0 transition-transform ${isActive ? 'text-[#EA580C] scale-110' : 'text-white'}`} />
+                    <Icon className={`w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0 transition-transform ${isActive ? 'text-[#EA580C] scale-105' : 'text-white'}`} />
                     <span>{link.shortName}</span>
                     {isActive && (
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#EA580C] ml-0.5 animate-pulse" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#EA580C] ml-0.5 animate-pulse shrink-0" />
                     )}
                   </a>
                 );
