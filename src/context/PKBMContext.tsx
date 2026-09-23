@@ -59,7 +59,11 @@ const INITIAL_PKBM_INFO: PKBMInfoState = {
   latitude: PKBM_INFO.latitude || -7.2574147,
   longitude: PKBM_INFO.longitude || 110.3196075,
   announcementText: 'Penerimaan Warga Belajar Baru (PWBB) Tahun Ajaran 2026/2027 Paket A, B, & C Resmi Dibuka. Bebas Biaya SPP Bulanan!',
-  announcementActive: true
+  announcementActive: true,
+  runningText: 'Selamat Datang di Portal Resmi PKBM Bina Insani Sumowono • Penerimaan Warga Belajar Baru (PWBB) Paket A, B, & C Resmi Dibuka • Bebas Biaya SPP Bulanan & Dilengkapi Program Vokasi Terampil Abad 21 • Ijazah Resmi Negara • Hubungi Layanan Hotline WhatsApp: 0852-9065-5103',
+  runningTextActive: true,
+  runningTextSpeed: 'normal',
+  runningTextBadge: 'WARTA KILAT'
 };
 
 const INITIAL_ABOUT_PROFILE =
@@ -277,7 +281,7 @@ export const PKBMProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [pkbmInfo, setPkbmInfo] = useState<PKBMInfoState>(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEYS.INFO);
-      if (saved) return JSON.parse(saved);
+      if (saved) return { ...INITIAL_PKBM_INFO, ...JSON.parse(saved) };
     } catch (e) {
       console.error('Failed to load info from storage', e);
     }

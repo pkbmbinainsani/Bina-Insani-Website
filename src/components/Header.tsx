@@ -28,7 +28,8 @@ import {
   ArrowRight,
   Camera,
   Edit3,
-  Mail
+  Mail,
+  Volume2
 } from 'lucide-react';
 import { usePKBM } from '../context/PKBMContext';
 import { LogoManagerModal } from './admin/LogoManagerModal';
@@ -95,18 +96,15 @@ export const Header: React.FC<HeaderProps> = ({
         <div className="bg-[#060D17] text-slate-300 text-xs border-b border-amber-500/20 shadow-xs">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-9">
             
-            {/* Left Contact & Notice Info */}
-            <div className="flex items-center space-x-3 overflow-hidden min-w-0 flex-1 mr-2">
-              <span className="flex items-center gap-2 font-medium text-white truncate text-[11px] sm:text-xs">
-                <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping shrink-0" />
-                <span className="truncate font-semibold text-white">
-                  {pkbmInfo.announcementText || 'Penerimaan Warga Belajar Baru T.A. 2026/2027 Telah Dibuka'}
-                </span>
-              </span>
-              <span className="hidden md:inline text-white/20">|</span>
-              <span className="hidden md:flex items-center gap-1.5 text-amber-300 font-black shrink-0 text-xs">
+            {/* Left Info: NPSN & Status Akreditasi Resmi */}
+            <div className="flex items-center space-x-2 sm:space-x-3 overflow-hidden min-w-0 flex-1 mr-2">
+              <span className="flex items-center gap-1.5 text-amber-300 font-black shrink-0 text-xs">
                 <ShieldCheck className="w-3.5 h-3.5 text-amber-400" />
-                <span>NPSN: {pkbmInfo.npsn} • {pkbmInfo.accreditation}</span>
+                <span>NPSN: {pkbmInfo.npsn}</span>
+              </span>
+              <span className="text-white/20">•</span>
+              <span className="text-slate-300 font-semibold truncate text-[11px] sm:text-xs">
+                {pkbmInfo.accreditation || 'Terakreditasi BAN-PDM'}
               </span>
             </div>
 
@@ -290,6 +288,69 @@ export const Header: React.FC<HeaderProps> = ({
             </nav>
           </div>
         </div>
+
+        {/* RUNNING TEXT TICKER BAR (Di Bawah Tab Menu dengan Style Menarik & Mewah) */}
+        {pkbmInfo.runningTextActive !== false && pkbmInfo.runningText && (
+          <div className="bg-[#07111E]/95 backdrop-blur-md border-b border-amber-500/25 text-white relative z-20 shadow-sm overflow-hidden transition-all">
+            <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8 flex items-center h-8 sm:h-8.5 gap-2 sm:gap-3">
+              
+              {/* Left Badge: WARTA KILAT / INFO RESMI */}
+              <div className="flex items-center gap-1.5 shrink-0 bg-gradient-to-r from-amber-400 via-amber-300 to-orange-400 text-slate-950 font-black text-[9px] sm:text-[10.5px] px-2 sm:px-2.5 py-0.5 sm:py-0.5 rounded-full shadow-sm shadow-amber-500/20 uppercase tracking-wider select-none border border-amber-200">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-red-600"></span>
+                </span>
+                <Volume2 className="w-3 h-3 text-slate-950 shrink-0" />
+                <span className="truncate max-w-[110px] sm:max-w-none">
+                  {pkbmInfo.runningTextBadge || 'WARTA KILAT'}
+                </span>
+              </div>
+
+              {/* Ticker Continuous Marquee Text Container */}
+              <div className="flex-1 overflow-hidden relative group/ticker py-0.5 select-none">
+                {/* Subtle side fade masks */}
+                <div className="absolute left-0 top-0 bottom-0 w-3 bg-gradient-to-r from-[#07111E] to-transparent z-10 pointer-events-none" />
+                <div className="absolute right-0 top-0 bottom-0 w-3 bg-gradient-to-l from-[#07111E] to-transparent z-10 pointer-events-none" />
+
+                <div
+                  className={`flex whitespace-nowrap pause-marquee-hover ${
+                    pkbmInfo.runningTextSpeed === 'slow'
+                      ? 'animate-marquee-slow'
+                      : pkbmInfo.runningTextSpeed === 'fast'
+                      ? 'animate-marquee-fast'
+                      : 'animate-marquee-normal'
+                  }`}
+                  title="Arahkan kursor atau sentuh untuk menjeda teks pengumuman"
+                >
+                  {/* Repeat text 2 times for seamless continuous looping */}
+                  {[1, 2].map((cycle) => (
+                    <div key={cycle} className="flex items-center gap-6 pr-6 text-[11px] sm:text-xs font-medium text-amber-100/95 tracking-wide shrink-0">
+                      <span>{pkbmInfo.runningText}</span>
+                      <span className="inline-flex items-center gap-1.5 text-amber-400 font-bold shrink-0">
+                        <Sparkles className="w-3 h-3 text-amber-400" />
+                        <span className="text-[10px]">•</span>
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Admin Quick Modification Trigger */}
+              {isAdminAuthenticated && onOpenAdmin && (
+                <button
+                  type="button"
+                  onClick={onOpenAdmin}
+                  title="Modifikasi Teks Berjalan di Pengaturan Admin"
+                  className="hidden md:flex items-center gap-1 text-[9.5px] font-bold text-amber-300 hover:text-white bg-white/10 hover:bg-amber-500/20 px-2 py-0.5 rounded-md border border-amber-400/30 transition-all shrink-0 cursor-pointer"
+                >
+                  <Edit3 className="w-2.5 h-2.5" />
+                  <span>Ubah Teks</span>
+                </button>
+              )}
+
+            </div>
+          </div>
+        )}
       </header>
 
       {/* Quick Search Modal */}

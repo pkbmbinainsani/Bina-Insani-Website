@@ -46,7 +46,9 @@ import {
   Navigation,
   Database,
   Radio,
-  Video
+  Video,
+  Volume2,
+  Zap
 } from 'lucide-react';
 import { usePKBM } from '../../context/PKBMContext';
 import { NewsItem, GalleryItem, RegisteredStudent, PKBMInfoState } from '../../types';
@@ -1802,30 +1804,220 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({ isOpen
                       </div>
                     </div>
 
-                    {/* Running Banner Pengumuman */}
-                    <div className="p-4 bg-amber-50 rounded-2xl border border-amber-200 space-y-3">
-                      <div className="flex items-center justify-between">
-                        <label className="text-xs font-black text-amber-900 flex items-center gap-1.5">
-                          <Sparkles className="w-3.5 h-3.5 text-amber-600" />
-                          <span>Teks Banner Pengumuman Berjalan (Top Bar)</span>
-                        </label>
-                        <label className="flex items-center gap-2 cursor-pointer text-xs font-bold text-amber-900">
+                    {/* RUNNING TEXT TICKER (Di Bawah Tab Menu - Style Menarik & Lengkap) */}
+                    <div className="p-5 sm:p-6 bg-gradient-to-br from-slate-900 via-[#0A1628] to-slate-950 rounded-2xl border-2 border-amber-400/40 text-white space-y-4 shadow-lg">
+                      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-amber-500/20 pb-3">
+                        <div className="flex items-center gap-2.5">
+                          <div className="w-8 h-8 rounded-xl bg-amber-400/20 border border-amber-400/30 flex items-center justify-center text-amber-400">
+                            <Volume2 className="w-4 h-4" />
+                          </div>
+                          <div>
+                            <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-amber-400/15 text-amber-300 text-[10px] font-black uppercase tracking-wider mb-0.5 border border-amber-400/30">
+                              <Sparkles className="w-3 h-3 text-amber-400" />
+                              <span>Bilah Menu Utama</span>
+                            </div>
+                            <h4 className="text-sm sm:text-base font-black text-white">Running Text Ticker (Bawah Tab Menu)</h4>
+                            <p className="text-xs text-slate-300">Teks pengumuman beranimasi berjalan tepat di bawah barisan menu navigasi</p>
+                          </div>
+                        </div>
+
+                        {/* Toggle ON / OFF */}
+                        <label className="flex items-center gap-2.5 px-3.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/15 border border-white/20 cursor-pointer select-none transition-colors">
                           <input
                             type="checkbox"
-                            checked={settingsForm.announcementActive}
-                            onChange={(e) => setSettingsForm({ ...settingsForm, announcementActive: e.target.checked })}
-                            className="rounded text-amber-600 focus:ring-amber-500 w-4 h-4"
+                            checked={settingsForm.runningTextActive ?? true}
+                            onChange={(e) => setSettingsForm({ ...settingsForm, runningTextActive: e.target.checked })}
+                            className="rounded text-amber-500 focus:ring-amber-400 w-4 h-4 accent-amber-500 cursor-pointer"
                           />
-                          <span>Aktifkan Banner</span>
+                          <span className={`text-xs font-black ${settingsForm.runningTextActive ?? true ? 'text-amber-300' : 'text-slate-400'}`}>
+                            {settingsForm.runningTextActive ?? true ? '🟢 Status: Aktif' : '⚪ Status: Nonaktif'}
+                          </span>
                         </label>
                       </div>
-                      <input
-                        type="text"
-                        value={settingsForm.announcementText || ''}
-                        onChange={(e) => setSettingsForm({ ...settingsForm, announcementText: e.target.value })}
-                        placeholder="Contoh: Pendaftaran Warga Belajar Baru PWBB 2026/2027 Resmi Dibuka..."
-                        className="w-full px-3.5 py-2.5 rounded-xl border border-amber-300 bg-white text-xs text-slate-900 focus:outline-none focus:border-orange-500 font-medium"
-                      />
+
+                      {/* Badge Label & Presets */}
+                      <div className="grid sm:grid-cols-12 gap-3 sm:gap-4 items-start">
+                        <div className="sm:col-span-5 space-y-1.5">
+                          <label className="block text-xs font-bold text-amber-200">
+                            Label / Judul Badge Ticker
+                          </label>
+                          <input
+                            type="text"
+                            value={settingsForm.runningTextBadge ?? 'WARTA KILAT'}
+                            onChange={(e) => setSettingsForm({ ...settingsForm, runningTextBadge: e.target.value.toUpperCase() })}
+                            placeholder="WARTA KILAT"
+                            className="w-full px-3 py-2 rounded-xl bg-white/10 border border-amber-400/30 text-white font-black text-xs uppercase tracking-wider placeholder-slate-400 focus:outline-none focus:border-amber-400"
+                          />
+                          {/* Quick Badge Chips */}
+                          <div className="flex flex-wrap gap-1 pt-1">
+                            {['WARTA KILAT', 'INFO RESMI', 'PENGUMUMAN', 'PPDB 2026', 'HOTLINE'].map((b) => (
+                              <button
+                                key={b}
+                                type="button"
+                                onClick={() => setSettingsForm({ ...settingsForm, runningTextBadge: b })}
+                                className={`text-[10px] px-2 py-0.5 rounded-md font-bold transition-all cursor-pointer ${
+                                  (settingsForm.runningTextBadge || 'WARTA KILAT') === b
+                                    ? 'bg-amber-400 text-slate-950 shadow-xs'
+                                    : 'bg-white/10 text-slate-300 hover:bg-white/20'
+                                }`}
+                              >
+                                {b}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Speed Selection */}
+                        <div className="sm:col-span-7 space-y-1.5">
+                          <label className="block text-xs font-bold text-amber-200">
+                            Kecepatan Gerak Animasi Teks
+                          </label>
+                          <div className="grid grid-cols-3 gap-2">
+                            {[
+                              { id: 'slow', label: 'Lambat', desc: '50 Detik (Santai)', icon: '🐢' },
+                              { id: 'normal', label: 'Normal', desc: '32 Detik (Ideal)', icon: '⚡' },
+                              { id: 'fast', label: 'Cepat', desc: '20 Detik (Dinamis)', icon: '🚀' }
+                            ].map((spd) => {
+                              const isSelected = (settingsForm.runningTextSpeed || 'normal') === spd.id;
+                              return (
+                                <button
+                                  key={spd.id}
+                                  type="button"
+                                  onClick={() => setSettingsForm({ ...settingsForm, runningTextSpeed: spd.id as 'slow' | 'normal' | 'fast' })}
+                                  className={`p-2 rounded-xl border text-left transition-all cursor-pointer ${
+                                    isSelected
+                                      ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 border-amber-300 shadow-md font-black'
+                                      : 'bg-white/5 hover:bg-white/10 text-slate-300 border-white/10'
+                                  }`}
+                                >
+                                  <div className="flex items-center gap-1.5 text-xs font-extrabold">
+                                    <span>{spd.icon}</span>
+                                    <span>{spd.label}</span>
+                                  </div>
+                                  <div className={`text-[10px] ${isSelected ? 'text-slate-900 font-semibold' : 'text-slate-400'}`}>
+                                    {spd.desc}
+                                  </div>
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Content Textarea */}
+                      <div className="space-y-1.5">
+                        <div className="flex items-center justify-between">
+                          <label className="block text-xs font-bold text-amber-200">
+                            Isi Teks Pengumuman Berjalan
+                          </label>
+                          <span className="text-[11px] text-slate-400 font-mono">
+                            {(settingsForm.runningText || '').length} Karakter
+                          </span>
+                        </div>
+                        <textarea
+                          rows={3}
+                          value={settingsForm.runningText ?? ''}
+                          onChange={(e) => setSettingsForm({ ...settingsForm, runningText: e.target.value })}
+                          placeholder="Masukkan kalimat pengumuman yang ingin dijalankan..."
+                          className="w-full px-3.5 py-2.5 rounded-xl bg-white/10 border border-amber-400/30 text-white text-xs placeholder-slate-400 focus:outline-none focus:border-amber-400 leading-relaxed font-sans"
+                        />
+                      </div>
+
+                      {/* Quick Template Presets Buttons */}
+                      <div className="space-y-1.5 pt-1 border-t border-white/10">
+                        <span className="block text-[11px] font-bold text-amber-300">
+                          Template Cepat Pengumuman (Klik untuk Mengisi):
+                        </span>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                          {[
+                            {
+                              title: '🎓 Pendaftaran PWBB Paket A, B, C',
+                              text: 'Penerimaan Warga Belajar Baru (PWBB) Tahun Ajaran 2026/2027 PKBM Bina Insani Sumowono Resmi Dibuka! Bebas Biaya SPP Bulanan • Program Vokasi Terampil Abad 21 • Ijazah Resmi Negara • Hubungi Hotline WA: 0852-9065-5103'
+                            },
+                            {
+                              title: '📚 Jadwal Asesmen & Ujian Kesetaraan',
+                              text: 'Pengumuman Resmi: Jadwal Ujian Pendidikan Kesetaraan (UPK) Paket A, B, dan C T.A. 2026/2027 telah dirilis. Seluruh warga belajar dapat mengunduh e-modul di portal materi atau konfirmasi ke tutor pembimbing.'
+                            },
+                            {
+                              title: '💼 Pelatihan Vokasi & Keterampilan',
+                              text: 'Tersedia Kursus Vokasi Keterampilan Gratis bagi Warga Belajar: Desain Grafis Komputer, Tata Boga Kuliner, Menjahit Konveksi, dan Budidaya Organik. Raih bekal mandiri dan wirausaha bersama PKBM Bina Insani.'
+                            },
+                            {
+                              title: '✨ Sambutan Resmi Portal Web',
+                              text: 'Selamat Datang di Portal Resmi PKBM Bina Insani Sumowono • Mengabdi dengan Semangat HEBAT - MANDIRI - KREATIF demi Mewujudkan Pendidikan Kesetaraan yang Berkualitas dan Merata bagi Seluruh Lapisan Masyarakat.'
+                            }
+                          ].map((tmpl, idx) => (
+                            <button
+                              key={idx}
+                              type="button"
+                              onClick={() => {
+                                setSettingsForm({
+                                  ...settingsForm,
+                                  runningText: tmpl.text,
+                                  runningTextActive: true
+                                });
+                                showToast(`Template "${tmpl.title}" dimuat!`);
+                              }}
+                              className="text-left p-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-amber-400/30 text-slate-300 hover:text-white transition-all cursor-pointer text-xs group"
+                            >
+                              <div className="font-bold text-amber-300 group-hover:text-amber-200 text-[11.5px]">
+                                {tmpl.title}
+                              </div>
+                              <p className="text-[10px] text-slate-400 line-clamp-1 mt-0.5">
+                                {tmpl.text}
+                              </p>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Live Interactive Preview Box */}
+                      <div className="space-y-1.5 pt-2 border-t border-white/10">
+                        <div className="flex items-center justify-between text-[11px] font-bold text-slate-300">
+                          <span className="flex items-center gap-1.5 text-amber-300">
+                            <Eye className="w-3.5 h-3.5" />
+                            <span>Pratinjau Langsung (Live Preview)</span>
+                          </span>
+                          <span className="text-[10px] text-slate-400 italic">
+                            (Arahkan mouse / sentuh untuk menjeda)
+                          </span>
+                        </div>
+
+                        <div className="rounded-xl overflow-hidden border border-amber-500/30 bg-[#07111E] p-2 shadow-inner">
+                          {settingsForm.runningTextActive ?? true ? (
+                            <div className="flex items-center gap-2 overflow-hidden py-1">
+                              <div className="flex items-center gap-1 shrink-0 bg-gradient-to-r from-amber-400 to-orange-400 text-slate-950 font-black text-[9.5px] px-2 py-0.5 rounded-full uppercase tracking-wider shadow-xs">
+                                <span className="w-1.5 h-1.5 rounded-full bg-red-600 animate-pulse"></span>
+                                <Volume2 className="w-3 h-3 text-slate-950" />
+                                <span>{settingsForm.runningTextBadge || 'WARTA KILAT'}</span>
+                              </div>
+
+                              <div className="flex-1 overflow-hidden relative">
+                                <div
+                                  className={`flex whitespace-nowrap pause-marquee-hover ${
+                                    settingsForm.runningTextSpeed === 'slow'
+                                      ? 'animate-marquee-slow'
+                                      : settingsForm.runningTextSpeed === 'fast'
+                                      ? 'animate-marquee-fast'
+                                      : 'animate-marquee-normal'
+                                  }`}
+                                >
+                                  {[1, 2].map((cycle) => (
+                                    <div key={cycle} className="flex items-center gap-6 pr-6 text-xs font-medium text-amber-100 tracking-wide shrink-0">
+                                      <span>{settingsForm.runningText || 'Belum ada teks pengumuman'}</span>
+                                      <span className="text-amber-400 font-bold shrink-0">✦</span>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="text-center py-2 text-xs text-slate-400 italic">
+                              Running text saat ini berstatus NONAKTIF (tidak ditampilkan di halaman publik).
+                            </div>
+                          )}
+                        </div>
+                      </div>
                     </div>
 
                     <div className="flex justify-end pt-2">

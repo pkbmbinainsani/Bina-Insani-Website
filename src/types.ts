@@ -232,6 +232,11 @@ export interface PKBMInfoState {
   longitude?: number;
   announcementText?: string;
   announcementActive?: boolean;
+  // Running Text Ticker di bawah tab menu
+  runningText?: string;
+  runningTextActive?: boolean;
+  runningTextSpeed?: 'slow' | 'normal' | 'fast';
+  runningTextBadge?: string;
 }
 
 export type PersonaliaCategory = 'pendiri' | 'yayasan' | 'pendidik' | 'tendik';

@@ -69,8 +69,17 @@ export const Hero: React.FC<HeroProps> = ({ onOpenRegistration, onNavigateTab })
 
   const active = slides[currentSlide] || slides[0];
 
+  const isTickerActive = pkbmInfo.runningTextActive !== false && Boolean(pkbmInfo.runningText);
+
   return (
-    <section id="beranda" className="relative pt-36 sm:pt-40 md:pt-40 lg:pt-44 pb-10 lg:pb-14 bg-gradient-to-b from-[#F8FAFC] via-[#F1F5F9]/50 to-[#F8FAFC] text-[#0F172A] overflow-hidden w-full max-w-full border-b border-[#E2E8F0]">
+    <section
+      id="beranda"
+      className={`relative ${
+        isTickerActive
+          ? 'pt-44 sm:pt-48 md:pt-48 lg:pt-50'
+          : 'pt-36 sm:pt-40 md:pt-40 lg:pt-44'
+      } pb-10 lg:pb-14 bg-gradient-to-b from-[#F8FAFC] via-[#F1F5F9]/50 to-[#F8FAFC] text-[#0F172A] overflow-hidden w-full max-w-full border-b border-[#E2E8F0] transition-all duration-200`}
+    >
       
       {/* Background Subtle Ambient Lighting */}
       <div className="absolute top-0 right-1/4 w-88 h-88 bg-[#FDBA74]/20 rounded-full blur-3xl pointer-events-none" />

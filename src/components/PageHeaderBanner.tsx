@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'motion/react';
 import { Sparkles, LucideIcon } from 'lucide-react';
+import { usePKBM } from '../context/PKBMContext';
 
 interface PageHeaderBannerProps {
   title: string;
@@ -23,10 +24,18 @@ export const PageHeaderBanner: React.FC<PageHeaderBannerProps> = ({
   icon: Icon,
   actionButton
 }) => {
+  const { pkbmInfo } = usePKBM();
   const ActionIcon = actionButton?.icon;
+  const isTickerActive = pkbmInfo.runningTextActive !== false && Boolean(pkbmInfo.runningText);
 
   return (
-    <div className="relative pt-[138px] sm:pt-[144px] md:pt-[148px] pb-3.5 sm:pb-4 bg-gradient-to-r from-[#17253D] via-[#1E3150] to-[#17253D] text-white overflow-hidden border-b-2 border-amber-500/30 shadow-lg">
+    <div
+      className={`relative ${
+        isTickerActive
+          ? 'pt-[170px] sm:pt-[176px] md:pt-[180px]'
+          : 'pt-[138px] sm:pt-[144px] md:pt-[148px]'
+      } pb-3.5 sm:pb-4 bg-gradient-to-r from-[#17253D] via-[#1E3150] to-[#17253D] text-white overflow-hidden border-b-2 border-amber-500/30 shadow-lg transition-all duration-200`}
+    >
       {/* Warm ambient background lightings matching the executive luxurious look */}
       <div className="absolute top-0 right-1/4 w-80 h-80 bg-orange-500/15 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute -bottom-10 left-10 w-72 h-72 bg-amber-400/15 rounded-full blur-3xl pointer-events-none" />

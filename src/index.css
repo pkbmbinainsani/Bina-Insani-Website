@@ -62,3 +62,39 @@ html {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* Continuous Smooth Running Text / Marquee Animations */
+@keyframes marquee-scroll {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.animate-marquee-slow {
+  display: flex;
+  width: max-content;
+  will-change: transform;
+  animation: marquee-scroll 50s linear infinite;
+}
+
+.animate-marquee-normal {
+  display: flex;
+  width: max-content;
+  will-change: transform;
+  animation: marquee-scroll 32s linear infinite;
+}
+
+.animate-marquee-fast {
+  display: flex;
+  width: max-content;
+  will-change: transform;
+  animation: marquee-scroll 20s linear infinite;
+}
+
+.pause-marquee-hover:hover {
+  animation-play-state: paused;
+}
+
