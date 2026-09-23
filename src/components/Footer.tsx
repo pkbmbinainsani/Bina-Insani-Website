@@ -42,7 +42,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenAdmin, onSelectTab }) => {
                   : pkbmInfo.logoShape === 'square'
                   ? 'rounded-lg'
                   : 'rounded-xl'
-              } bg-[#F97316] flex items-center justify-center text-white font-bold shadow-sm overflow-hidden shrink-0 border border-[#FDBA74]/50 p-1`}>
+              } bg-white flex items-center justify-center text-[#EA580C] font-bold shadow-sm overflow-hidden shrink-0 border border-white/80 p-1`}>
                 {pkbmInfo.logoUrl ? (
                   <img
                     src={pkbmInfo.logoUrl}
@@ -50,7 +50,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenAdmin, onSelectTab }) => {
                     className="w-full h-full object-contain"
                   />
                 ) : (
-                  <BookOpen className="w-5 h-5 text-white" />
+                  <BookOpen className="w-5 h-5 text-[#EA580C]" />
                 )}
               </div>
               <div>

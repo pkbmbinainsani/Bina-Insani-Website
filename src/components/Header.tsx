@@ -151,16 +151,16 @@ export const Header: React.FC<HeaderProps> = ({
                             : pkbmInfo.logoShape === 'square'
                             ? 'rounded-lg'
                             : 'rounded-xl'
-                        } bg-gradient-to-br from-[#F97316] to-[#EA580C] flex items-center justify-center text-white font-bold shadow-md shrink-0 border border-white/30 overflow-hidden relative`}
+                        } bg-white flex items-center justify-center text-[#EA580C] font-bold shadow-md shrink-0 border-2 border-white/90 overflow-hidden relative p-1`}
                       >
                         {pkbmInfo.logoUrl ? (
                           <img
                             src={pkbmInfo.logoUrl}
                             alt={pkbmInfo.name}
-                            className="w-full h-full object-contain p-0.5 sm:p-1"
+                            className="w-full h-full object-contain"
                           />
                         ) : (
-                          <BookOpen className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                          <BookOpen className="w-5 h-5 sm:w-6 sm:h-6 text-[#EA580C]" />
                         )}
                       </div>
                       <div className="flex flex-col text-left pr-1 sm:pr-2 min-w-0">
