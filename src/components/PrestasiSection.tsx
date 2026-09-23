@@ -24,9 +24,10 @@ import { MediaShowcaseView, ShowcaseItem } from './MediaShowcaseView';
 interface PrestasiSectionProps {
   onOpenAdmin?: () => void;
   onOpenNewsReader?: (article: NewsItem) => void;
+  onShareCustom?: (data: { title: string; description: string; hash: string; category?: string; image?: string }) => void;
 }
 
-export const PrestasiSection: React.FC<PrestasiSectionProps> = ({ onOpenAdmin, onOpenNewsReader }) => {
+export const PrestasiSection: React.FC<PrestasiSectionProps> = ({ onOpenAdmin, onOpenNewsReader, onShareCustom }) => {
   const { news, pkbmInfo, isAdminAuthenticated } = usePKBM();
   const [activeArticleModal, setActiveArticleModal] = useState<NewsItem | null>(null);
 
@@ -113,6 +114,17 @@ export const PrestasiSection: React.FC<PrestasiSectionProps> = ({ onOpenAdmin, o
               sectionTitle="Prestasi & Penghargaan Warga Belajar"
               mediaType="achievement"
               theme="dark"
+              onShareItem={(item) => {
+                if (onShareCustom) {
+                  onShareCustom({
+                    title: item.title,
+                    description: item.description,
+                    hash: '#prestasi',
+                    category: item.category,
+                    image: item.image
+                  });
+                }
+              }}
             />
           </div>
         )}
@@ -188,10 +200,31 @@ export const PrestasiSection: React.FC<PrestasiSectionProps> = ({ onOpenAdmin, o
 
                   {/* Card Bottom CTA */}
                   <div className="pt-4 border-t border-stone-800/80 flex items-center justify-between">
-                    <span className="text-[11px] font-bold text-amber-400/90 uppercase tracking-wider flex items-center gap-1">
-                      <Sparkles className="w-3 h-3" />
-                      Pencapaian Sah
-                    </span>
+                    {onShareCustom ? (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onShareCustom({
+                            title: item.title,
+                            description: item.summary,
+                            hash: '#prestasi',
+                            category: item.category,
+                            image: item.image
+                          });
+                        }}
+                        className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-stone-800/90 hover:bg-stone-700 text-amber-300 text-xs font-bold border border-amber-500/30 transition-colors cursor-pointer"
+                        title="Bagikan Prestasi Ini"
+                      >
+                        <Share2 className="w-3.5 h-3.5 text-orange-400" />
+                        <span>Bagikan</span>
+                      </button>
+                    ) : (
+                      <span className="text-[11px] font-bold text-amber-400/90 uppercase tracking-wider flex items-center gap-1">
+                        <Sparkles className="w-3 h-3" />
+                        Pencapaian Sah
+                      </span>
+                    )}
                     <button
                       onClick={() => handleReadDetail(item)}
                       className="inline-flex items-center gap-1.5 text-xs font-black text-amber-300 group-hover:text-orange-300 hover:underline cursor-pointer"

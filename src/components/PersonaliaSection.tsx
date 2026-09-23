@@ -21,7 +21,8 @@ import {
   Edit3,
   Maximize2,
   ZoomIn,
-  Download
+  Download,
+  Share2
 } from 'lucide-react';
 import { usePKBM } from '../context/PKBMContext';
 import { PersonaliaCategory, PersonaliaMember } from '../types';
@@ -29,6 +30,7 @@ import { MediaShowcaseView, ShowcaseItem } from './MediaShowcaseView';
 
 interface PersonaliaSectionProps {
   onOpenAdmin?: () => void;
+  onShareCustom?: (data: { title: string; description: string; hash: string; category?: string; image?: string }) => void;
 }
 
 const CATEGORY_CONFIG: Record<
@@ -86,7 +88,7 @@ const CATEGORY_CONFIG: Record<
   }
 };
 
-export const PersonaliaSection: React.FC<PersonaliaSectionProps> = ({ onOpenAdmin }) => {
+export const PersonaliaSection: React.FC<PersonaliaSectionProps> = ({ onOpenAdmin, onShareCustom }) => {
   const { personalia, pkbmInfo, isAdminAuthenticated } = usePKBM();
   const [selectedCategory, setSelectedCategory] = useState<PersonaliaCategory | 'all'>('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -318,6 +320,17 @@ export const PersonaliaSection: React.FC<PersonaliaSectionProps> = ({ onOpenAdmi
               sectionTitle="Profil Personalia & Tim Pengelola"
               mediaType="person"
               theme="dark"
+              onShareItem={(item) => {
+                if (onShareCustom) {
+                  onShareCustom({
+                    title: `Profil ${item.title} - ${item.subtitle || 'Personalia PKBM Bina Insani'}`,
+                    description: item.description,
+                    hash: '#personalia',
+                    category: item.category,
+                    image: item.image
+                  });
+                }
+              }}
             />
           </div>
         )}
@@ -469,14 +482,33 @@ export const PersonaliaSection: React.FC<PersonaliaSectionProps> = ({ onOpenAdmi
                   </div>
 
                   {/* Card Bottom Actions */}
-                  <div className="p-4 pt-0">
+                  <div className="p-4 pt-0 flex items-center gap-2">
                     <button
                       onClick={() => setActiveModalMember(member)}
-                      className="w-full py-1.5 px-3 rounded-lg bg-stone-950 text-amber-300 hover:bg-gradient-to-r hover:from-orange-500 hover:to-amber-500 hover:text-white border border-orange-400/35 text-[11px] font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow"
+                      className="flex-1 py-1.5 px-3 rounded-lg bg-stone-950 text-amber-300 hover:bg-gradient-to-r hover:from-orange-500 hover:to-amber-500 hover:text-white border border-orange-400/35 text-[11px] font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow"
                     >
                       <UserCheck className="w-3.5 h-3.5" />
-                      <span>Lihat Profil Lengkap</span>
+                      <span>Lihat Profil</span>
                     </button>
+                    {onShareCustom && (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onShareCustom({
+                            title: `Profil ${member.name} (${member.role})`,
+                            description: member.bio || `${member.name} - ${member.role} di PKBM Bina Insani Sumowono.`,
+                            hash: '#personalia',
+                            category: member.category,
+                            image: member.photo
+                          });
+                        }}
+                        className="p-1.5 rounded-lg bg-stone-900 hover:bg-stone-800 text-amber-300 border border-orange-500/35 cursor-pointer transition-colors"
+                        title="Bagikan Profil Pendidik/Pengurus"
+                      >
+                        <Share2 className="w-3.5 h-3.5 text-orange-400" />
+                      </button>
+                    )}
                   </div>
                 </motion.div>
               );

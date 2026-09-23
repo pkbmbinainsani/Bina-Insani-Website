@@ -24,9 +24,10 @@ import { sortNewsByDateDesc } from '../utils/dateHelper';
 
 interface NewsSectionProps {
   onOpenAdmin?: () => void;
+  onShareCustom?: (data: { title: string; description: string; hash: string; category?: string; image?: string }) => void;
 }
 
-export const NewsSection: React.FC<NewsSectionProps> = ({ onOpenAdmin }) => {
+export const NewsSection: React.FC<NewsSectionProps> = ({ onOpenAdmin, onShareCustom }) => {
   const { news, isAdminAuthenticated } = usePKBM();
   const [expandedArticles, setExpandedArticles] = useState<Record<string, boolean>>({});
   const [copiedId, setCopiedId] = useState<string | null>(null);
@@ -43,6 +44,16 @@ export const NewsSection: React.FC<NewsSectionProps> = ({ onOpenAdmin }) => {
   };
 
   const handleShareArticle = (article: NewsItem) => {
+    if (onShareCustom) {
+      onShareCustom({
+        title: article.title,
+        description: article.summary,
+        hash: `#berita`,
+        category: article.category,
+        image: article.image
+      });
+      return;
+    }
     const url = `${window.location.origin}${window.location.pathname}#berita`;
     if (navigator.share) {
       navigator.share({

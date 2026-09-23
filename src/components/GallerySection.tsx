@@ -14,7 +14,8 @@ import {
   Film,
   Clock,
   Layers,
-  ArrowRight
+  ArrowRight,
+  Share2
 } from 'lucide-react';
 import { usePKBM } from '../context/PKBMContext';
 import { GalleryItem, VideoItem } from '../types';
@@ -27,9 +28,10 @@ import { MediaShowcaseView, ShowcaseItem } from './MediaShowcaseView';
 
 interface GallerySectionProps {
   onOpenAdmin?: () => void;
+  onShareCustom?: (data: { title: string; description: string; hash: string; category?: string; image?: string }) => void;
 }
 
-export const GallerySection: React.FC<GallerySectionProps> = ({ onOpenAdmin }) => {
+export const GallerySection: React.FC<GallerySectionProps> = ({ onOpenAdmin, onShareCustom }) => {
   const { gallery, news, videos } = usePKBM();
 
   // Mode Tampilan: 'photos' | 'videos'
@@ -201,6 +203,17 @@ export const GallerySection: React.FC<GallerySectionProps> = ({ onOpenAdmin }) =
                 sectionTitle="Dokumentasi Foto Kegiatan"
                 mediaType="photo"
                 theme="light"
+                onShareItem={(item) => {
+                  if (onShareCustom) {
+                    onShareCustom({
+                      title: `Dokumentasi Foto: ${item.title}`,
+                      description: item.description,
+                      hash: '#galeri',
+                      category: item.category,
+                      image: item.image
+                    });
+                  }
+                }}
               />
             )}
 
@@ -303,6 +316,17 @@ export const GallerySection: React.FC<GallerySectionProps> = ({ onOpenAdmin }) =
                 sectionTitle="Video Dokumentasi Kegiatan"
                 mediaType="video"
                 theme="light"
+                onShareItem={(item) => {
+                  if (onShareCustom) {
+                    onShareCustom({
+                      title: `Video Dokumentasi: ${item.title}`,
+                      description: item.description,
+                      hash: '#galeri',
+                      category: item.category,
+                      image: item.image
+                    });
+                  }
+                }}
               />
             )}
 

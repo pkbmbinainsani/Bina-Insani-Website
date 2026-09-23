@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { Home, ChevronRight, ArrowLeft, Sparkles, LucideIcon } from 'lucide-react';
+import { Home, ChevronRight, ArrowLeft, Sparkles, LucideIcon, Share2 } from 'lucide-react';
 
 interface PageHeaderBannerProps {
   title: string;
@@ -8,6 +8,7 @@ interface PageHeaderBannerProps {
   badge: string;
   icon: LucideIcon;
   onBackToHome: () => void;
+  onShare?: () => void;
   actionButton?: {
     label: string;
     onClick: () => void;
@@ -21,6 +22,7 @@ export const PageHeaderBanner: React.FC<PageHeaderBannerProps> = ({
   badge,
   icon: Icon,
   onBackToHome,
+  onShare,
   actionButton
 }) => {
   const ActionIcon = actionButton?.icon;
@@ -54,14 +56,28 @@ export const PageHeaderBanner: React.FC<PageHeaderBannerProps> = ({
             </div>
           </nav>
 
-          {/* Back to Home CTA button */}
-          <button
-            onClick={onBackToHome}
-            className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-stone-900/90 hover:bg-stone-800 text-stone-300 hover:text-white border border-stone-700/80 hover:border-orange-500/50 transition-all text-[11px] font-bold cursor-pointer shadow-sm"
-          >
-            <ArrowLeft className="w-3 h-3 text-orange-400" />
-            <span>Kembali ke Beranda</span>
-          </button>
+          {/* Right Action buttons */}
+          <div className="flex items-center gap-2">
+            {onShare && (
+              <button
+                onClick={onShare}
+                className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-orange-950/80 hover:bg-orange-900/90 text-amber-300 hover:text-amber-200 border border-orange-500/40 hover:border-orange-400 transition-all text-[11px] font-bold cursor-pointer shadow-sm"
+                title="Bagikan Tautan Halaman Ini"
+              >
+                <Share2 className="w-3 h-3 text-orange-400" />
+                <span>Bagikan Halaman</span>
+              </button>
+            )}
+
+            {/* Back to Home CTA button */}
+            <button
+              onClick={onBackToHome}
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-stone-900/90 hover:bg-stone-800 text-stone-300 hover:text-white border border-stone-700/80 hover:border-orange-500/50 transition-all text-[11px] font-bold cursor-pointer shadow-sm"
+            >
+              <ArrowLeft className="w-3 h-3 text-orange-400" />
+              <span>Kembali ke Beranda</span>
+            </button>
+          </div>
         </div>
 
         {/* Main Title & Action Row */}

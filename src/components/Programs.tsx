@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
-import { BookOpen, GraduationCap, Award, CheckCircle, Clock, Calendar, Users, ArrowRight, X, Sparkles, HelpCircle } from 'lucide-react';
+import { BookOpen, GraduationCap, Award, CheckCircle, Clock, Calendar, Users, ArrowRight, X, Sparkles, HelpCircle, Share2 } from 'lucide-react';
 import { usePKBM } from '../context/PKBMContext';
 import { Program } from '../types';
 
 interface ProgramsProps {
   onOpenRegistration: (programName?: string) => void;
+  onShareCustom?: (data: { title: string; description: string; hash: string; category?: string }) => void;
 }
 
-export const Programs: React.FC<ProgramsProps> = ({ onOpenRegistration }) => {
+export const Programs: React.FC<ProgramsProps> = ({ onOpenRegistration, onShareCustom }) => {
   const { programs, pkbmInfo } = usePKBM();
   const [selectedProgramModal, setSelectedProgramModal] = useState<Program | null>(null);
 
@@ -133,13 +134,33 @@ export const Programs: React.FC<ProgramsProps> = ({ onOpenRegistration }) => {
                       <ArrowRight className="w-4 h-4" />
                     </button>
 
-                    <button
-                      onClick={() => setSelectedProgramModal(prog)}
-                      className="w-full py-2.5 px-4 rounded-xl text-stone-700 hover:text-orange-700 font-semibold text-xs transition-colors hover:bg-orange-50 flex items-center justify-center gap-1.5 cursor-pointer"
-                    >
-                      <HelpCircle className="w-3.5 h-3.5 text-stone-500" />
-                      <span>Detail & Syarat Pendaftaran</span>
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => setSelectedProgramModal(prog)}
+                        className="flex-1 py-2 px-3 rounded-xl text-stone-700 hover:text-orange-700 font-semibold text-xs transition-colors hover:bg-orange-50 flex items-center justify-center gap-1.5 cursor-pointer border border-stone-200"
+                      >
+                        <HelpCircle className="w-3.5 h-3.5 text-stone-500" />
+                        <span>Detail & Syarat</span>
+                      </button>
+
+                      {onShareCustom && (
+                        <button
+                          type="button"
+                          onClick={() =>
+                            onShareCustom({
+                              title: `Program Kesetaraan ${prog.code} (${prog.name}) - PKBM Bina Insani`,
+                              description: `${prog.description} Layanan resmi berijazah negara dengan SPP gratis.`,
+                              hash: '#program-belajar',
+                              category: 'Program Kesetaraan'
+                            })
+                          }
+                          className="p-2 rounded-xl text-orange-600 hover:bg-orange-50 border border-orange-200 cursor-pointer transition-colors"
+                          title={`Bagikan info ${prog.code}`}
+                        >
+                          <Share2 className="w-4 h-4" />
+                        </button>
+                      )}
+                    </div>
                   </div>
 
                 </div>

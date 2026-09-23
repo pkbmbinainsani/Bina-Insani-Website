@@ -4,7 +4,11 @@ import { Phone, Mail, MapPin, Clock, Send, MessageSquare, CheckCircle2, Sparkles
 import { usePKBM } from '../context/PKBMContext';
 import { ContactFormData } from '../types';
 
-export const ContactSection: React.FC = () => {
+interface ContactSectionProps {
+  onShareLocation?: () => void;
+}
+
+export const ContactSection: React.FC<ContactSectionProps> = ({ onShareLocation }) => {
   const { pkbmInfo } = usePKBM();
   const [formData, setFormData] = useState<ContactFormData>({
     nama: '',
@@ -144,20 +148,27 @@ ${formData.pesan}`;
             </div>
 
             {/* Embedded Location Map Preview */}
-            <div className="bg-white p-5 rounded-3xl border border-stone-200 shadow-sm space-y-3">
+            <div id="geolocation" className="bg-white p-5 rounded-3xl border border-stone-200 shadow-sm space-y-3 scroll-mt-28">
               <div className="flex items-center justify-between">
                 <div>
                   <div className="flex items-center gap-1.5 text-xs font-black text-slate-900">
                     <Navigation className="w-4 h-4 text-orange-600" />
-                    <span>Titik Lokasi PKBM Bina Insani</span>
+                    <span>Titik Lokasi & Geolocation</span>
                   </div>
                   <p className="text-[11px] text-stone-500 mt-0.5">
                     Dusun Kawedusan RT 01/02, Desa Ngadikerso, Sumowono
                   </p>
                 </div>
-                <span className="px-2 py-0.5 rounded-md bg-orange-100 text-orange-900 text-[10px] font-bold">
-                  Geo-Verified
-                </span>
+                {onShareLocation && (
+                  <button
+                    type="button"
+                    onClick={onShareLocation}
+                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-orange-50 hover:bg-orange-100 text-orange-700 text-[11px] font-bold border border-orange-200 cursor-pointer transition-colors"
+                    title="Bagikan Titik Geolocation"
+                  >
+                    <span>Bagikan Lokasi</span>
+                  </button>
+                )}
               </div>
 
               {/* Map Iframe with coordinates of PKBM Bina Insani */}

@@ -14,7 +14,8 @@ import {
   GraduationCap,
   BookOpen,
   Mail,
-  UserCheck
+  UserCheck,
+  Share2
 } from 'lucide-react';
 import { getVideoEmbedUrl, getVideoPlatformInfo } from '../utils/videoHelper';
 
@@ -46,6 +47,7 @@ interface MediaShowcaseViewProps {
   sectionTitle?: string;
   mediaType?: 'photo' | 'video' | 'person' | 'achievement';
   theme?: 'dark' | 'light';
+  onShareItem?: (item: ShowcaseItem) => void;
 }
 
 export const MediaShowcaseView: React.FC<MediaShowcaseViewProps> = ({
@@ -55,7 +57,8 @@ export const MediaShowcaseView: React.FC<MediaShowcaseViewProps> = ({
   onClose,
   sectionTitle = 'Galeri & Dokumentasi',
   mediaType = 'photo',
-  theme = 'light'
+  theme = 'light',
+  onShareItem
 }) => {
   const showcaseRef = useRef<HTMLDivElement>(null);
   const activeIndex = items.findIndex((item) => item.id === activeId);
@@ -143,6 +146,19 @@ export const MediaShowcaseView: React.FC<MediaShowcaseViewProps> = ({
           >
             <ChevronRight className="w-5 h-5" />
           </button>
+
+          {onShareItem && (
+            <button
+              onClick={() => onShareItem(currentItem)}
+              title="Bagikan Konten Ini"
+              className={`p-1.5 rounded-lg transition-colors cursor-pointer flex items-center gap-1 text-xs font-bold ${
+                isDark ? 'hover:bg-orange-950/80 text-amber-300 border border-orange-500/30' : 'hover:bg-orange-50 text-orange-600 border border-orange-200'
+              }`}
+            >
+              <Share2 className="w-4 h-4 text-orange-400" />
+              <span className="hidden sm:inline">Bagikan</span>
+            </button>
+          )}
 
           <button
             onClick={onClose}

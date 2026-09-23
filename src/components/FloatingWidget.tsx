@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
-import { Globe, MessageCircle, Phone, ArrowUp, Sparkles, Check, ChevronUp } from 'lucide-react';
+import { Globe, MessageCircle, Phone, ArrowUp, Sparkles, Check, ChevronUp, Share2 } from 'lucide-react';
 import { usePKBM } from '../context/PKBMContext';
 
 interface FloatingWidgetProps {
   onOpenAdmin?: () => void;
+  onOpenShare?: () => void;
 }
 
-export const FloatingWidget: React.FC<FloatingWidgetProps> = () => {
+export const FloatingWidget: React.FC<FloatingWidgetProps> = ({ onOpenShare }) => {
   const { pkbmInfo } = usePKBM();
   const [isOpen, setIsOpen] = useState(false);
   const [fontSize, setFontSize] = useState<'normal' | 'large'>('normal');
@@ -54,6 +55,22 @@ export const FloatingWidget: React.FC<FloatingWidgetProps> = () => {
             <span>Chat WhatsApp Sekretariat</span>
           </a>
 
+          {onOpenShare && (
+            <button
+              onClick={() => {
+                setIsOpen(false);
+                onOpenShare();
+              }}
+              className="w-full py-2 px-3 rounded-xl bg-orange-950/80 hover:bg-orange-900 text-amber-300 text-xs font-bold flex items-center justify-between border border-orange-500/40 transition-colors cursor-pointer"
+            >
+              <span className="flex items-center gap-1.5">
+                <Share2 className="w-3.5 h-3.5 text-orange-400" />
+                <span>Bagikan Konten Website</span>
+              </span>
+              <span className="text-[10px] bg-orange-500/20 text-orange-300 px-1.5 py-0.5 rounded">Link</span>
+            </button>
+          )}
+
           <button
             onClick={scrollToTop}
             className="w-full py-2 px-3 rounded-xl bg-stone-950 hover:bg-black text-stone-300 text-xs font-bold flex items-center justify-center gap-2 transition-colors cursor-pointer border border-stone-800"
@@ -66,6 +83,17 @@ export const FloatingWidget: React.FC<FloatingWidgetProps> = () => {
 
       {/* Floating Widget Trigger Buttons Group */}
       <div className="flex items-center gap-2">
+        {/* Direct Content Share Button */}
+        {onOpenShare && (
+          <button
+            onClick={onOpenShare}
+            className="bg-stone-900 hover:bg-stone-800 text-amber-300 p-3 rounded-2xl shadow-xl border border-orange-500/50 flex items-center justify-center transition-all transform hover:scale-110 cursor-pointer"
+            title="Bagikan Langsung Konten Website"
+            aria-label="Bagikan Halaman atau Konten"
+          >
+            <Share2 className="w-5 h-5 text-orange-400 hover:text-amber-300" />
+          </button>
+        )}
         
         {/* Language & Accessibility Widget */}
         <button

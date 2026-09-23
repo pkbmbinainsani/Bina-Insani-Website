@@ -31,6 +31,7 @@ import { RegistrationModal } from './components/RegistrationModal';
 import { FloatingWidget } from './components/FloatingWidget';
 import { AdminLoginModal } from './components/admin/AdminLoginModal';
 import { AdminDashboardModal } from './components/admin/AdminDashboardModal';
+import { ShareModal, ShareData } from './components/ShareModal';
 
 const VALID_TABS = [
   'beranda',
@@ -51,6 +52,119 @@ function MainAppContent() {
   const [selectedProgramForReg, setSelectedProgramForReg] = useState<string | undefined>(undefined);
   const [isAdminLoginOpen, setIsAdminLoginOpen] = useState(false);
   const [isAdminDashboardOpen, setIsAdminDashboardOpen] = useState(false);
+  const [shareModalState, setShareModalState] = useState<{ isOpen: boolean; data: ShareData }>({
+    isOpen: false,
+    data: {
+      title: 'PKBM Bina Insani Sumowono',
+      description: 'Lembaga Pendidikan Nonformal Resmi Terakreditasi di Kecamatan Sumowono.',
+      url: window.location.href,
+      category: 'Beranda'
+    }
+  });
+
+  const getPageShareInfo = (tabId: string): ShareData => {
+    const origin = window.location.origin + window.location.pathname;
+    switch (tabId) {
+      case 'berita':
+        return {
+          title: 'Berita & Pengumuman Resmi - PKBM Bina Insani Sumowono',
+          description: 'Kabar terkini, liputan agenda kegiatan akademik, pengumuman ujian kesetaraan, dan informasi resmi lembaga.',
+          url: `${origin}#berita`,
+          category: 'Berita Resmi'
+        };
+      case 'prestasi':
+        return {
+          title: 'Prestasi Warga Belajar - PKBM Bina Insani Sumowono',
+          description: 'Pencapaian kejuaraan, medali, dan penghargaan membanggakan dari warga belajar PKBM Bina Insani.',
+          url: `${origin}#prestasi`,
+          category: 'Prestasi'
+        };
+      case 'tentang-kami':
+        return {
+          title: 'Profil, Visi, Misi & Karakter - PKBM Bina Insani Sumowono',
+          description: 'Visi kelembagaan, 6 misi strategis, 4 tujuan pokok, dan pilar karakter HEBAT • MANDIRI • KREATIF.',
+          url: `${origin}#tentang-kami`,
+          category: 'Profil Lembaga'
+        };
+      case 'personalia':
+        return {
+          title: 'Profil Personalia & Dewan Guru - PKBM Bina Insani Sumowono',
+          description: 'Struktur dewan pengurus yayasan, tutor pendidik bersertifikasi, dan tenaga kependidikan resmi.',
+          url: `${origin}#personalia`,
+          category: 'Personalia'
+        };
+      case 'program-belajar':
+        return {
+          title: 'Program Pendidikan Kesetaraan Paket A, B, C - PKBM Bina Insani',
+          description: 'Layanan pendidikan kesetaraan ijazah resmi negara dengan jadwal belajar fleksibel dan SPP gratis.',
+          url: `${origin}#program-belajar`,
+          category: 'Program Belajar'
+        };
+      case 'vokasi':
+        return {
+          title: 'Pelatihan Keterampilan Vokasi - PKBM Bina Insani Sumowono',
+          description: 'Kursus keterampilan terapan siap kerja: Komputer TI, Tata Busana, Tata Boga, dan Kerajinan Tangan.',
+          url: `${origin}#vokasi`,
+          category: 'Vokasi'
+        };
+      case 'galeri':
+        return {
+          title: 'Galeri Dokumentasi Foto & Video - PKBM Bina Insani Sumowono',
+          description: 'Dokumentasi visual dan video kegiatan pembelajaran, ujian, dan workshop vokasi PKBM Bina Insani.',
+          url: `${origin}#galeri`,
+          category: 'Galeri'
+        };
+      case 'faq':
+        return {
+          title: 'Pusat Bantuan & Tanya Jawab (FAQ) - PKBM Bina Insani Sumowono',
+          description: 'Tanya jawab lengkap seputar pendaftaran warga belajar baru, legalitas ijazah kesetaraan, dan beasiswa.',
+          url: `${origin}#faq`,
+          category: 'Pusat Bantuan'
+        };
+      case 'kontak':
+        return {
+          title: 'Kontak & Titik Lokasi - PKBM Bina Insani Sumowono',
+          description: 'Sekretariat resmi di Dusun Kawedusan RT 01/02, Desa Ngadikerso, Sumowono. Peta lokasi & konsultasi WA.',
+          url: `${origin}#kontak`,
+          category: 'Kontak Lembaga'
+        };
+      default:
+        return {
+          title: 'PKBM Bina Insani Sumowono - Pusat Kegiatan Belajar Masyarakat',
+          description: 'Lembaga Pendidikan Nonformal Resmi Terakreditasi di Kecamatan Sumowono (NPSN: P9908447). Semangat HEBAT • MANDIRI • KREATIF.',
+          url: origin,
+          category: 'Beranda'
+        };
+    }
+  };
+
+  const handleOpenSharePage = (tabId?: string) => {
+    const info = getPageShareInfo(tabId || activeTab);
+    setShareModalState({
+      isOpen: true,
+      data: info
+    });
+  };
+
+  const handleOpenShareCustom = (custom: {
+    title: string;
+    description: string;
+    hash: string;
+    category?: string;
+    image?: string;
+  }) => {
+    const origin = window.location.origin + window.location.pathname;
+    setShareModalState({
+      isOpen: true,
+      data: {
+        title: custom.title,
+        description: custom.description,
+        url: `${origin}${custom.hash}`,
+        category: custom.category,
+        image: custom.image
+      }
+    });
+  };
 
   // Initialize active tab from URL hash (e.g. #berita or #prestasi) or default to 'beranda'
   const [activeTab, setActiveTab] = useState<string>(() => {
@@ -167,8 +281,12 @@ function MainAppContent() {
                 badge="Berita & Informasi"
                 icon={Newspaper}
                 onBackToHome={() => handleSelectTab('beranda')}
+                onShare={() => handleOpenSharePage('berita')}
               />
-              <NewsSection onOpenAdmin={handleOpenAdmin} />
+              <NewsSection
+                onOpenAdmin={handleOpenAdmin}
+                onShareCustom={handleOpenShareCustom}
+              />
             </motion.div>
           )}
 
@@ -186,8 +304,12 @@ function MainAppContent() {
                 badge="Prestasi Siswa"
                 icon={Trophy}
                 onBackToHome={() => handleSelectTab('beranda')}
+                onShare={() => handleOpenSharePage('prestasi')}
               />
-              <PrestasiSection onOpenAdmin={handleOpenAdmin} />
+              <PrestasiSection
+                onOpenAdmin={handleOpenAdmin}
+                onShareCustom={handleOpenShareCustom}
+              />
             </motion.div>
           )}
 
@@ -205,8 +327,12 @@ function MainAppContent() {
                 badge="Profil Lembaga"
                 icon={Award}
                 onBackToHome={() => handleSelectTab('beranda')}
+                onShare={() => handleOpenSharePage('tentang-kami')}
               />
-              <AboutUs />
+              <AboutUs
+                onOpenAdmin={handleOpenAdmin}
+                onShareCustom={handleOpenShareCustom}
+              />
             </motion.div>
           )}
 
@@ -224,8 +350,12 @@ function MainAppContent() {
                 badge="Personalia & Guru"
                 icon={Users}
                 onBackToHome={() => handleSelectTab('beranda')}
+                onShare={() => handleOpenSharePage('personalia')}
               />
-              <PersonaliaSection onOpenAdmin={handleOpenAdmin} />
+              <PersonaliaSection
+                onOpenAdmin={handleOpenAdmin}
+                onShareCustom={handleOpenShareCustom}
+              />
             </motion.div>
           )}
 
@@ -243,12 +373,16 @@ function MainAppContent() {
                 badge="Program Belajar"
                 icon={GraduationCap}
                 onBackToHome={() => handleSelectTab('beranda')}
+                onShare={() => handleOpenSharePage('program-belajar')}
                 actionButton={{
                   label: 'Daftar Sekarang (PWBB)',
                   onClick: () => handleOpenRegistration()
                 }}
               />
-              <Programs onOpenRegistration={handleOpenRegistration} />
+              <Programs
+                onOpenRegistration={handleOpenRegistration}
+                onShareCustom={handleOpenShareCustom}
+              />
             </motion.div>
           )}
 
@@ -266,12 +400,13 @@ function MainAppContent() {
                 badge="Keterampilan & Vokasi"
                 icon={Wrench}
                 onBackToHome={() => handleSelectTab('beranda')}
+                onShare={() => handleOpenSharePage('vokasi')}
                 actionButton={{
                   label: 'Daftar Kursus Vokasi',
                   onClick: () => handleOpenRegistration('Vokasi')
                 }}
               />
-              <VokasiSection />
+              <VokasiSection onShareCustom={handleOpenShareCustom} />
             </motion.div>
           )}
 
@@ -289,8 +424,12 @@ function MainAppContent() {
                 badge="Galeri Dokumentasi"
                 icon={ImageIcon}
                 onBackToHome={() => handleSelectTab('beranda')}
+                onShare={() => handleOpenSharePage('galeri')}
               />
-              <GallerySection onOpenAdmin={handleOpenAdmin} />
+              <GallerySection
+                onOpenAdmin={handleOpenAdmin}
+                onShareCustom={handleOpenShareCustom}
+              />
             </motion.div>
           )}
 
@@ -308,8 +447,9 @@ function MainAppContent() {
                 badge="Tanya Jawab (FAQ)"
                 icon={HelpCircle}
                 onBackToHome={() => handleSelectTab('beranda')}
+                onShare={() => handleOpenSharePage('faq')}
               />
-              <FaqSection />
+              <FaqSection onShareCustom={handleOpenShareCustom} />
             </motion.div>
           )}
 
@@ -327,8 +467,19 @@ function MainAppContent() {
                 badge="Kontak & Lokasi"
                 icon={MapPin}
                 onBackToHome={() => handleSelectTab('beranda')}
+                onShare={() => handleOpenSharePage('kontak')}
               />
-              <ContactSection />
+              <ContactSection
+                onShareLocation={() =>
+                  handleOpenShareCustom({
+                    title: 'Titik Geolocation & Peta Navigasi PKBM Bina Insani Sumowono',
+                    description:
+                      'Dusun Kawedusan RT 01/RW 02, Desa Ngadikerso, Kec. Sumowono, Kab. Semarang, Jawa Tengah 50662. Buka di Google Maps.',
+                    hash: '#kontak',
+                    category: 'Geolocation & Peta'
+                  })
+                }
+              />
             </motion.div>
           )}
         </AnimatePresence>
@@ -341,7 +492,10 @@ function MainAppContent() {
       />
 
       {/* Floating Accessibility & WhatsApp Widget */}
-      <FloatingWidget onOpenAdmin={handleOpenAdmin} />
+      <FloatingWidget
+        onOpenAdmin={handleOpenAdmin}
+        onOpenShare={() => handleOpenSharePage()}
+      />
 
       {/* Registration Modal Popup */}
       <RegistrationModal
@@ -361,6 +515,18 @@ function MainAppContent() {
       <AdminDashboardModal
         isOpen={isAdminDashboardOpen}
         onClose={() => setIsAdminDashboardOpen(false)}
+      />
+
+      {/* Global Share Modal */}
+      <ShareModal
+        isOpen={shareModalState.isOpen}
+        onClose={() =>
+          setShareModalState((prev) => ({
+            ...prev,
+            isOpen: false
+          }))
+        }
+        data={shareModalState.data}
       />
     </div>
   );

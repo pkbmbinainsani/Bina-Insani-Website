@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'motion/react';
 import { usePKBM } from '../context/PKBMContext';
-import { Laptop, Utensils, Palette, TrendingUp, Sparkles, CheckCircle2, Award, BookOpen, Wrench, Scissors } from 'lucide-react';
+import { Laptop, Utensils, Palette, TrendingUp, Sparkles, CheckCircle2, Award, BookOpen, Wrench, Scissors, Share2 } from 'lucide-react';
 
 const renderIcon = (iconName: string) => {
   switch (iconName) {
@@ -22,7 +22,11 @@ const renderIcon = (iconName: string) => {
   }
 };
 
-export const VokasiSection: React.FC = () => {
+interface VokasiSectionProps {
+  onShareCustom?: (data: { title: string; description: string; hash: string; category?: string }) => void;
+}
+
+export const VokasiSection: React.FC<VokasiSectionProps> = ({ onShareCustom }) => {
   const { vokasiPrograms, pkbmInfo } = usePKBM();
 
   return (
@@ -78,9 +82,28 @@ export const VokasiSection: React.FC = () => {
                 </div>
               </div>
 
-              <div className="pt-4 mt-4 border-t border-stone-800 text-xs text-orange-200 flex items-start gap-1.5 font-medium">
-                <CheckCircle2 className="w-4 h-4 text-orange-400 shrink-0 mt-0.5" />
-                <span>Capaian: {vokasi.output}</span>
+              <div className="pt-4 mt-4 border-t border-stone-800 flex items-center justify-between gap-2">
+                <div className="text-xs text-orange-200 flex items-start gap-1.5 font-medium flex-1">
+                  <CheckCircle2 className="w-4 h-4 text-orange-400 shrink-0 mt-0.5" />
+                  <span className="line-clamp-2">Capaian: {vokasi.output}</span>
+                </div>
+                {onShareCustom && (
+                  <button
+                    type="button"
+                    onClick={() =>
+                      onShareCustom({
+                        title: `Kursus Vokasi: ${vokasi.title} - PKBM Bina Insani`,
+                        description: `${vokasi.description} Durasi ${vokasi.duration}, capaian: ${vokasi.output}.`,
+                        hash: '#vokasi',
+                        category: 'Pelatihan Vokasi'
+                      })
+                    }
+                    className="p-1.5 rounded-lg bg-stone-950 hover:bg-stone-800 text-amber-300 border border-orange-500/30 cursor-pointer transition-colors shrink-0"
+                    title={`Bagikan info ${vokasi.title}`}
+                  >
+                    <Share2 className="w-3.5 h-3.5 text-orange-400" />
+                  </button>
+                )}
               </div>
             </motion.div>
           ))}

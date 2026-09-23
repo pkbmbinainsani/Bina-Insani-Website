@@ -1,9 +1,13 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { HelpCircle, ChevronDown, Sparkles } from 'lucide-react';
+import { HelpCircle, ChevronDown, Sparkles, Share2 } from 'lucide-react';
 import { usePKBM } from '../context/PKBMContext';
 
-export const FaqSection: React.FC = () => {
+interface FaqSectionProps {
+  onShareCustom?: (data: { title: string; description: string; hash: string; category?: string }) => void;
+}
+
+export const FaqSection: React.FC<FaqSectionProps> = ({ onShareCustom }) => {
   const { faqs, pkbmInfo } = usePKBM();
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
@@ -56,11 +60,31 @@ export const FaqSection: React.FC = () => {
                       exit={{ opacity: 0, height: 0 }}
                       transition={{ duration: 0.25 }}
                     >
-                      <div className="p-5 bg-white border-t border-stone-100 text-slate-700 text-sm leading-relaxed space-y-2">
+                      <div className="p-5 bg-white border-t border-stone-100 text-slate-700 text-sm leading-relaxed space-y-3">
                         <p>{faq.answer}</p>
-                        <div className="pt-2 flex items-center gap-2 text-xs text-orange-700 font-bold">
-                          <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-                          <span>Kategori: {faq.category}</span>
+                        <div className="pt-2 border-t border-stone-100 flex items-center justify-between text-xs text-orange-700 font-bold">
+                          <div className="flex items-center gap-2">
+                            <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+                            <span>Kategori: {faq.category}</span>
+                          </div>
+                          {onShareCustom && (
+                            <button
+                              type="button"
+                              onClick={() =>
+                                onShareCustom({
+                                  title: `Tanya Jawab: ${faq.question}`,
+                                  description: faq.answer,
+                                  hash: '#faq',
+                                  category: 'FAQ PKBM Bina Insani'
+                                })
+                              }
+                              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-orange-50 hover:bg-orange-100 text-orange-700 border border-orange-200 cursor-pointer transition-colors"
+                              title="Bagikan Pertanyaan Ini"
+                            >
+                              <Share2 className="w-3.5 h-3.5" />
+                              <span>Bagikan Jawaban</span>
+                            </button>
+                          )}
                         </div>
                       </div>
                     </motion.div>

@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
-import { Target, Compass, Flag, Sparkles, CheckCircle, ShieldCheck, Building2 } from 'lucide-react';
+import { Target, Compass, Flag, Sparkles, CheckCircle, ShieldCheck, Building2, Share2 } from 'lucide-react';
 import { usePKBM } from '../context/PKBMContext';
 
 interface AboutUsProps {
   onOpenAdmin?: () => void;
+  onShareCustom?: (data: { title: string; description: string; hash: string; category?: string }) => void;
 }
 
-export const AboutUs: React.FC<AboutUsProps> = ({ onOpenAdmin }) => {
+export const AboutUs: React.FC<AboutUsProps> = ({ onOpenAdmin, onShareCustom }) => {
   const { visiMisi, mottoValues, aboutProfile, pkbmInfo } = usePKBM();
   const [activeTab, setActiveTab] = useState<'visi-misi' | 'motto' | 'tujuan'>('visi-misi');
 
@@ -33,6 +34,22 @@ export const AboutUs: React.FC<AboutUsProps> = ({ onOpenAdmin }) => {
             </div>
           </div>
           <div className="flex items-center gap-2 shrink-0 self-end md:self-center">
+            {onShareCustom && (
+              <button
+                type="button"
+                onClick={() => onShareCustom({
+                  title: 'Profil & Visi Misi PKBM Bina Insani Sumowono',
+                  description: aboutProfile || 'Lembaga Pendidikan Nonformal terakreditasi resmi di Kecamatan Sumowono.',
+                  hash: '#tentang-kami',
+                  category: 'Profil Lembaga'
+                })}
+                className="px-2.5 py-1 rounded-lg bg-orange-950/80 hover:bg-orange-900 text-amber-300 border border-orange-500/40 text-[11px] font-bold flex items-center gap-1.5 transition-colors cursor-pointer"
+                title="Bagikan Profil Lembaga"
+              >
+                <Share2 className="w-3.5 h-3.5 text-orange-400" />
+                <span>Bagikan Profil</span>
+              </button>
+            )}
             <span className="px-2.5 py-1 rounded-lg bg-black/50 text-amber-300 border border-orange-500/30 text-[11px] font-mono font-semibold">
               NPSN: {pkbmInfo.npsn}
             </span>
