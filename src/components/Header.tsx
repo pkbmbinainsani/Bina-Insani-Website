@@ -27,7 +27,8 @@ import {
   Layers,
   ArrowRight,
   Camera,
-  Edit3
+  Edit3,
+  Mail
 } from 'lucide-react';
 import { usePKBM } from '../context/PKBMContext';
 import { LogoManagerModal } from './admin/LogoManagerModal';
@@ -90,20 +91,20 @@ export const Header: React.FC<HeaderProps> = ({
     <>
       <header className="fixed top-0 left-0 right-0 z-50 transition-all duration-300">
         
-        {/* Top Info Bar - Modern Dark Tone */}
-        <div className="bg-[#060E1A] text-slate-300 text-xs border-b border-white/10 shadow-xs">
+        {/* Top Info Bar - Luxurious Deep Midnight with Golden Accents */}
+        <div className="bg-[#060D17] text-slate-300 text-xs border-b border-amber-500/20 shadow-xs">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-9">
             
-            {/* Left Notice with Golden Pulse */}
+            {/* Left Contact & Notice Info */}
             <div className="flex items-center space-x-3 overflow-hidden min-w-0 flex-1 mr-2">
               <span className="flex items-center gap-2 font-medium text-white truncate text-[11px] sm:text-xs">
-                <span className="w-2 h-2 rounded-full bg-[#F59E0B] animate-ping shrink-0" />
+                <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping shrink-0" />
                 <span className="truncate font-semibold text-white">
                   {pkbmInfo.announcementText || 'Penerimaan Warga Belajar Baru T.A. 2026/2027 Telah Dibuka'}
                 </span>
               </span>
-              <span className="hidden md:inline text-white/30">|</span>
-              <span className="hidden md:flex items-center gap-1.5 text-amber-400 font-black shrink-0 text-xs">
+              <span className="hidden md:inline text-white/20">|</span>
+              <span className="hidden md:flex items-center gap-1.5 text-amber-300 font-black shrink-0 text-xs">
                 <ShieldCheck className="w-3.5 h-3.5 text-amber-400" />
                 <span>NPSN: {pkbmInfo.npsn} • {pkbmInfo.accreditation}</span>
               </span>
@@ -111,6 +112,11 @@ export const Header: React.FC<HeaderProps> = ({
 
             {/* Right Quick Links */}
             <div className="flex items-center space-x-2 sm:space-x-4 text-[11px] sm:text-xs shrink-0">
+              <span className="hidden lg:flex items-center gap-1 text-slate-400">
+                <MapPin className="w-3 h-3 text-amber-400" />
+                <span>{pkbmInfo.address || 'Sumowono, Kab. Semarang'}</span>
+              </span>
+              <span className="hidden lg:inline text-white/20">|</span>
               <a
                 href={`https://wa.me/${pkbmInfo.whatsappNumber}`}
                 target="_blank"
@@ -124,12 +130,12 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
         </div>
 
-        {/* Main Header Bar - Modern Executive Deep Slate Navy */}
+        {/* Main Header Bar - Executive Midnight Sapphire Navy */}
         <div
-          className={`transition-all duration-300 border-b border-white/10 ${
+          className={`transition-all duration-300 border-b border-amber-500/20 ${
             isScrolled
-              ? 'bg-[#0F1E36]/95 backdrop-blur-md shadow-lg py-2.5'
-              : 'bg-[#0B1728] py-3 shadow-md'
+              ? 'bg-[#0A1628]/98 backdrop-blur-md shadow-xl py-2 sm:py-2.5'
+              : 'bg-[#0B1526] py-2.5 sm:py-3 shadow-lg'
           }`}
         >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -141,17 +147,17 @@ export const Header: React.FC<HeaderProps> = ({
                   <a
                     href="#beranda"
                     onClick={(e) => handleNavClick(e, 'beranda')}
-                    className="bg-white/10 hover:bg-white/15 p-1.5 sm:p-2 md:p-2 rounded-xl sm:rounded-2xl border border-white/15 flex items-center gap-2 sm:gap-3 group-hover:scale-102 transition-all group-hover:border-amber-400/40 block min-w-0 cursor-pointer backdrop-blur-sm shadow-inner"
+                    className="p-1 sm:p-1.5 rounded-xl flex items-center gap-2 sm:gap-3 group-hover:scale-102 transition-all block min-w-0 cursor-pointer"
                   >
-                    <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+                    <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
                       <div
-                        className={`w-9 h-9 sm:w-11 sm:h-11 md:w-12 md:h-12 ${
+                        className={`w-10 h-10 sm:w-11 sm:h-11 md:w-12 md:h-12 ${
                           pkbmInfo.logoShape === 'circle'
                             ? 'rounded-full'
                             : pkbmInfo.logoShape === 'square'
                             ? 'rounded-lg'
                             : 'rounded-xl'
-                        } bg-white flex items-center justify-center text-[#EA580C] font-bold shadow-md shrink-0 border-2 border-white/90 overflow-hidden relative p-1`}
+                        } bg-white flex items-center justify-center text-[#EA580C] font-bold shadow-md shrink-0 border-2 border-white/95 overflow-hidden relative p-1 ring-2 ring-amber-400/30`}
                       >
                         {pkbmInfo.logoUrl ? (
                           <img
@@ -164,15 +170,15 @@ export const Header: React.FC<HeaderProps> = ({
                         )}
                       </div>
                       <div className="flex flex-col text-left pr-1 sm:pr-2 min-w-0">
-                        <span className="text-sm xs:text-base sm:text-lg md:text-xl font-black tracking-tight text-white leading-tight uppercase font-sans truncate">
+                        <span className="text-sm xs:text-base sm:text-lg md:text-xl font-black tracking-tight text-white leading-tight uppercase font-sans truncate drop-shadow-xs">
                           PKBM BINA INSANI
                         </span>
                         <div className="flex items-center gap-1.5 sm:gap-2 mt-0.5 min-w-0">
-                          <span className="text-[10px] xs:text-xs sm:text-xs font-black tracking-wider text-[#FB923C] uppercase shrink-0">
+                          <span className="text-xs sm:text-sm font-black tracking-wider text-[#FB923C] uppercase shrink-0">
                             SUMOWONO
                           </span>
-                          <span className="text-[8.5px] xs:text-[9.5px] sm:text-[10.5px] font-extrabold bg-white/15 text-amber-300 px-1.5 sm:px-2 py-0.5 rounded-md border border-white/20 whitespace-nowrap shrink-0">
-                            NPSN P9979993
+                          <span className="text-[8.5px] xs:text-[9.5px] sm:text-[10px] font-extrabold bg-amber-400/15 text-amber-300 px-1.5 sm:px-2 py-0.5 rounded-md border border-amber-400/30 whitespace-nowrap shrink-0">
+                            NPSN {pkbmInfo.npsn}
                           </span>
                         </div>
                       </div>
@@ -187,28 +193,28 @@ export const Header: React.FC<HeaderProps> = ({
                       setIsLogoModalOpen(true);
                     }}
                     title="Ganti Logo Lembaga"
-                    className="absolute -top-1.5 -left-1.5 sm:-top-2 sm:-left-2 p-1 sm:p-1.5 rounded-full bg-[#F97316] hover:bg-[#EA580C] text-white shadow-md border-2 border-white transition-all opacity-0 group-hover/logo:opacity-100 scale-90 hover:scale-110 cursor-pointer z-20 flex items-center gap-1 text-[10px] font-black"
+                    className="absolute -top-1 -left-1 sm:-top-1.5 sm:-left-1.5 p-1 sm:p-1.5 rounded-full bg-[#EA580C] hover:bg-[#C2410C] text-white shadow-md border-2 border-white transition-all opacity-0 group-hover/logo:opacity-100 scale-90 hover:scale-110 cursor-pointer z-20 flex items-center gap-1 text-[10px] font-black"
                   >
                     <Camera className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                   </button>
                 </div>
 
                 {/* BRAND MOTTO BLOCK: SEMANGAT & LANDASAN KARAKTER LEMBAGA */}
-                <div className="hidden md:flex flex-col border-l-2 border-white/15 pl-3.5 xl:pl-4 max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl">
-                  <div className="flex items-center gap-1.5 text-[9px] sm:text-[10px] xl:text-[10.5px] font-bold tracking-widest text-slate-300 uppercase">
-                    <Sparkles className="w-3 h-3 text-[#FB923C] shrink-0" />
-                    <span className="truncate">SEMANGAT & LANDASAN KARAKTER LEMBAGA</span>
+                <div className="hidden lg:flex flex-col border-l-2 border-white/15 pl-3.5 xl:pl-4 max-w-xs xl:max-w-md">
+                  <div className="flex items-center gap-1.5 text-[9px] sm:text-[10px] font-bold tracking-widest text-amber-300/90 uppercase">
+                    <Sparkles className="w-3 h-3 text-amber-400 shrink-0" />
+                    <span className="truncate">SEMANGAT & LANDASAN KARAKTER</span>
                   </div>
 
                   {/* Prominent Motto */}
                   <div className="flex items-center gap-1.5 my-0.5">
-                    <div className="text-xs sm:text-sm lg:text-base font-black tracking-wide uppercase font-sans text-transparent bg-clip-text bg-gradient-to-r from-[#FB923C] via-[#FDBA74] to-[#F59E0B] whitespace-nowrap">
-                      HEBAT <span className="text-[#FB923C] mx-0.5 sm:mx-1 font-black">•</span> MANDIRI <span className="text-[#FB923C] mx-0.5 sm:mx-1 font-black">•</span> KREATIF
+                    <div className="text-xs sm:text-sm font-black tracking-wider uppercase font-sans text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-orange-300 to-amber-200 whitespace-nowrap drop-shadow-xs">
+                      HEBAT <span className="text-[#FB923C] mx-0.5 font-black">•</span> MANDIRI <span className="text-[#FB923C] mx-0.5 font-black">•</span> KREATIF
                     </div>
                   </div>
 
                   {/* Subtext Quote in Header */}
-                  <p className="text-[10px] xl:text-[11.5px] font-medium text-slate-400 leading-tight italic font-serif line-clamp-1">
+                  <p className="text-[10px] xl:text-[11px] font-medium text-slate-300 leading-tight italic line-clamp-1">
                     "Pusat Kegiatan Belajar Masyarakat Kecamatan Sumowono"
                   </p>
                 </div>
@@ -220,16 +226,16 @@ export const Header: React.FC<HeaderProps> = ({
                 {/* Quick Search Button (Desktop Only) */}
                 <button
                   onClick={() => setIsSearchOpen(true)}
-                  className="hidden md:flex p-2.5 sm:p-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white transition-all cursor-pointer border border-white/15 shadow-sm hover:scale-105"
+                  className="hidden md:flex p-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white transition-all cursor-pointer border border-white/15 hover:border-amber-400/40 shadow-sm hover:scale-105 backdrop-blur-xs"
                   title="Cari Informasi"
                 >
-                  <Search className="w-4 h-4 sm:w-4.5 sm:h-4.5" />
+                  <Search className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-amber-300" />
                 </button>
 
                 {/* Registration CTA (Desktop Only) */}
                 <button
                   onClick={() => onOpenRegistration()}
-                  className="hidden md:flex px-4 sm:px-5 py-2.5 sm:py-2.5 rounded-xl text-xs sm:text-sm font-black bg-gradient-to-r from-[#F97316] to-[#EA580C] hover:from-[#EA580C] hover:to-[#C2410C] text-white shadow-md shadow-orange-500/25 transition-all items-center gap-2 cursor-pointer transform hover:scale-102 active:scale-95 whitespace-nowrap border border-orange-400/40"
+                  className="hidden md:flex px-4 sm:px-5 py-2.5 rounded-xl text-xs sm:text-sm font-black bg-gradient-to-r from-[#F97316] via-[#EA580C] to-[#C2410C] hover:from-[#EA580C] hover:to-[#9A3412] text-white shadow-lg shadow-orange-600/30 transition-all items-center gap-2 cursor-pointer transform hover:scale-102 active:scale-95 whitespace-nowrap border border-amber-400/40 ring-1 ring-amber-400/20"
                 >
                   <UserPlus className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-white" />
                   <span>Daftar Online</span>
@@ -251,8 +257,8 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
         </div>
 
-        {/* BARIS TAB MENU UTAMA (Sleek Compact, Oranye dengan Teks Huruf Kapital & Font Bersih Modern) */}
-        <div className="bg-gradient-to-r from-[#EA580C] via-[#F97316] to-[#EA580C] border-b border-[#C2410C]/80 shadow-sm">
+        {/* BARIS TAB MENU UTAMA (Sleek Compact, Oranye Mewah dengan Teks Huruf Kapital) */}
+        <div className="bg-gradient-to-r from-[#C2410C] via-[#EA580C] to-[#C2410C] border-b border-[#9A3412] shadow-md">
           <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
             <nav
               className="flex items-center justify-start md:justify-between py-1 gap-1 sm:gap-1.5 overflow-x-auto no-scrollbar scroll-smooth"
@@ -266,14 +272,14 @@ export const Header: React.FC<HeaderProps> = ({
                     key={link.id}
                     href={link.href}
                     onClick={(e) => handleNavClick(e, link.id)}
-                    className={`px-2 sm:px-2.5 lg:px-3 py-1 rounded-lg text-[10.5px] sm:text-[11px] lg:text-[11.5px] font-sans uppercase tracking-wider leading-none transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer select-none shrink-0 ${
+                    className={`px-2.5 sm:px-3 lg:px-3.5 py-1 rounded-lg text-[10.5px] sm:text-[11px] lg:text-[11.5px] font-sans uppercase tracking-wider leading-none transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer select-none shrink-0 ${
                       isActive
-                        ? 'bg-white text-[#EA580C] shadow-xs font-black ring-1 ring-white/70 scale-[1.02]'
+                        ? 'bg-white text-[#EA580C] shadow-md font-black ring-1 ring-white/90 scale-[1.02]'
                         : 'text-white/95 font-extrabold hover:bg-white/20 hover:text-white active:bg-white/30 border border-transparent'
                     }`}
                     title={link.name}
                   >
-                    <Icon className={`w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0 transition-transform ${isActive ? 'text-[#EA580C] scale-105' : 'text-white'}`} />
+                    <Icon className={`w-3.5 h-3.5 shrink-0 transition-transform ${isActive ? 'text-[#EA580C] scale-105' : 'text-white'}`} />
                     <span>{link.shortName}</span>
                     {isActive && (
                       <span className="w-1.5 h-1.5 rounded-full bg-[#EA580C] ml-0.5 animate-pulse shrink-0" />
