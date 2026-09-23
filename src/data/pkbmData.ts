@@ -236,7 +236,155 @@ export const FAQ_DATA: FAQItem[] = [
 
 export const TESTIMONIALS: Testimonial[] = [];
 
-export const PERSONALIA_DATA: PersonaliaMember[] = [];
+export const PERSONALIA_DATA: PersonaliaMember[] = [
+  // 1. PENDIRI (ID Pegawai PEG-001, PEG-002)
+  {
+    id: 'person-pendiri-1',
+    name: 'Drs. H. Ahmad Sudirman, M.Pd.',
+    role: 'Ketua Dewan Pembina & Pendiri Lembaga',
+    category: 'pendiri',
+    education: 'S2 Manajemen Pendidikan UNNES',
+    specialization: 'Kebijakan Pendidikan & Manajemen Mutu Kesetaraan',
+    nuptkOrNip: 'PEG-001',
+    bio: 'Perintis dan pendiri pendidikan kesetaraan PKBM Bina Insani Sumowono sejak 2012 dengan komitmen pengentasan putus sekolah.',
+    photo: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=600&q=80',
+    phone: '081234567890',
+    email: 'pembina@pkbmsumowono.sch.id',
+    order: 1
+  },
+  {
+    id: 'person-pendiri-2',
+    name: "KH. Syukron Ma'mun, S.Ag.",
+    role: 'Dewan Pembina & Tokoh Pendiri',
+    category: 'pendiri',
+    education: 'S1 Pendidikan Agama Islam UIN Walisongo',
+    specialization: 'Pendidikan Karakter & Pengembangan Warga Belajar',
+    nuptkOrNip: 'PEG-002',
+    bio: 'Tokoh masyarakat dan pembina kerohanian yang mengawal nilai luhur serta budi pekerti warga belajar.',
+    photo: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=600&q=80',
+    phone: '081234567891',
+    email: 'syukron@pkbmsumowono.sch.id',
+    order: 2
+  },
+
+  // 2. PENGELOLA - YAYASAN (ID Pegawai PEG-003, PEG-004)
+  {
+    id: 'person-yayasan-1',
+    name: 'Hj. Siti Rahmawati, S.Sos.',
+    role: 'Ketua Yayasan Bina Insani',
+    category: 'yayasan',
+    education: 'S1 Ilmu Komunikasi UNDIP',
+    specialization: 'Manajemen Kelembagaan & Hubungan Kemitraan',
+    nuptkOrNip: 'PEG-003',
+    bio: 'Memimpin koordinasi strategis yayasan, kemitraan DUDI vokasi, dan tata kelola program pendidikan masyarakat.',
+    photo: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=600&q=80',
+    phone: '081398765432',
+    email: 'yayasan@pkbmsumowono.sch.id',
+    order: 3
+  },
+  {
+    id: 'person-yayasan-2',
+    name: 'H. Arif Budiman, S.E.',
+    role: 'Sekretaris Yayasan & Pengelola Administrasi',
+    category: 'yayasan',
+    education: 'S1 Manajemen Ekonomi STIE Widya Manggala',
+    specialization: 'Akuntabilitas Lembaga & Perencanaan Program',
+    nuptkOrNip: 'PEG-004',
+    bio: 'Mengelola tata persuratan, perizinan operasional kesetaraan, dan program penguatan sarana prasarana.',
+    photo: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=600&q=80',
+    phone: '081398765433',
+    email: 'sekretariat@pkbmsumowono.sch.id',
+    order: 4
+  },
+
+  // 2. PENGELOLA - TENAGA KEPENDIDIKAN (ID Pegawai PEG-005, PEG-006)
+  {
+    id: 'person-tendik-1',
+    name: 'Nurul Aini, S.Kom.',
+    role: 'Kepala Tenaga Kependidikan & Operator Dapodik',
+    category: 'tendik',
+    education: 'S1 Sistem Informasi UDINUS',
+    specialization: 'Sistem Dapodik Kesetaraan, Asesmen Nasional & Arsip Digital',
+    nuptkOrNip: 'PEG-005',
+    bio: 'Penanggung jawab administrasi Dapodikmas, sinkronisasi data ijazah, dan operasional laboratorium komputer.',
+    photo: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=600&q=80',
+    phone: '087812345678',
+    email: 'dapodik@pkbmsumowono.sch.id',
+    order: 5
+  },
+  {
+    id: 'person-tendik-2',
+    name: 'Hendra Setiawan, S.Ak.',
+    role: 'Staf Administrasi & Bendahara Operasional',
+    category: 'tendik',
+    education: 'S1 Akuntansi Universitas Dian Nuswantoro',
+    specialization: 'Manajemen Keuangan, BOSP & Layanan Peserta Didik',
+    nuptkOrNip: 'PEG-006',
+    bio: 'Menangani pembukuan BOS Kesetaraan, administrasi pendaftaran santri/warga belajar, dan inventaris lembaga.',
+    photo: 'https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?auto=format&fit=crop&w=600&q=80',
+    phone: '087812345679',
+    email: 'keuangan@pkbmsumowono.sch.id',
+    order: 6
+  },
+
+  // 3. TUTOR - PENDIDIK (ID Pegawai PEG-007, PEG-008, PEG-009, PEG-010)
+  {
+    id: 'person-tutor-1',
+    name: 'Budi Santoso, S.Pd.',
+    role: 'Tutor Matematika & Numerasi Paket B & C',
+    category: 'pendidik',
+    education: 'S1 Pendidikan Matematika UNNES',
+    specialization: 'Matematika Terapan, Aljabar & Logika Bernalar',
+    nuptkOrNip: 'PEG-007',
+    bio: 'Tutor berdedikasi mengampu numerasi dengan pendekatan kontekstual yang mudah dipahami bagi warga belajar dewasa.',
+    photo: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80',
+    phone: '085612345678',
+    email: 'budi.santoso@pkbmsumowono.sch.id',
+    order: 7
+  },
+  {
+    id: 'person-tutor-2',
+    name: 'Dewi Lestari, S.Pd., M.Hum.',
+    role: 'Tutor Bahasa Indonesia & Literasi Budaya',
+    category: 'pendidik',
+    education: 'S2 Pendidikan Bahasa Indonesia UNNES',
+    specialization: 'Literasi Kritis, Menulis Kreatif & Komunikasi Efektif',
+    nuptkOrNip: 'PEG-008',
+    bio: 'Mengembangkan minat baca dan kemampuan literasi penulisan laporan warga belajar Paket A, B, dan C.',
+    photo: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=600&q=80',
+    phone: '085612345679',
+    email: 'dewi.lestari@pkbmsumowono.sch.id',
+    order: 8
+  },
+  {
+    id: 'person-tutor-3',
+    name: 'Eko Prasetyo, S.Kom.',
+    role: 'Tutor Vokasi Komputer & Digital Marketing',
+    category: 'pendidik',
+    education: 'S1 Teknik Informatika UKSW Salatiga',
+    specialization: 'Desain Grafis Canva, Microsoft Office & Pemasaran Online UMKM',
+    nuptkOrNip: 'PEG-009',
+    bio: 'Instruktur vokasi siap kerja yang membekali warga belajar keterampilan digital praktis bernilai ekonomi.',
+    photo: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=600&q=80',
+    phone: '085612345680',
+    email: 'eko.prasetyo@pkbmsumowono.sch.id',
+    order: 9
+  },
+  {
+    id: 'person-tutor-4',
+    name: 'Siti Maryam, S.Pd.',
+    role: 'Tutor Bahasa Inggris & Ilmu Pengetahuan Sosial (IPS)',
+    category: 'pendidik',
+    education: 'S1 Pendidikan Bahasa Inggris Universitas Negeri Yogyakarta',
+    specialization: 'Percakapan Bahasa Inggris Dasar & Pengetahuan Sosial Masyarakat',
+    nuptkOrNip: 'PEG-010',
+    bio: 'Membimbing percakapan bahasa Inggris praktis dan wawasan kebangsaan yang inklusif serta interaktif.',
+    photo: 'https://images.unsplash.com/photo-1534751516642-a171edd2521d?auto=format&fit=crop&w=600&q=80',
+    phone: '085612345681',
+    email: 'siti.maryam@pkbmsumowono.sch.id',
+    order: 10
+  }
+];
 
 export const INITIAL_VIDEOS: VideoItem[] = [
   {

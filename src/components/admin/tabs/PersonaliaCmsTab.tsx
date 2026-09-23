@@ -25,6 +25,7 @@ import {
 import { usePKBM } from '../../../context/PKBMContext';
 import { PersonaliaCategory, PersonaliaMember } from '../../../types';
 import { ImportPersonaliaCsvModal } from './ImportPersonaliaCsvModal';
+import { sortPersonaliaMembers } from '../../../utils/personaliaHelper';
 
 interface PersonaliaCmsTabProps {
   onShowToast: (msg: string) => void;
@@ -102,9 +103,9 @@ export const PersonaliaCmsTab: React.FC<PersonaliaCmsTabProps> = ({ onShowToast 
     order: 1
   });
 
-  // Filtered List
+  // Filtered and Sorted List: Pendiri -> Pengelola -> Tutor, dan berdasarkan nomor ID pegawai
   const filteredList = useMemo(() => {
-    return personalia.filter((item) => {
+    const list = personalia.filter((item) => {
       const matchCat = filterCategory === 'all' || item.category === filterCategory;
       const q = searchQuery.toLowerCase().trim();
       const matchSearch =
@@ -112,10 +113,13 @@ export const PersonaliaCmsTab: React.FC<PersonaliaCmsTabProps> = ({ onShowToast 
         item.name.toLowerCase().includes(q) ||
         item.role.toLowerCase().includes(q) ||
         (item.specialization && item.specialization.toLowerCase().includes(q)) ||
-        (item.education && item.education.toLowerCase().includes(q));
+        (item.education && item.education.toLowerCase().includes(q)) ||
+        (item.nuptkOrNip && item.nuptkOrNip.toLowerCase().includes(q));
 
       return matchCat && matchSearch;
     });
+
+    return sortPersonaliaMembers(list);
   }, [personalia, filterCategory, searchQuery]);
 
   // Counts
@@ -603,15 +607,18 @@ export const PersonaliaCmsTab: React.FC<PersonaliaCmsTabProps> = ({ onShowToast 
 
                   <div className="space-y-1">
                     <label className="text-xs font-bold text-slate-700">
-                      NUPTK / NIP / ID Personalia (Opsional)
+                      Nomor ID Pegawai / NUPTK / NIP
                     </label>
                     <input
                       type="text"
                       value={formData.nuptkOrNip}
                       onChange={(e) => setFormData((prev) => ({ ...prev, nuptkOrNip: e.target.value }))}
-                      placeholder="Contoh: 19650412 199003 1 004 / NUPTK"
+                      placeholder="Contoh: PEG-001, 19650412..., atau 001"
                       className="w-full p-2.5 rounded-xl border border-slate-300 text-xs font-mono focus:outline-none focus:border-[#006633]"
                     />
+                    <p className="text-[10px] text-slate-500">
+                      Digunakan untuk urutan tampil otomatis per kelompok serta tautan langsung.
+                    </p>
                   </div>
                 </div>
 

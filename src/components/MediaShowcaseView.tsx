@@ -306,8 +306,10 @@ export const MediaShowcaseView: React.FC<MediaShowcaseViewProps> = ({
                 >
                   {currentItem.nuptkOrNip && (
                     <div className="flex items-center gap-2">
-                      <span className="font-bold text-orange-500">NUPTK/NIP:</span>
-                      <span className="font-mono">{currentItem.nuptkOrNip}</span>
+                      <span className="font-bold text-orange-500">Nomor ID Pegawai / NIP:</span>
+                      <span className="font-mono font-bold px-2 py-0.5 rounded bg-orange-500/10 border border-orange-500/30 text-amber-300">
+                        {currentItem.nuptkOrNip}
+                      </span>
                     </div>
                   )}
                   {currentItem.education && (

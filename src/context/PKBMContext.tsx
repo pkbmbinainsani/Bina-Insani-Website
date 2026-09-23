@@ -384,7 +384,10 @@ export const PKBMProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [personalia, setPersonalia] = useState<PersonaliaMember[]>(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEYS.PERSONALIA);
-      if (saved) return JSON.parse(saved);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
     } catch (e) {
       console.error('Failed to load personalia from storage', e);
     }

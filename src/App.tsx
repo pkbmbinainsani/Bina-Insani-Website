@@ -166,25 +166,29 @@ function MainAppContent() {
     });
   };
 
-  // Initialize active tab from URL hash (e.g. #berita or #prestasi) or default to 'beranda'
+  // Initialize active tab from URL hash (e.g. #berita, #prestasi, or #personalia?id=...) or default to 'beranda'
   const [activeTab, setActiveTab] = useState<string>(() => {
     if (typeof window !== 'undefined') {
       const initialHash = window.location.hash.replace('#', '').trim();
-      if (VALID_TABS.includes(initialHash)) {
-        return initialHash;
+      const baseTab = initialHash.split('?')[0].split('/')[0];
+      if (VALID_TABS.includes(baseTab)) {
+        return baseTab;
       }
     }
     return 'beranda';
   });
 
-  // Sync hash changes (e.g. browser back/forward buttons)
+  // Sync hash changes (e.g. browser back/forward buttons, direct deep links)
   useEffect(() => {
     const handleHashChange = () => {
-      const hash = window.location.hash.replace('#', '').trim();
-      if (hash && VALID_TABS.includes(hash)) {
-        setActiveTab(hash);
-        window.scrollTo({ top: 0, behavior: 'instant' });
-      } else if (!hash) {
+      const rawHash = window.location.hash.replace('#', '').trim();
+      const baseTab = rawHash.split('?')[0].split('/')[0];
+      if (baseTab && VALID_TABS.includes(baseTab)) {
+        setActiveTab(baseTab);
+        if (!rawHash.includes('?')) {
+          window.scrollTo({ top: 0, behavior: 'instant' });
+        }
+      } else if (!rawHash) {
         setActiveTab('beranda');
         window.scrollTo({ top: 0, behavior: 'instant' });
       }

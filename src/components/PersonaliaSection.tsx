@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   Users,
@@ -27,6 +27,11 @@ import {
 import { usePKBM } from '../context/PKBMContext';
 import { PersonaliaCategory, PersonaliaMember } from '../types';
 import { MediaShowcaseView, ShowcaseItem } from './MediaShowcaseView';
+import {
+  sortPersonaliaMembers,
+  getPersonaliaDirectHash,
+  parsePersonaliaTargetFromUrl
+} from '../utils/personaliaHelper';
 
 interface PersonaliaSectionProps {
   onOpenAdmin?: () => void;
@@ -106,9 +111,11 @@ export const PersonaliaSection: React.FC<PersonaliaSectionProps> = ({ onOpenAdmi
     };
   }, [personalia]);
 
-  // Filtered members
+  // Filtered and Sorted members according to requested order:
+  // 1. Urutan kategori: Pendiri -> Pengelola (Yayasan & Tendik) -> Tutor (Pendidik)
+  // 2. Pada masing-masing urutan ditentukan berdasarkan nomor ID pegawai
   const filteredMembers = useMemo(() => {
-    return personalia.filter((m) => {
+    const list = personalia.filter((m) => {
       const matchCategory = selectedCategory === 'all' || m.category === selectedCategory;
       const q = searchQuery.toLowerCase().trim();
       const matchSearch =
@@ -122,7 +129,83 @@ export const PersonaliaSection: React.FC<PersonaliaSectionProps> = ({ onOpenAdmi
 
       return matchCategory && matchSearch;
     });
+
+    // Urutkan: Pendiri -> Pengelola -> Tutor, dan berdasarkan nomor ID pegawai
+    return sortPersonaliaMembers(list);
   }, [personalia, selectedCategory, searchQuery]);
+
+  // Deep-linking: mendeteksi tautan langsung ke personal tertentu (#personalia?id=..., dll)
+  useEffect(() => {
+    const handleDeepLink = () => {
+      const target = parsePersonaliaTargetFromUrl();
+      if (!target || personalia.length === 0) return;
+
+      const found = personalia.find((p) => {
+        const matchId = p.id === target || p.id.toLowerCase() === target.toLowerCase();
+        const matchNip = p.nuptkOrNip && (p.nuptkOrNip === target || p.nuptkOrNip.toLowerCase() === target.toLowerCase());
+        return matchId || matchNip;
+      });
+
+      if (found) {
+        setSelectedCategory('all');
+        setActiveModalMember(found);
+        setTimeout(() => {
+          const showcaseEl = document.getElementById('personalia-showcase-container');
+          if (showcaseEl) {
+            showcaseEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          } else {
+            const cardEl = document.getElementById(`personalia-member-${found.id}`);
+            if (cardEl) {
+              cardEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+          }
+        }, 250);
+      }
+    };
+
+    handleDeepLink();
+    window.addEventListener('hashchange', handleDeepLink);
+    return () => window.removeEventListener('hashchange', handleDeepLink);
+  }, [personalia]);
+
+  // Handler saat kartu personalia diklik: buka detail dan perbarui URL hash langsung
+  const handleSelectMember = useCallback((member: PersonaliaMember) => {
+    setActiveModalMember(member);
+    const directHash = getPersonaliaDirectHash(member.id);
+    if (window.location.hash !== directHash) {
+      history.replaceState(null, '', directHash);
+    }
+    setTimeout(() => {
+      const showcaseEl = document.getElementById('personalia-showcase-container');
+      if (showcaseEl) {
+        showcaseEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 100);
+  }, []);
+
+  // Handler saat showcase ditutup: kembalikan URL hash ke #personalia
+  const handleCloseShowcase = useCallback(() => {
+    setActiveModalMember(null);
+    if (window.location.hash.includes('personalia?')) {
+      history.replaceState(null, '', '#personalia');
+    }
+  }, []);
+
+  // Handler bagikan tautan langsung profil personalia
+  const handleShareMember = useCallback(
+    (member: PersonaliaMember) => {
+      if (onShareCustom) {
+        onShareCustom({
+          title: `Profil ${member.name} (${member.role})`,
+          description: member.bio || `${member.name} - ${member.role} di PKBM Bina Insani Sumowono.`,
+          hash: getPersonaliaDirectHash(member.id),
+          category: `Personalia: ${member.role}`,
+          image: member.photo
+        });
+      }
+    },
+    [onShareCustom]
+  );
 
   // Transform personalia members to 2-column showcase layout
   const personaliaShowcaseItems: ShowcaseItem[] = filteredMembers.map((member) => {
@@ -308,24 +391,27 @@ export const PersonaliaSection: React.FC<PersonaliaSectionProps> = ({ onOpenAdmi
 
         {/* Tampilan Fokus Split 2 Kolom Sesuai Gambar Layout */}
         {activeModalMember && (
-          <div className="mb-12">
+          <div id="personalia-showcase-container" className="mb-12 scroll-mt-28">
             <MediaShowcaseView
               items={personaliaShowcaseItems}
               activeId={activeModalMember.id}
               onSelect={(item) => {
                 const found = personalia.find((p) => p.id === item.id);
-                if (found) setActiveModalMember(found);
+                if (found) handleSelectMember(found);
               }}
-              onClose={() => setActiveModalMember(null)}
+              onClose={handleCloseShowcase}
               sectionTitle="Profil Personalia & Tim Pengelola"
               mediaType="person"
               theme="dark"
               onShareItem={(item) => {
-                if (onShareCustom) {
+                const found = personalia.find((p) => p.id === item.id);
+                if (found) {
+                  handleShareMember(found);
+                } else if (onShareCustom) {
                   onShareCustom({
                     title: `Profil ${item.title} - ${item.subtitle || 'Personalia PKBM Bina Insani'}`,
                     description: item.description,
-                    hash: '#personalia',
+                    hash: getPersonaliaDirectHash(item.id),
                     category: item.category,
                     image: item.image
                   });
@@ -368,12 +454,14 @@ export const PersonaliaSection: React.FC<PersonaliaSectionProps> = ({ onOpenAdmi
               return (
                 <motion.div
                   key={member.id}
+                  id={`personalia-member-${member.id}`}
+                  data-member-id={member.id}
                   initial={{ opacity: 0, y: 15 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.3, delay: (idx % 4) * 0.08 }}
-                  onClick={() => setActiveModalMember(member)}
-                  className={`rounded-2xl bg-gradient-to-b from-stone-900 via-[#1c1917] to-stone-950 border shadow-lg transition-all flex flex-col justify-between overflow-hidden group backdrop-blur-md cursor-pointer ${
+                  onClick={() => handleSelectMember(member)}
+                  className={`rounded-2xl bg-gradient-to-b from-stone-900 via-[#1c1917] to-stone-950 border shadow-lg transition-all flex flex-col justify-between overflow-hidden group backdrop-blur-md cursor-pointer scroll-mt-28 ${
                     activeModalMember?.id === member.id
                       ? 'border-amber-400 ring-2 ring-amber-400/50 shadow-amber-500/20'
                       : 'border-orange-400/30 hover:border-orange-400 hover:shadow-orange-400/10'
@@ -416,11 +504,14 @@ export const PersonaliaSection: React.FC<PersonaliaSectionProps> = ({ onOpenAdmi
                         </span>
                       </div>
 
-                      {/* Order / Status Badge & Zoom Photo Button */}
+                      {/* Nomor ID Pegawai Badge & Zoom Photo Button */}
                       <div className="absolute top-2.5 right-2.5 z-20 flex items-center gap-1">
                         {member.nuptkOrNip && (
-                          <span className="px-1.5 py-0.5 rounded-md bg-stone-950/90 text-[9px] text-amber-300 font-mono border border-orange-500/40 backdrop-blur-sm shadow">
-                            Terdaftar
+                          <span
+                            className="px-2 py-0.5 rounded-md bg-stone-950/95 text-[10px] text-amber-300 font-mono font-bold border border-orange-500/50 backdrop-blur-sm shadow"
+                            title={`Nomor ID Pegawai / NIP: ${member.nuptkOrNip}`}
+                          >
+                            ID: {member.nuptkOrNip}
                           </span>
                         )}
                         <button
@@ -447,9 +538,11 @@ export const PersonaliaSection: React.FC<PersonaliaSectionProps> = ({ onOpenAdmi
                     {/* Content Details */}
                     <div className="p-4 space-y-2">
                       <div>
-                        <h3 className="text-base font-extrabold text-white group-hover:text-amber-300 transition-colors leading-snug">
-                          {member.name}
-                        </h3>
+                        <div className="flex items-center justify-between gap-2">
+                          <h3 className="text-base font-extrabold text-white group-hover:text-amber-300 transition-colors leading-snug">
+                            {member.name}
+                          </h3>
+                        </div>
                         <p className="text-[11px] font-bold text-amber-300/90 mt-0.5">
                           {member.role}
                         </p>
@@ -484,27 +577,25 @@ export const PersonaliaSection: React.FC<PersonaliaSectionProps> = ({ onOpenAdmi
                   {/* Card Bottom Actions */}
                   <div className="p-4 pt-0 flex items-center gap-2">
                     <button
-                      onClick={() => setActiveModalMember(member)}
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleSelectMember(member);
+                      }}
                       className="flex-1 py-1.5 px-3 rounded-lg bg-stone-950 text-amber-300 hover:bg-gradient-to-r hover:from-orange-500 hover:to-amber-500 hover:text-white border border-orange-400/35 text-[11px] font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow"
                     >
                       <UserCheck className="w-3.5 h-3.5" />
-                      <span>Lihat Profil</span>
+                      <span>Lihat Detail</span>
                     </button>
                     {onShareCustom && (
                       <button
                         type="button"
                         onClick={(e) => {
                           e.stopPropagation();
-                          onShareCustom({
-                            title: `Profil ${member.name} (${member.role})`,
-                            description: member.bio || `${member.name} - ${member.role} di PKBM Bina Insani Sumowono.`,
-                            hash: '#personalia',
-                            category: member.category,
-                            image: member.photo
-                          });
+                          handleShareMember(member);
                         }}
                         className="p-1.5 rounded-lg bg-stone-900 hover:bg-stone-800 text-amber-300 border border-orange-500/35 cursor-pointer transition-colors"
-                        title="Bagikan Profil Pendidik/Pengurus"
+                        title="Bagikan Tautan Langsung Profil Ini"
                       >
                         <Share2 className="w-3.5 h-3.5 text-orange-400" />
                       </button>
