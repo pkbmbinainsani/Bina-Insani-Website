@@ -258,3 +258,12 @@ export interface PersonaliaMember {
   order?: number;
 }
 
+export interface DetectedLocalStorageBackup {
+  key: string;
+  type: 'news' | 'gallery' | 'general';
+  itemCount: number;
+  sampleTitles: string[];
+  data: any;
+  dateDetected: string;
+}
+

@@ -33,6 +33,12 @@ import {
   broadcastRealtimeUpdate
 } from '../lib/supabase';
 import { sortNewsByDateDesc } from '../utils/dateHelper';
+import {
+  isDummyNewsOnly,
+  findBestHistoricalNews,
+  findBestHistoricalGallery,
+  scanLocalStorageForRecoverableData
+} from '../utils/recoveryHelper';
 
 
 
@@ -208,6 +214,12 @@ interface PKBMContextType {
   syncAllToSupabase: () => Promise<{ success: boolean; message: string }>;
   loadFromSupabase: () => Promise<void>;
   sendRealtimePing: () => void;
+
+  // 15. Data Recovery & Protection
+  isCurrentNewsDummy: boolean;
+  scanLocalBackups: () => ReturnType<typeof scanLocalStorageForRecoverableData>;
+  restoreDetectedNews: (items: NewsItem[]) => void;
+  restoreDetectedGallery: (items: GalleryItem[]) => void;
 }
 
 const PKBMContext = createContext<PKBMContextType | undefined>(undefined);
@@ -237,7 +249,20 @@ export const PKBMProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [news, setNews] = useState<NewsItem[]>(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEYS.NEWS);
-      if (saved) return sortNewsByDateDesc(JSON.parse(saved));
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0 && !isDummyNewsOnly(parsed)) {
+          return sortNewsByDateDesc(parsed);
+        }
+      }
+      // Check historical storage keys if saved in _v5 was empty or dummy only
+      const historical = findBestHistoricalNews();
+      if (historical && historical.length > 0) {
+        return historical;
+      }
+      if (saved) {
+        return sortNewsByDateDesc(JSON.parse(saved));
+      }
     } catch (e) {
       console.error('Failed to load news from storage', e);
     }
@@ -248,7 +273,15 @@ export const PKBMProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [gallery, setGallery] = useState<GalleryItem[]>(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEYS.GALLERY);
-      if (saved) return JSON.parse(saved);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+      // Check historical storage keys if current gallery is empty
+      const historical = findBestHistoricalGallery();
+      if (historical && historical.length > 0) {
+        return historical;
+      }
     } catch (e) {
       console.error('Failed to load gallery from storage', e);
     }
@@ -539,13 +572,48 @@ export const PKBMProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       if (tableExists && Object.keys(records).length > 0) {
         if (records.news && Array.isArray(records.news)) {
-          const sorted = sortNewsByDateDesc(records.news);
-          setNews(sorted);
-          try { localStorage.setItem(STORAGE_KEYS.NEWS, JSON.stringify(sorted)); } catch {}
+          const isRemoteDummy = isDummyNewsOnly(records.news);
+          setNews((currentNews) => {
+            // Safeguard: If remote Supabase holds dummy news, BUT locally we have custom legitimate news,
+            // DO NOT let remote dummy wipe local legitimate news!
+            if (isRemoteDummy && !isDummyNewsOnly(currentNews)) {
+              console.warn('[Data Protection] Remote Supabase has dummy news. Preserving local user news and queuing sync to Supabase.');
+              setTimeout(() => syncRecord('news', currentNews), 1500);
+              return currentNews;
+            }
+            if (isRemoteDummy) {
+              const historical = findBestHistoricalNews();
+              if (historical && historical.length > 0) {
+                console.warn('[Data Recovery] Restored historical user news from browser storage.');
+                setTimeout(() => syncRecord('news', historical), 1500);
+                return historical;
+              }
+            }
+            const sorted = sortNewsByDateDesc(records.news);
+            try { localStorage.setItem(STORAGE_KEYS.NEWS, JSON.stringify(sorted)); } catch {}
+            return sorted;
+          });
         }
         if (records.gallery && Array.isArray(records.gallery)) {
-          setGallery(records.gallery);
-          try { localStorage.setItem(STORAGE_KEYS.GALLERY, JSON.stringify(records.gallery)); } catch {}
+          setGallery((currentGallery) => {
+            // Safeguard: If remote Supabase gallery is empty, BUT locally we have items,
+            // DO NOT wipe local gallery items!
+            if (records.gallery.length === 0 && currentGallery.length > 0) {
+              console.warn('[Data Protection] Remote Supabase gallery is empty. Preserving local gallery items and queuing sync to Supabase.');
+              setTimeout(() => syncRecord('gallery', currentGallery), 1500);
+              return currentGallery;
+            }
+            if (records.gallery.length === 0) {
+              const historical = findBestHistoricalGallery();
+              if (historical && historical.length > 0) {
+                console.warn('[Data Recovery] Restored historical user gallery from browser storage.');
+                setTimeout(() => syncRecord('gallery', historical), 1500);
+                return historical;
+              }
+            }
+            try { localStorage.setItem(STORAGE_KEYS.GALLERY, JSON.stringify(records.gallery)); } catch {}
+            return records.gallery;
+          });
         }
         if (records.videos && Array.isArray(records.videos)) {
           setVideos(records.videos);
@@ -607,9 +675,6 @@ export const PKBMProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
         setLastSyncTime(new Date().toLocaleTimeString('id-ID'));
         setSupabaseStatus('connected');
-      } else if (tableExists && Object.keys(records).length === 0) {
-        // Table exists but is completely empty: auto-populate with initial data
-        await syncAllToSupabase();
       }
     } catch (err) {
       console.warn('[Supabase] Initial load failed:', err);
@@ -643,6 +708,15 @@ export const PKBMProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       let anyError = false;
       let lastErrMsg = '';
+
+      // Auto-save backup snapshot before syncing to prevent irreversible data loss
+      await saveRecordToSupabase('backup_last_sync', {
+        timestamp: new Date().toISOString(),
+        newsCount: news.length,
+        galleryCount: gallery.length,
+        registrationsCount: registrations.length,
+        allDataSnapshot: allData
+      });
 
       for (const [key, value] of Object.entries(allData)) {
         const res = await saveRecordToSupabase(key, value);
@@ -1255,8 +1329,30 @@ export const PKBMProvider: React.FC<{ children: React.ReactNode }> = ({ children
     localStorage.removeItem(STORAGE_KEYS.STATS);
     localStorage.removeItem(STORAGE_KEYS.PERSONALIA);
 
-    // Also push default data to Supabase
-    syncAllToSupabase();
+    // CATATAN KEAMANAN: Reset lokal hanya mengembalikan data ke memori perangkat ini.
+    // Supabase TIDAK ditimpa otomatis agar database online terlindungi dari penghapusan massal.
+  };
+
+  // 15. Data Recovery & Protection Methods
+  const isCurrentNewsDummy = isDummyNewsOnly(news);
+
+  const scanLocalBackups = () => {
+    return scanLocalStorageForRecoverableData();
+  };
+
+  const restoreDetectedNews = (items: NewsItem[]) => {
+    if (!items || !Array.isArray(items) || items.length === 0) return;
+    const sorted = sortNewsByDateDesc(items);
+    setNews(sorted);
+    try { localStorage.setItem(STORAGE_KEYS.NEWS, JSON.stringify(sorted)); } catch {}
+    syncRecord('news', sorted);
+  };
+
+  const restoreDetectedGallery = (items: GalleryItem[]) => {
+    if (!items || !Array.isArray(items)) return;
+    setGallery(items);
+    try { localStorage.setItem(STORAGE_KEYS.GALLERY, JSON.stringify(items)); } catch {}
+    syncRecord('gallery', items);
   };
 
   const exportDataJSON = () => {
@@ -1379,7 +1475,11 @@ export const PKBMProvider: React.FC<{ children: React.ReactNode }> = ({ children
         isSyncing,
         syncAllToSupabase,
         loadFromSupabase,
-        sendRealtimePing
+        sendRealtimePing,
+        isCurrentNewsDummy,
+        scanLocalBackups,
+        restoreDetectedNews,
+        restoreDetectedGallery
       }}
     >
       {children}

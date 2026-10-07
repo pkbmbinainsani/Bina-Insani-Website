@@ -17,7 +17,15 @@ import {
   Activity,
   Layers,
   Clock,
-  Sparkles
+  Sparkles,
+  History,
+  Search,
+  FileUp,
+  FileDown,
+  RotateCcw,
+  Info,
+  ShieldAlert,
+  HardDrive
 } from 'lucide-react';
 import { usePKBM } from '../../../context/PKBMContext';
 import {
@@ -25,6 +33,7 @@ import {
   SUPABASE_ANON_KEY,
   SUPABASE_SQL_SETUP_SCRIPT
 } from '../../../lib/supabase';
+import { DetectedLocalStorageBackup } from '../../../types';
 
 export const DatabaseCmsTab: React.FC = () => {
   const {
@@ -44,7 +53,13 @@ export const DatabaseCmsTab: React.FC = () => {
     heroSlides,
     personalia,
     stats,
-    pkbmInfo
+    pkbmInfo,
+    isCurrentNewsDummy,
+    scanLocalBackups,
+    restoreDetectedNews,
+    restoreDetectedGallery,
+    exportDataJSON,
+    importDataJSON
   } = usePKBM();
 
   const [copiedSql, setCopiedSql] = useState(false);
@@ -53,6 +68,15 @@ export const DatabaseCmsTab: React.FC = () => {
   const [showSql, setShowSql] = useState(false);
   const [syncFeedback, setSyncFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
   const [pingLog, setPingLog] = useState<string | null>(null);
+
+  const [scanResults, setScanResults] = useState<{
+    newsBackups: DetectedLocalStorageBackup[];
+    galleryBackups: DetectedLocalStorageBackup[];
+    fullBackups: DetectedLocalStorageBackup[];
+  } | null>(null);
+  const [hasScanned, setHasScanned] = useState(false);
+  const [isScanning, setIsScanning] = useState(false);
+  const [showSyncWarningModal, setShowSyncWarningModal] = useState(false);
 
   const handleCopySql = () => {
     navigator.clipboard.writeText(SUPABASE_SQL_SETUP_SCRIPT);
@@ -72,7 +96,93 @@ export const DatabaseCmsTab: React.FC = () => {
     setTimeout(() => setCopiedKey(false), 2000);
   };
 
+  const handleScanBrowser = () => {
+    setIsScanning(true);
+    setTimeout(() => {
+      const results = scanLocalBackups();
+      setScanResults(results);
+      setHasScanned(true);
+      setIsScanning(false);
+    }, 350);
+  };
+
+  const handleRestoreNewsBackup = (items: any[]) => {
+    restoreDetectedNews(items);
+    setSyncFeedback({
+      type: 'success',
+      message: `Berhasil memulihkan ${items.length} berita dari riwayat penyimpanan browser ke sistem dan Supabase!`
+    });
+  };
+
+  const handleRestoreGalleryBackup = (items: any[]) => {
+    restoreDetectedGallery(items);
+    setSyncFeedback({
+      type: 'success',
+      message: `Berhasil memulihkan ${items.length} foto galeri dari riwayat penyimpanan browser ke sistem dan Supabase!`
+    });
+  };
+
+  const handleRestoreFullBackup = (data: any) => {
+    const success = importDataJSON(JSON.stringify(data));
+    if (success) {
+      setSyncFeedback({
+        type: 'success',
+        message: 'Cadangan data lengkap berhasil dipulihkan dan disinkronkan ke Supabase!'
+      });
+    }
+  };
+
+  const handleExportBackupFile = () => {
+    const jsonStr = exportDataJSON();
+    const blob = new Blob([jsonStr], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `backup_pkbm_sumowono_${new Date().toISOString().split('T')[0]}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleImportBackupFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const content = event.target?.result as string;
+        const ok = importDataJSON(content);
+        if (ok) {
+          setSyncFeedback({
+            type: 'success',
+            message: 'File cadangan JSON berhasil diimpor dan database Supabase telah diperbarui!'
+          });
+        } else {
+          setSyncFeedback({
+            type: 'error',
+            message: 'Format file JSON tidak valid.'
+          });
+        }
+      } catch (err: any) {
+        setSyncFeedback({
+          type: 'error',
+          message: `Gagal membaca file: ${err.message}`
+        });
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+  };
+
   const handleManualSync = async () => {
+    if (isCurrentNewsDummy && gallery.length === 0) {
+      setShowSyncWarningModal(true);
+      return;
+    }
+    await executeManualSync();
+  };
+
+  const executeManualSync = async () => {
+    setShowSyncWarningModal(false);
     setSyncFeedback(null);
     const res = await syncAllToSupabase();
     if (res.success) {
@@ -266,6 +376,241 @@ export const DatabaseCmsTab: React.FC = () => {
           </button>
         </div>
       </div>
+
+      {/* Diagnostic Alert: Dummy Data or Empty Gallery Detected */}
+      {(isCurrentNewsDummy || gallery.length === 0) && (
+        <div className="bg-amber-50 border border-amber-300 rounded-3xl p-5 shadow-sm space-y-3">
+          <div className="flex items-start gap-3">
+            <div className="w-9 h-9 rounded-xl bg-amber-500/20 text-amber-800 flex items-center justify-center shrink-0 mt-0.5">
+              <ShieldAlert className="w-5 h-5 text-amber-700" />
+            </div>
+            <div className="flex-1 space-y-1">
+              <h4 className="text-sm font-black text-amber-950 flex items-center gap-2">
+                <span>Investigasi Data: Mengapa Berita & Galeri Menampilkan Data Dummy?</span>
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-200 text-amber-900">
+                  Perlu Penanganan
+                </span>
+              </h4>
+              <p className="text-xs text-amber-900 leading-relaxed">
+                Berdasarkan rekam jejak Supabase (<code className="font-mono font-bold text-amber-950">pkbm_records</code>), pada tanggal <strong>25 September 2026 pukul 20:04 UTC</strong> telah terjadi sinkronisasi dari browser yang memuat data template bawaan awal (2 berita dummy dan galeri kosong), sehingga menimpa data di database online. Halaman galeri secara otomatis menampilkan gambar dari 2 berita tersebut karena galeri mandiri kosong.
+              </p>
+              <div className="pt-2 flex flex-wrap gap-2 items-center">
+                <button
+                  onClick={handleScanBrowser}
+                  disabled={isScanning}
+                  className="px-3.5 py-2 rounded-xl bg-amber-800 hover:bg-amber-900 active:scale-95 text-white text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-sm disabled:opacity-50"
+                >
+                  <Search className="w-3.5 h-3.5" />
+                  <span>{isScanning ? 'Memindai Memori Browser...' : 'Pindai Memori Browser Ini Sekarang'}</span>
+                </button>
+                <span className="text-[11px] text-amber-800">
+                  (Cek apakah browser laptop/ponsel ini masih menyimpan riwayat berita & foto asli sebelum 25 September)
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Data Recovery Center Card */}
+      <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-orange-100 text-orange-700 flex items-center justify-center font-bold">
+              <History className="w-5 h-5" />
+            </div>
+            <div>
+              <h4 className="text-sm font-black text-slate-900 flex items-center gap-2">
+                <span>Pusat Pemulihan Data & Riwayat Browser (Recovery Tool)</span>
+                <span className="px-2 py-0.5 rounded-full bg-blue-100 text-blue-800 text-[10px] font-bold">
+                  Anti Data Hilang
+                </span>
+              </h4>
+              <p className="text-xs text-slate-500 mt-0.5">
+                Pindai memori browser (LocalStorage) untuk menemukan draf berita, foto galeri, atau riwayat versi lama yang pernah tersimpan.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handleScanBrowser}
+              disabled={isScanning}
+              className="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 active:scale-95 text-white text-xs font-bold flex items-center gap-2 transition-all cursor-pointer disabled:opacity-50"
+            >
+              <Search className={`w-3.5 h-3.5 text-amber-400 ${isScanning ? 'animate-spin' : ''}`} />
+              <span>{isScanning ? 'Memindai...' : 'Pindai Penyimpanan Browser'}</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Scan Results Display */}
+        {hasScanned && (
+          <div className="space-y-3 pt-1">
+            <h5 className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+              <HardDrive className="w-3.5 h-3.5 text-slate-500" />
+              <span>Hasil Pemindaian Memori Lokal Browser:</span>
+            </h5>
+
+            {(!scanResults ||
+              (scanResults.newsBackups.length === 0 &&
+                scanResults.galleryBackups.length === 0 &&
+                scanResults.fullBackups.length === 0)) ? (
+              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-xs text-slate-600 space-y-1">
+                <p className="font-bold text-slate-800">
+                  Tidak ditemukan jejak data lama pada browser perangkat ini.
+                </p>
+                <p className="text-slate-500 leading-relaxed text-[11px]">
+                  Tips: Jika Anda pernah menginput berita atau galeri menggunakan <strong>laptop, PC, atau perangkat lain</strong>, silakan buka website ini pada perangkat tersebut lalu buka tab ini dan klik <em>"Pindai Penyimpanan Browser"</em>. Data yang tersimpan di perangkat tersebut dapat langsung dipulihkan ke Supabase. Anda juga dapat menggunakan tombol <strong>Impor Cadangan (JSON)</strong> di bawah jika memiliki arsip file.
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {/* News backups detected */}
+                {scanResults.newsBackups.map((nb, i) => (
+                  <div
+                    key={`news-b-${i}`}
+                    className="p-3.5 rounded-2xl bg-blue-50/70 border border-blue-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs"
+                  >
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="font-bold text-blue-950">Riwayat Berita Terdeteksi ({nb.itemCount} Artikel)</span>
+                        <span className="text-[10px] font-mono bg-blue-100 text-blue-800 px-2 py-0.5 rounded-md">
+                          {nb.key}
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-blue-700 mt-1 line-clamp-1">
+                        Sampel Judul: {nb.sampleTitles.join(' • ')}
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => handleRestoreNewsBackup(nb.data)}
+                      className="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs flex items-center gap-1.5 transition-colors shrink-0 cursor-pointer shadow-sm"
+                    >
+                      <RotateCcw className="w-3.5 h-3.5" />
+                      <span>Pulihkan Berita ke Supabase</span>
+                    </button>
+                  </div>
+                ))}
+
+                {/* Gallery backups detected */}
+                {scanResults.galleryBackups.map((gb, i) => (
+                  <div
+                    key={`gallery-b-${i}`}
+                    className="p-3.5 rounded-2xl bg-emerald-50/70 border border-emerald-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs"
+                  >
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="font-bold text-emerald-950">Riwayat Galeri Terdeteksi ({gb.itemCount} Foto)</span>
+                        <span className="text-[10px] font-mono bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-md">
+                          {gb.key}
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-emerald-700 mt-1 line-clamp-1">
+                        Sampel: {gb.sampleTitles.join(' • ')}
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => handleRestoreGalleryBackup(gb.data)}
+                      className="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-1.5 transition-colors shrink-0 cursor-pointer shadow-sm"
+                    >
+                      <RotateCcw className="w-3.5 h-3.5" />
+                      <span>Pulihkan Galeri ke Supabase</span>
+                    </button>
+                  </div>
+                ))}
+
+                {/* Full backups detected */}
+                {scanResults.fullBackups.map((fb, i) => (
+                  <div
+                    key={`full-b-${i}`}
+                    className="p-3.5 rounded-2xl bg-purple-50/70 border border-purple-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs"
+                  >
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="font-bold text-purple-950">Cadangan Lengkap Terdeteksi ({fb.itemCount} Total Item)</span>
+                        <span className="text-[10px] font-mono bg-purple-100 text-purple-800 px-2 py-0.5 rounded-md">
+                          {fb.key}
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-purple-700 mt-1 line-clamp-1">
+                        Waktu Cadangan: {fb.dateDetected}
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => handleRestoreFullBackup(fb.data)}
+                      className="px-3.5 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs flex items-center gap-1.5 transition-colors shrink-0 cursor-pointer shadow-sm"
+                    >
+                      <RotateCcw className="w-3.5 h-3.5" />
+                      <span>Pulihkan Seluruh Data ke Supabase</span>
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* JSON Backup & Restore Tools */}
+        <div className="pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3 text-xs">
+          <div className="text-slate-500 text-[11px]">
+            Cadangkan data secara mandiri untuk menghindari kehilangan data di masa depan.
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <button
+              onClick={handleExportBackupFile}
+              className="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold flex items-center gap-1.5 transition-colors cursor-pointer"
+            >
+              <FileDown className="w-3.5 h-3.5 text-blue-600" />
+              <span>Unduh Cadangan (JSON)</span>
+            </button>
+            <label className="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold flex items-center gap-1.5 transition-colors cursor-pointer">
+              <FileUp className="w-3.5 h-3.5 text-emerald-600" />
+              <span>Impor Cadangan (JSON)</span>
+              <input
+                type="file"
+                accept=".json,application/json"
+                onChange={handleImportBackupFile}
+                className="hidden"
+              />
+            </label>
+          </div>
+        </div>
+      </div>
+
+      {/* Confirmation Safeguard Modal for Syncing Dummy Data */}
+      {showSyncWarningModal && (
+        <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-amber-200 space-y-4 animate-in zoom-in-95">
+            <div className="w-12 h-12 rounded-2xl bg-amber-100 text-amber-800 flex items-center justify-center mx-auto">
+              <AlertTriangle className="w-6 h-6 text-amber-600" />
+            </div>
+            <div className="text-center space-y-2">
+              <h3 className="text-base font-black text-slate-900">
+                Peringatan: Menimpa Database dengan Data Kosong/Dummy?
+              </h3>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                Saat ini data lokal Anda hanya berisi <strong>{news.length} Berita Template</strong> dan <strong>{gallery.length} Galeri</strong>.
+                Jika Anda melanjutkan, database online Supabase akan ditimpa dengan data ini.
+              </p>
+            </div>
+            <div className="flex items-center gap-2 pt-2">
+              <button
+                onClick={() => setShowSyncWarningModal(false)}
+                className="flex-1 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-colors cursor-pointer"
+              >
+                Batalkan
+              </button>
+              <button
+                onClick={executeManualSync}
+                className="flex-1 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold text-xs transition-colors cursor-pointer shadow-md"
+              >
+                Tetap Lanjutkan Unggah
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Connection Credentials Card */}
       <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm space-y-4">
