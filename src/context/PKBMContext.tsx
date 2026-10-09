@@ -675,9 +675,18 @@ export const PKBMProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
         setLastSyncTime(new Date().toLocaleTimeString('id-ID'));
         setSupabaseStatus('connected');
+      } else if (error) {
+        console.warn('[Supabase] Initial load error:', error);
+        if (!tableExists) {
+          setIsTableConfigured(false);
+          setSupabaseStatus('disconnected');
+        } else {
+          setSupabaseStatus('error');
+        }
       }
     } catch (err) {
       console.warn('[Supabase] Initial load failed:', err);
+      setSupabaseStatus('error');
     } finally {
       setIsSyncing(false);
     }
@@ -709,22 +718,31 @@ export const PKBMProvider: React.FC<{ children: React.ReactNode }> = ({ children
       let anyError = false;
       let lastErrMsg = '';
 
-      // Auto-save backup snapshot before syncing to prevent irreversible data loss
+      // Auto-save backup metadata snapshot before syncing (lightweight to conserve egress & storage)
       await saveRecordToSupabase('backup_last_sync', {
         timestamp: new Date().toISOString(),
         newsCount: news.length,
         galleryCount: gallery.length,
         registrationsCount: registrations.length,
-        allDataSnapshot: allData
+        personaliaCount: personalia.length,
+        summary: `Backup otomatis sebelum sinkronisasi massal pada ${new Date().toLocaleString('id-ID')}`
       });
 
-      for (const [key, value] of Object.entries(allData)) {
-        const res = await saveRecordToSupabase(key, value);
-        if (!res.success) {
-          anyError = true;
-          lastErrMsg = res.error || 'Gagal menyimpan tabel';
-        }
-        broadcastRealtimeUpdate(channelRef.current, key, value);
+      // Upload in parallel batches of 4 to accelerate sync speed significantly
+      const entries = Object.entries(allData);
+      const batchSize = 4;
+      for (let i = 0; i < entries.length; i += batchSize) {
+        const batch = entries.slice(i, i + batchSize);
+        await Promise.all(
+          batch.map(async ([key, value]) => {
+            const res = await saveRecordToSupabase(key, value);
+            if (!res.success) {
+              anyError = true;
+              lastErrMsg = res.error || 'Gagal menyimpan tabel';
+            }
+            broadcastRealtimeUpdate(channelRef.current, key, value);
+          })
+        );
       }
 
       setLastSyncTime(new Date().toLocaleTimeString('id-ID'));

@@ -87,17 +87,25 @@ export async function fetchRecordFromSupabase(key: string): Promise<any | null> 
 }
 
 /**
- * Fetch all records at once from Supabase
+ * Fetch all records at once from Supabase with timeout protection & excluding huge backup snapshots
  */
-export async function fetchAllRecordsFromSupabase(): Promise<{
+export async function fetchAllRecordsFromSupabase(timeoutMs: number = 7000): Promise<{
   records: Record<string, any>;
   tableExists: boolean;
   error?: string;
 }> {
   try {
-    const { data, error } = await supabase
+    // Timeout guard so devices on slow network or throttled server don't freeze indefinitely
+    const fetchPromise = supabase
       .from('pkbm_records')
-      .select('key, data, updated_at');
+      .select('key, data, updated_at')
+      .neq('key', 'backup_last_sync'); // Exclude heavy duplicate backup snapshots
+
+    const timeoutPromise = new Promise<{ data: null; error: { message: string } }>((_, reject) =>
+      setTimeout(() => reject(new Error('Koneksi sinkronisasi ke Supabase melebihi batas waktu (timeout). Menggunakan cache lokal.')), timeoutMs)
+    );
+
+    const { data, error } = await Promise.race([fetchPromise, timeoutPromise]) as any;
 
     if (error) {
       if (error.code === 'PGRST205' || error.message?.includes('not find')) {

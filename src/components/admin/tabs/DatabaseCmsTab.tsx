@@ -25,7 +25,9 @@ import {
   RotateCcw,
   Info,
   ShieldAlert,
-  HardDrive
+  HardDrive,
+  Zap,
+  Wifi
 } from 'lucide-react';
 import { usePKBM } from '../../../context/PKBMContext';
 import {
@@ -574,6 +576,58 @@ export const DatabaseCmsTab: React.FC = () => {
                 className="hidden"
               />
             </label>
+          </div>
+        </div>
+      </div>
+
+      {/* Speed & Multi-Device Sync Diagnostics Card */}
+      <div className="bg-slate-900 text-slate-100 p-5 rounded-3xl border border-slate-800 shadow-md space-y-4">
+        <div className="flex items-center gap-3 pb-3 border-b border-slate-800">
+          <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold shrink-0">
+            <Zap className="w-5 h-5" />
+          </div>
+          <div>
+            <h4 className="text-sm font-black text-white flex items-center gap-2">
+              <span>Mengapa Sinkronisasi di Perangkat Lain Terkadang Lama?</span>
+              <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-bold border border-emerald-500/30">
+                Optimasi Aktif
+              </span>
+            </h4>
+            <p className="text-xs text-slate-400 mt-0.5">
+              Faktor teknis yang memengaruhi kecepatan sinkronisasi lintas perangkat beserta langkah pencegahannya.
+            </p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+          <div className="bg-slate-950/70 p-4 rounded-2xl border border-slate-800 space-y-2">
+            <div className="flex items-center gap-2 text-amber-400 font-bold">
+              <Activity className="w-4 h-4 shrink-0" />
+              <span>1. Kuota Egress Supabase</span>
+            </div>
+            <p className="text-slate-300 text-[11px] leading-relaxed">
+              Jika akun Supabase gratis melebihi kuota bandwidth bulanan (<em>exceed_egress_quota</em>), server akan membatasi (<em>throttle</em>) permintaan sehingga perangkat lain tertahan (pending). Sistem kini telah dibekali batas waktu <strong>7 detik (timeout guard)</strong> agar browser tidak membeku.
+            </p>
+          </div>
+
+          <div className="bg-slate-950/70 p-4 rounded-2xl border border-slate-800 space-y-2">
+            <div className="flex items-center gap-2 text-cyan-400 font-bold">
+              <HardDrive className="w-4 h-4 shrink-0" />
+              <span>2. Ukuran Foto Base64</span>
+            </div>
+            <p className="text-slate-300 text-[11px] leading-relaxed">
+              Foto resolusi tinggi yang disimpan dalam format teks Base64 dapat berukuran 2–10MB per foto. Mengunduh puluhan MB via jaringan seluler HP membutuhkan waktu lebih lama. Disarankan mengompresi foto sebelum diunggah ke CMS.
+            </p>
+          </div>
+
+          <div className="bg-slate-950/70 p-4 rounded-2xl border border-slate-800 space-y-2">
+            <div className="flex items-center gap-2 text-emerald-400 font-bold">
+              <Wifi className="w-4 h-4 shrink-0" />
+              <span>3. Unggah Paralel & Ringan</span>
+            </div>
+            <p className="text-slate-300 text-[11px] leading-relaxed">
+              Sistem telah dioptimalkan: data kini diunggah dalam kelompok paralel (4 request simultan) dan salinan cadangan dipisahkan agar perangkat pengunjung tidak ikut mengunduh duplikat data yang berat.
+            </p>
           </div>
         </div>
       </div>
